@@ -157,6 +157,12 @@ export default function DriverDashboard() {
     }
   }
 
+  // Mode hemat (makanan) hanya terlihat driver yang sedang ada pesanan aktif (batching)
+  const visibleAvailable = available.filter((o) => {
+    if (o.type === "food" && o.mode === "hemat") return orders.length > 0;
+    return true;
+  });
+
   if (checking) {
     return (
       <Layout>
@@ -270,14 +276,16 @@ export default function DriverDashboard() {
           <h2 className="font-bold mb-3 flex items-center gap-2">
             <Package className="w-4 h-4 text-primary" /> Pesanan Tersedia
           </h2>
-          {available.length === 0 ? (
+          {visibleAvailable.length === 0 ? (
             <div className="text-center py-6 bg-card rounded-2xl border border-dashed border-border">
               <p className="text-sm text-muted-foreground">Belum ada pesanan tersedia</p>
-              <p className="text-xs text-muted-foreground mt-1">Pesanan baru akan muncul di sini</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {orders.length > 0 ? "Tidak ada pesanan baru saat ini" : "Pesanan hemat akan muncul saat Anda sedang mengantar"}
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {available.map((o) => (
+              {visibleAvailable.map((o) => (
                 <div key={o.id} className="bg-card rounded-2xl border-2 border-primary/30 p-4">
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <p className="font-semibold truncate">{o.store_name}</p>
