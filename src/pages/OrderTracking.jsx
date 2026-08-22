@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
+import PhotoUpload from "@/components/PhotoUpload";
 import { reverseGeocodePoi } from "@/lib/googleMaps";
 
 const TIMELINE = [
@@ -43,6 +44,7 @@ export default function OrderTracking() {
   const [billConfirm, setBillConfirm] = useState(null);
   const [qrisPhoto, setQrisPhoto] = useState(null);
   const [proofPhoto, setProofPhoto] = useState(null);
+  const [ownerQris, setOwnerQris] = useState(null);
   const prevStatusRef = useRef(null);
   const selfUpdateRef = useRef(false);
 
@@ -126,6 +128,13 @@ export default function OrderTracking() {
     return unsub;
   }, [id]);
 
+  // Ambil QRIS pemilik (setting admin) untuk pembayaran
+  useEffect(() => {
+    base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1)
+      .then((rows) => setOwnerQris(rows[0]?.value || null))
+      .catch(() => {});
+  }, []);
+
   // Enrich store_name: bila masih berupa pecahan alamat, ambil nama POI dari koordinat toko
   useEffect(() => {
     if (!order?.id || order.store_lat == null || order.store_lng == null) return;
@@ -195,53 +204,6 @@ export default function OrderTracking() {
       loadOrder();
     } catch (e) {
       toast({ title: "Gagal", description: e.message, variant: "destructive" });
-    } finally {
-      setActing(false);
-    }
-  }
-
-  function loadSnapScript(clientKey) {
-    return new Promise((resolve, reject) => {
-      if (window.snap) return resolve();
-      const s = document.createElement("script");
-      s.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-      s.setAttribute("data-client-key", clientKey);
-      s.onload = () => resolve();
-      s.onerror = () => reject(new Error("Gagal memuat Midtrans"));
-      document.head.appendChild(s);
-    });
-  }
-
-  async function startMidtransPayment() {
-    setActing(true);
-    try {
-      const res = await base44.functions.invoke("createMidtransTransaction", { orderId: id });
-      const { token, client_key } = res.data || {};
-      if (!token) {
-        toast({ title: "Gagal membuat transaksi", description: res.data?.error, variant: "destructive" });
-        return;
-      }
-      await loadSnapScript(client_key);
-      window.snap.pay(token, {
-        onSuccess: () => {
-          toast({ title: "Pembayaran berhasil", description: "Menunggu konfirmasi sistem." });
-          loadOrder();
-        },
-        onPending: () => {
-          toast({ title: "Pembayaran menunggu", description: "Selesaikan pembayaran untuk lanjut." });
-          loadOrder();
-        },
-        onError: () => {
-          toast({ title: "Pembayaran gagal", variant: "destructive" });
-        },
-        onClose: () => {
-          loadOrder();
-        },
-      });
-    } catch (e) {
-      let msg = e.message;
-      try { const p = JSON.parse(msg); if (p?.error) msg = p.error; } catch {}
-      toast({ title: "Gagal memulai pembayaran", description: msg, variant: "destructive" });
     } finally {
       setActing(false);
     }
@@ -516,7 +478,7 @@ export default function OrderTracking() {
 
             {order.status === "awaiting_payment" && (
               <p className="text-sm text-muted-foreground text-center py-2">
-                {isQris ? "Menunggu user membayar via Midtrans..." : "Menunggu pengguna membayar..."}
+                {isQris ? "Menunggu user scan QRIS & kirim bukti bayar..." : "Menunggu pengguna membayar..."}
               </p>
             )}
             {order.status === "completed" && (
@@ -538,15 +500,28 @@ export default function OrderTracking() {
                 Total tagihan: <span className="font-semibold text-foreground">{formatRupiah(order.item_cost)}</span>
               </p>
               <p className="text-xs text-muted-foreground">
-                Bisa pakai QRIS, GoPay, Dana, kartu, atau VA. Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
+                Scan QRIS di bawah, bayar sesuai nominal, lalu unggah bukti. Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
               </p>
+              {ownerQris ? (
+                <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
+                  <Image src={ownerQris} fittingType="fit" className="w-full h-auto" />
+                </div>
+              ) : (
+                <p className="text-sm text-amber-600 text-center">QRIS pemilik belum diatur admin.</p>
+              )}
+              <PhotoUpload
+                label="Bukti pembayaran"
+                value={proofPhoto}
+                onChange={setProofPhoto}
+                hint="Unggah bukti transfer/screenshot pembayaran."
+              />
               <button
-                onClick={startMidtransPayment}
-                disabled={acting}
+                onClick={pay}
+                disabled={acting || !proofPhoto}
                 className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-                Bayar dengan Midtrans
+                Saya Sudah Bayar, Kirim Bukti
               </button>
             </div>
           ) : (
@@ -584,7 +559,7 @@ export default function OrderTracking() {
             <AlertDialogTitle>Konfirmasi Tagihan</AlertDialogTitle>
             <AlertDialogDescription>
               {Number(itemCost) > 0
-                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan membayar via Midtrans (QRIS/e-wallet)."}`
+                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan scan QRIS pemilik & kirim bukti bayar."}`
                 : "Masukkan nominal bill dulu sebelum konfirmasi."}
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -5,12 +5,16 @@ import { Users, Bike, Clock, ListOrdered, Loader2, TrendingUp, AlertCircle, Chec
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { formatRupiah } from "@/lib/geo";
+import PhotoUpload from "@/components/PhotoUpload";
+import { QrCode } from "lucide-react";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [wallet, setWallet] = useState({ balance: 0, txs: [] });
   const [loading, setLoading] = useState(true);
+  const [qrisPhoto, setQrisPhoto] = useState(null);
+  const [savingQris, setSavingQris] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -40,12 +44,32 @@ export default function AdminDashboard() {
         const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
         const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
         setWallet({ balance: adminBalance, txs: adminTxs });
+        const qrisRows = await base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1);
+        setQrisPhoto(qrisRows[0]?.value || null);
       } finally {
         setLoading(false);
       }
     }
     load();
   }, []);
+
+  async function saveQris() {
+    if (!qrisPhoto) return;
+    setSavingQris(true);
+    try {
+      const rows = await base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1);
+      if (rows[0]) {
+        await base44.entities.AppSetting.update(rows[0].id, { value: qrisPhoto });
+      } else {
+        await base44.entities.AppSetting.create({ key: "owner_qris", value: qrisPhoto });
+      }
+      alert("QRIS pemilik tersimpan.");
+    } catch (e) {
+      alert("Gagal menyimpan: " + e.message);
+    } finally {
+      setSavingQris(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -92,6 +116,28 @@ export default function AdminDashboard() {
           );
           return c.to ? <Link key={c.label} to={c.to}>{inner}</Link> : <div key={c.label}>{inner}</div>;
         })}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="font-display text-xl font-extrabold mb-1 flex items-center gap-2">
+          <QrCode className="w-5 h-5 text-primary" /> QRIS Pemilik
+        </h2>
+        <p className="text-muted-foreground text-sm mb-4">QRIS rekening Anda yang ditampilkan ke user saat bayar tagihan toko (food). Dana masuk ke rekening Anda, lalu direimburse ke dompet driver saat pesanan selesai.</p>
+        <div className="bg-card rounded-2xl border border-border p-5 mb-8 max-w-sm">
+          <PhotoUpload
+            label="Gambar QRIS"
+            value={qrisPhoto}
+            onChange={setQrisPhoto}
+            hint="Unggah screenshot/foto QRIS dari e-wallet/bank Anda."
+          />
+          <button
+            onClick={saveQris}
+            disabled={savingQris || !qrisPhoto}
+            className="w-full mt-3 bg-primary text-primary-foreground font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-60"
+          >
+            {savingQris ? "Menyimpan..." : "Simpan QRIS"}
+          </button>
+        </div>
       </div>
 
       <div className="mt-8">
