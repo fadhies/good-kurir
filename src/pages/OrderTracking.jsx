@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import PhotoUpload from "@/components/PhotoUpload";
+import { reverseGeocodePoi } from "@/lib/googleMaps";
 
 const TIMELINE = [
   { key: "pending_match", label: "Mencari Driver" },
@@ -102,6 +103,22 @@ export default function OrderTracking() {
     });
     return unsub;
   }, [id]);
+
+  // Enrich store_name: bila masih berupa pecahan alamat, ambil nama POI dari koordinat toko
+  useEffect(() => {
+    if (!order?.id || order.store_lat == null || order.store_lng == null) return;
+    const firstFragment = (order.store_address || "").split(",")[0].trim();
+    if (order.store_name && order.store_name !== firstFragment) return;
+    let active = true;
+    reverseGeocodePoi(order.store_lat, order.store_lng).then(({ name }) => {
+      if (!active || !name || name === order.store_name) return;
+      base44.entities.Order
+        .update(order.id, { store_name: name })
+        .then(() => setOrder((prev) => (prev ? { ...prev, store_name: name } : prev)))
+        .catch(() => {});
+    });
+    return () => { active = false; };
+  }, [order?.id, order?.store_name, order?.store_address, order?.store_lat, order?.store_lng]);
 
   const role = user?.role || "user";
   const isDriver = order?.driver_id === user?.id;

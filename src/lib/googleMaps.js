@@ -19,4 +19,28 @@ export function loadGoogleMaps() {
   return loader;
 }
 
+function extractPoiName(components) {
+  if (!components) return "";
+  const poiTypes = ["point_of_interest", "establishment", "premise", "subpremise", "neighborhood"];
+  for (const t of poiTypes) {
+    const c = components.find((c) => c.types.includes(t));
+    if (c?.long_name) return c.long_name;
+  }
+  return "";
+}
+
+export async function reverseGeocodePoi(lat, lng) {
+  const gmaps = await loadGoogleMaps();
+  const geocoder = new gmaps.Geocoder();
+  return new Promise((resolve) => {
+    geocoder.geocode({ location: { lat, lng } }, (res, status) => {
+      if (status === "OK" && res?.[0]) {
+        resolve({ name: extractPoiName(res[0].address_components), address: res[0].formatted_address });
+      } else {
+        resolve({ name: "", address: "" });
+      }
+    });
+  });
+}
+
 export { GOOGLE_MAPS_API_KEY };
