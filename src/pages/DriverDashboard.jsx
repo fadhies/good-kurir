@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/LocationPicker";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
+import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package } from "lucide-react";
@@ -134,6 +135,7 @@ export default function DriverDashboard() {
 
   return (
     <Layout>
+      <PullToRefresh onRefresh={async () => { await loadProfile(); await loadOrders(); }}>
       <h1 className="font-display text-2xl font-extrabold mb-1">Dashboard Driver</h1>
       <p className="text-muted-foreground text-sm mb-6">Kelola ketersediaan & lihat pesanan masuk.</p>
 
@@ -267,6 +269,7 @@ export default function DriverDashboard() {
           </div>
         </div>
       )}
+      </PullToRefresh>
     </Layout>
   );
 }

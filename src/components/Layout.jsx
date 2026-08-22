@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
-import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";
 
@@ -40,6 +40,14 @@ export default function Layout({ children }) {
 
   const items = [...USER_ITEMS, ...(isDriver ? DRIVER_ITEMS : []), ...(role === "admin" ? ADMIN_ITEMS : [])];
 
+  const tabPaths = items.map((i) => i.to);
+  const isDetail = !tabPaths.includes(location.pathname);
+  const pageTitle = /^\/pesanan\//.test(location.pathname)
+    ? "Detail Pesanan"
+    : location.pathname === "/jadi-driver"
+    ? "Daftar Driver"
+    : "KurirTa";
+
   const handleLogout = () => {
     logout();
   };
@@ -49,14 +57,27 @@ export default function Layout({ children }) {
       {/* Top bar */}
       <header className="sticky top-0 z-40 glass-card border-b border-border/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/30">
-              <Bike className="w-5 h-5 text-primary-foreground" />
+          {isDetail ? (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 rounded-full hover:bg-secondary text-foreground transition-colors"
+                title="Kembali"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <span className="font-display font-bold text-lg tracking-tight">{pageTitle}</span>
             </div>
-            <span className="font-display font-extrabold text-lg tracking-tight">
-              Kurir<span className="text-primary">Ta</span>
-            </span>
-          </Link>
+          ) : (
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/30">
+                <Bike className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="font-display font-extrabold text-lg tracking-tight">
+                Kurir<span className="text-primary">Ta</span>
+              </span>
+            </Link>
+          )}
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary">
               <UserCircle className="w-4 h-4 text-secondary-foreground" />
@@ -80,11 +101,12 @@ export default function Layout({ children }) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 pb-28 md:pb-10">
+      <main className={cn("flex-1 max-w-6xl w-full mx-auto px-4 py-6", isDetail ? "pb-10" : "pb-28 md:pb-10")}>
         {children}
       </main>
 
       {/* Bottom nav (mobile) */}
+      {!isDetail && (
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/60" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex items-center justify-around h-16">
           {items.map((item) => {
@@ -106,6 +128,7 @@ export default function Layout({ children }) {
           })}
         </div>
       </nav>
+      )}
 
       {/* Side nav (desktop) - rendered as floating rail */}
       <nav className="hidden md:flex fixed left-1/2 -translate-x-[19rem] top-1/2 -translate-y-1/2 flex-col gap-1">

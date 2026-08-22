@@ -28,6 +28,11 @@
     "amount"
   ],
   "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "read": {
       "$or": [
         {
@@ -39,9 +44,6 @@
           }
         }
       ]
-    },
-    "create": {
-      "data.user_id": "{{user.id}}"
     },
     "update": {
       "user_condition": {

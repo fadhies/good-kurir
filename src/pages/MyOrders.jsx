@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
+import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, ShoppingBag, ChevronRight } from "lucide-react";
@@ -12,22 +13,24 @@ export default function MyOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState(null);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const list = await base44.entities.Order.filter({}, "-created_date", 50);
-        setOrders(list);
-      } catch (e) {
-        setOrders([]);
-      }
+  async function reload() {
+    try {
+      const list = await base44.entities.Order.filter({}, "-created_date", 50);
+      setOrders(list);
+    } catch (e) {
+      setOrders([]);
     }
-    load();
-    const unsub = base44.entities.Order.subscribe(() => load());
+  }
+
+  useEffect(() => {
+    reload();
+    const unsub = base44.entities.Order.subscribe(() => reload());
     return unsub;
   }, []);
 
   return (
     <Layout>
+      <PullToRefresh onRefresh={reload}>
       <h1 className="font-display text-2xl font-extrabold mb-1">Pesanan Saya</h1>
       <p className="text-muted-foreground text-sm mb-6">Riwayat dan status pesanan Anda.</p>
 
@@ -73,6 +76,7 @@ export default function MyOrders() {
           ))}
         </div>
       )}
+      </PullToRefresh>
     </Layout>
   );
 }
