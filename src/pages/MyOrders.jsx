@@ -4,7 +4,6 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import PullToRefresh from "@/components/PullToRefresh";
-import { useIsDriver } from "@/hooks/useIsDriver";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
@@ -14,9 +13,18 @@ import { cn } from "@/lib/utils";
 export default function MyOrders() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const isDriver = useIsDriver();
   const [orders, setOrders] = useState(null);
   const [tab, setTab] = useState("pemesan");
+  const [isDriver, setIsDriver] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    base44.entities.DriverProfile.filter({ user_id: user.id })
+      .then((list) => active && setIsDriver(list.some((p) => p.verification_status === "approved")))
+      .catch(() => active && setIsDriver(false));
+    return () => { active = false; };
+  }, [user?.id]);
 
   async function reload() {
     try {
