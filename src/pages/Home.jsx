@@ -45,7 +45,7 @@ export default function Home() {
             <Sparkles className="w-3.5 h-3.5" /> Selamat datang, {user?.full_name?.split(" ")[0] || "Sobat"}!
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold leading-tight max-w-lg">
-            Ojek antar apa saja, sampai tujuan dengan cepat
+            Pesan Antar Apa Saja
           </h1>
           <p className="mt-3 text-white/80 max-w-md text-sm md:text-base">
             Makanan, barang, atau sekutan naik ojek — semua bisa. Driver terdekat siap membantu.
@@ -113,7 +113,7 @@ export default function Home() {
       {role === "user" && (
         <div className="mt-8 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold text-lg">Mau jadi driver OjekKu?</h3>
+            <h3 className="font-bold text-lg">Mau jadi driver KurirTa?</h3>
             <p className="text-sm text-muted-foreground">Daftar dan mulai dapat penghasilan hari ini.</p>
           </div>
           <Link

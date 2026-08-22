@@ -9,12 +9,28 @@ export function haversineKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-export function calcDeliveryFee(distanceKm) {
-  const baseFare = 5000;
-  const perKm = 2000;
-  return Math.round(baseFare + perKm * distanceKm);
+// Tarif antar berdasarkan mode:
+// - hemat: Rp7.000 untuk 0-4 km, +Rp1.000/km setelahnya
+// - cepat: Rp12.000 untuk 0-4 km, +Rp2.000/km setelahnya
+export function calcDeliveryFee(distanceKm: number, mode: string = "hemat"): number {
+  const BASE_KM = 4;
+  if (mode === "cepat") {
+    const baseFare = 12000;
+    const perKm = 2000;
+    if (distanceKm <= BASE_KM) return baseFare;
+    return Math.round(baseFare + perKm * (distanceKm - BASE_KM));
+  }
+  const baseFare = 7000;
+  const perKm = 1000;
+  if (distanceKm <= BASE_KM) return baseFare;
+  return Math.round(baseFare + perKm * (distanceKm - BASE_KM));
 }
 
-export function calcAppFee(deliveryFee) {
-  return Math.round(deliveryFee * 0.2);
+// Dari tarif yang dibayar konsumen, dipotong Rp2.000 per order
+// (Rp1.000 fee admin + Rp1.000 fee aplikasi), sisanya untuk driver.
+export function calcFees(deliveryFee: number) {
+  const appFee = 1000;
+  const adminFee = 1000;
+  const driverEarning = Math.max(0, (deliveryFee || 0) - appFee - adminFee);
+  return { app_fee: appFee, admin_fee: adminFee, driver_earning: driverEarning };
 }

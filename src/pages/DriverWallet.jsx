@@ -39,7 +39,7 @@ export default function DriverWallet() {
             <Wallet className="w-4 h-4" /> Saldo Tersedia
           </div>
           <p className="font-display text-4xl font-extrabold">{formatRupiah(balance)}</p>
-          <p className="text-white/70 text-xs mt-3">Penghasilan dibayar setelah dipotong biaya layanan 20%</p>
+          <p className="text-white/70 text-xs mt-3">Penghasilan dipotong Rp2.000/order (fee admin + aplikasi)</p>
         </div>
       </div>
 

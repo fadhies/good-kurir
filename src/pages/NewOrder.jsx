@@ -21,6 +21,7 @@ export default function NewOrder() {
   const { toast } = useToast();
 
   const [type, setType] = useState(params.get("type") || "food");
+  const [mode, setMode] = useState("hemat");
   const [store, setStore] = useState(null);
   const [destination, setDestination] = useState(null);
   const [notes, setNotes] = useState("");
@@ -33,7 +34,7 @@ export default function NewOrder() {
     return null;
   }, [store, destination]);
 
-  const deliveryFee = distance != null ? calcDeliveryFee(distance) : 0;
+  const deliveryFee = distance != null ? calcDeliveryFee(distance, mode) : 0;
 
   async function handleSubmit() {
     if (!store) {
@@ -49,6 +50,7 @@ export default function NewOrder() {
       const order = await base44.entities.Order.create({
         user_id: user.id,
         type,
+        mode,
         store_name: store.address.split(",")[0],
         store_address: store.address,
         store_lat: store.lat,
@@ -115,6 +117,29 @@ export default function NewOrder() {
             </button>
           );
         })}
+      </div>
+
+      {/* Mode selector */}
+      <div className="mb-6">
+        <h3 className="font-bold mb-2 text-sm">Mode Pengantaran</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { v: "hemat", l: "Hemat", desc: "Rp7.000 / 4km", per: "+Rp1.000/km" },
+            { v: "cepat", l: "Cepat", desc: "Rp12.000 / 4km", per: "+Rp2.000/km" },
+          ].map((o) => (
+            <button
+              key={o.v}
+              onClick={() => setMode(o.v)}
+              className={`p-3 rounded-2xl border-2 text-left transition-all ${
+                mode === o.v ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"
+              }`}
+            >
+              <span className={`text-sm font-bold ${mode === o.v ? "text-primary" : ""}`}>{o.l}</span>
+              <p className="text-xs text-muted-foreground mt-0.5">{o.desc}</p>
+              <p className="text-[10px] text-muted-foreground">{o.per} setelahnya</p>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -185,6 +210,10 @@ export default function NewOrder() {
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Jarak toko → tujuan</span>
               <span className="font-semibold">{(Math.round(distance * 10) / 10).toFixed(1)} km</span>
+            </div>
+            <div className="flex justify-between text-sm py-1">
+              <span className="text-muted-foreground">Mode</span>
+              <span className="font-semibold">{mode === "cepat" ? "Cepat" : "Hemat"}</span>
             </div>
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Ongkir</span>

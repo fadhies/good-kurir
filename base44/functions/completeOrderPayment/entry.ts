@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { calcAppFee } from '../../shared/geo.ts';
+import { calcFees } from '../../shared/geo.ts';
 
 export default async function(req) {
   try {
@@ -21,13 +21,13 @@ export default async function(req) {
     }
 
     const deliveryFee = order.delivery_fee || 0;
-    const appFee = calcAppFee(deliveryFee);
-    const driverEarning = deliveryFee - appFee;
+    const { app_fee: appFee, admin_fee: adminFee, driver_earning: driverEarning } = calcFees(deliveryFee);
     const total = (order.item_cost || 0) + deliveryFee;
 
     await base44.asServiceRole.entities.Order.update(orderId, {
       status: 'paid',
       app_fee: appFee,
+      admin_fee: adminFee,
       driver_earning: driverEarning,
       total_amount: total
     });
@@ -46,7 +46,8 @@ export default async function(req) {
       success: true,
       total_amount: total,
       driver_earning: driverEarning,
-      app_fee: appFee
+      app_fee: appFee,
+      admin_fee: adminFee
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

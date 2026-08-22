@@ -50,7 +50,7 @@ export default function Layout({ children }) {
               <Bike className="w-5 h-5 text-primary-foreground" />
             </div>
             <span className="font-display font-extrabold text-lg tracking-tight">
-              Ojek<span className="text-primary">Ku</span>
+              Kurir<span className="text-primary">Ta</span>
             </span>
           </Link>
           <div className="flex items-center gap-3">

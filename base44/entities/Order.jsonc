@@ -16,6 +16,14 @@
         "person"
       ]
     },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "hemat",
+        "cepat"
+      ],
+      "default": "hemat"
+    },
     "store_name": {
       "type": "string"
     },
@@ -61,6 +69,9 @@
       "type": "number"
     },
     "app_fee": {
+      "type": "number"
+    },
+    "admin_fee": {
       "type": "number"
     },
     "driver_earning": {
