@@ -8,7 +8,7 @@ function accentToHsl(accent) {
   return `hsl(${accent})`;
 }
 
-export default function GoogleLocationPicker({ label, value, onChange, accent = "158 64% 30%" }) {
+export default function GoogleLocationPicker({ label, value, onChange, accent = "158 64% 30%", biasCenter }) {
   const [query, setQuery] = useState(value?.address || "");
   const [predictions, setPredictions] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -31,6 +31,8 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
         const center =
           value?.lat != null && value?.lng != null
             ? { lat: value.lat, lng: value.lng }
+            : biasCenter?.lat != null && biasCenter?.lng != null
+            ? { lat: biasCenter.lat, lng: biasCenter.lng }
             : DEFAULT_CENTER;
         mapRef.current = new gmaps.Map(mapElRef.current, {
           center,
@@ -95,10 +97,12 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     if (!acServiceRef.current) return;
     setSearching(true);
     try {
-      const res = await acServiceRef.current.getPlacePredictions({
-        input: q,
-        componentRestrictions: { country: "id" },
-      });
+      const req = { input: q, componentRestrictions: { country: "id" } };
+      if (biasCenter?.lat != null && biasCenter?.lng != null) {
+        req.location = new window.google.maps.LatLng(biasCenter.lat, biasCenter.lng);
+        req.radius = 5000;
+      }
+      const res = await acServiceRef.current.getPlacePredictions(req);
       setPredictions(res?.predictions || []);
       setShowResults(true);
     } catch {

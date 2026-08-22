@@ -28,6 +28,7 @@ export default function NewOrder() {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cashAvailable, setCashAvailable] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [userLoc, setUserLoc] = useState(null);
 
   useEffect(() => {
     base44.functions
@@ -71,6 +72,7 @@ export default function NewOrder() {
         } catch {}
         if (!active) return;
         const loc = { lat: latitude, lng: longitude, address };
+        setUserLoc({ lat: latitude, lng: longitude });
         if (type === "food") setDestination(loc);
         else setStore(loc);
       },
@@ -248,6 +250,7 @@ export default function NewOrder() {
             value={store}
             onChange={setStore}
             accent={currentType.accent}
+            biasCenter={userLoc}
           />
         </div>
 
@@ -264,6 +267,7 @@ export default function NewOrder() {
             value={destination}
             onChange={setDestination}
             accent="158 64% 45%"
+            biasCenter={userLoc}
           />
         </div>
 
