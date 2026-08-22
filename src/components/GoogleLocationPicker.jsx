@@ -22,6 +22,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
   const acServiceRef = useRef(null);
   const placesRef = useRef(null);
   const debounceRef = useRef(null);
+  const userCenterRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -66,6 +67,20 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
         });
 
         setReady(true);
+
+        // Default ke lokasi pengguna bila tidak ada value/biasCenter (mis. halaman Daftar Driver)
+        if (value?.lat == null && !(biasCenter?.lat != null) && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              if (!active || !mapRef.current) return;
+              const uLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              userCenterRef.current = uLoc;
+              mapRef.current.panTo(uLoc);
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        }
       })
       .catch(() => {});
     return () => {
@@ -85,6 +100,16 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value?.lat, value?.lng, ready]);
 
+  // Re-center ke lokasi pengguna (biasCenter) begitu GPS tersedia, bila belum ada pin value
+  useEffect(() => {
+    if (!ready || !mapRef.current) return;
+    if (value?.lat != null) return;
+    if (biasCenter?.lat != null && biasCenter?.lng != null) {
+      mapRef.current.panTo({ lat: biasCenter.lat, lng: biasCenter.lng });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [biasCenter?.lat, biasCenter?.lng, ready, value?.lat]);
+
   useEffect(() => {
     if (value?.address) setQuery(value.address);
   }, [value?.address]);
@@ -98,8 +123,9 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     setSearching(true);
     try {
       const req = { input: q, componentRestrictions: { country: "id" } };
-      if (biasCenter?.lat != null && biasCenter?.lng != null) {
-        req.location = new window.google.maps.LatLng(biasCenter.lat, biasCenter.lng);
+      const bias = biasCenter?.lat != null ? biasCenter : userCenterRef.current;
+      if (bias?.lat != null) {
+        req.location = new window.google.maps.LatLng(bias.lat, bias.lng);
         req.radius = 5000;
       }
       const res = await acServiceRef.current.getPlacePredictions(req);
