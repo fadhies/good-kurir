@@ -8,6 +8,8 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
+import { fireNewOrderAlert } from "@/lib/newOrderAlert";
+import { useRef } from "react";
 import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package } from "lucide-react";
 import {
   AlertDialog,
@@ -33,6 +35,8 @@ export default function DriverDashboard() {
   const [available, setAvailable] = useState([]);
   const [acceptTarget, setAcceptTarget] = useState(null);
   const [accepting, setAccepting] = useState(false);
+  const seenAvailableIdsRef = useRef(new Set());
+  const firstAvailableLoadRef = useRef(true);
 
   async function loadProfile() {
     try {
@@ -75,6 +79,21 @@ export default function DriverDashboard() {
         30
       );
       setAvailable(list);
+
+      // Deteksi pesanan baru untuk notifikasi otomatis
+      const seen = seenAvailableIdsRef.current;
+      const newOnes = firstAvailableLoadRef.current ? [] : list.filter((o) => !seen.has(o.id));
+      list.forEach((o) => seen.add(o.id));
+      if (firstAvailableLoadRef.current) {
+        firstAvailableLoadRef.current = false;
+      } else if (newOnes.length > 0) {
+        fireNewOrderAlert();
+        const o = newOnes[0];
+        toast({
+          title: `🔔 Pesanan baru: ${o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}`,
+          description: `Dari ${o.store_name || "lokasi"} • Ongkir ${formatRupiah(o.delivery_fee)}`,
+        });
+      }
     } catch (e) {
       setAvailable([]);
     }
