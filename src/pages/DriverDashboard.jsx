@@ -8,6 +8,16 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function DriverDashboard() {
@@ -19,6 +29,9 @@ export default function DriverDashboard() {
   const [orders, setOrders] = useState([]);
   const [locModal, setLocModal] = useState(false);
   const [tempLoc, setTempLoc] = useState(null);
+  const [available, setAvailable] = useState([]);
+  const [acceptTarget, setAcceptTarget] = useState(null);
+  const [accepting, setAccepting] = useState(false);
 
   async function loadProfile() {
     try {
@@ -45,13 +58,54 @@ export default function DriverDashboard() {
     }
   }
 
+  async function loadAvailable() {
+    if (!profile) return;
+    if (profile.verification_status !== "approved" || !profile.is_online) {
+      setAvailable([]);
+      return;
+    }
+    try {
+      const list = await base44.entities.Order.filter(
+        { status: "pending_match" },
+        "-created_date",
+        30
+      );
+      setAvailable(list);
+    } catch (e) {
+      setAvailable([]);
+    }
+  }
+
+  async function confirmAccept() {
+    if (!acceptTarget) return;
+    setAccepting(true);
+    try {
+      const res = await base44.functions.invoke("acceptOrder", { orderId: acceptTarget.id });
+      if (res.data?.success) {
+        toast({ title: "Pesanan diterima!", description: "Buka detail untuk lanjut." });
+        setAcceptTarget(null);
+        await loadOrders();
+        await loadAvailable();
+      } else {
+        toast({ title: "Gagal menerima", description: res.data?.error, variant: "destructive" });
+      }
+    } catch (e) {
+      let msg = e.message;
+      try { const p = JSON.parse(msg); if (p?.error) msg = p.error; } catch {}
+      toast({ title: "Gagal menerima", description: msg, variant: "destructive" });
+    } finally {
+      setAccepting(false);
+    }
+  }
+
   useEffect(() => {
     loadProfile();
   }, []);
 
   useEffect(() => {
     loadOrders();
-    const unsub = base44.entities.Order.subscribe(() => loadOrders());
+    loadAvailable();
+    const unsub = base44.entities.Order.subscribe(() => { loadOrders(); loadAvailable(); });
     return unsub;
   }, [profile]);
 
@@ -210,6 +264,48 @@ export default function DriverDashboard() {
         <span className="text-xs font-semibold text-primary">Ubah</span>
       </button>
 
+      {/* Pesanan tersedia untuk diterima */}
+      {profile.verification_status === "approved" && profile.is_online && (
+        <div className="mb-6">
+          <h2 className="font-bold mb-3 flex items-center gap-2">
+            <Package className="w-4 h-4 text-primary" /> Pesanan Tersedia
+          </h2>
+          {available.length === 0 ? (
+            <div className="text-center py-6 bg-card rounded-2xl border border-dashed border-border">
+              <p className="text-sm text-muted-foreground">Belum ada pesanan tersedia</p>
+              <p className="text-xs text-muted-foreground mt-1">Pesanan baru akan muncul di sini</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {available.map((o) => (
+                <div key={o.id} className="bg-card rounded-2xl border-2 border-primary/30 p-4">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <p className="font-semibold truncate">{o.store_name}</p>
+                    <OrderStatusBadge status={o.status} />
+                  </div>
+                  <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
+                  {o.notes && <p className="text-xs text-muted-foreground truncate mt-0.5">📝 {o.notes}</p>}
+                  <div className="flex items-center justify-between mt-3">
+                    <div>
+                      <p className="text-sm font-bold text-primary">Ongkir {formatRupiah(o.delivery_fee)}</p>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"} • {o.mode === "cepat" ? "Cepat" : "Hemat"} • {o.payment_method === "cash" ? "Tunai" : o.payment_method}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setAcceptTarget(o)}
+                      className="bg-primary text-primary-foreground font-semibold px-4 py-2.5 rounded-xl text-sm hover:opacity-90"
+                    >
+                      Terima Pesanan
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Active orders */}
       <div>
         <h2 className="font-bold mb-3">Pesanan Aktif</h2>
@@ -244,6 +340,26 @@ export default function DriverDashboard() {
           </div>
         )}
       </div>
+
+      {/* Konfirmasi terima pesanan */}
+      <AlertDialog open={!!acceptTarget} onOpenChange={(o) => !o && setAcceptTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Terima pesanan ini?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {acceptTarget
+                ? `${acceptTarget.store_name} → ${acceptTarget.destination_address}. Ongkir ${formatRupiah(acceptTarget.delivery_fee)}.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={accepting}>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAccept} disabled={accepting}>
+              {accepting ? "Memproses..." : "Ya, Terima"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Location modal */}
       {locModal && (

@@ -6,6 +6,16 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { ArrowLeft, Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 
 const TIMELINE = [
@@ -28,6 +38,40 @@ export default function OrderTracking() {
   const [itemCost, setItemCost] = useState("");
   const [billNote, setBillNote] = useState("");
   const [acting, setActing] = useState(false);
+  const [billConfirm, setBillConfirm] = useState(null);
+
+  async function confirmBillAction() {
+    const cost = Number(itemCost);
+    if (!cost || cost <= 0) {
+      toast({ title: "Masukkan nominal bill yang valid", variant: "destructive" });
+      setBillConfirm(null);
+      return;
+    }
+    setActing(true);
+    try {
+      if (billConfirm === "cash") {
+        await base44.entities.Order.update(id, {
+          status: "on_the_way",
+          item_cost: cost,
+          store_bill_note: billNote,
+        });
+        toast({ title: "Mulai mengantar ke tujuan" });
+      } else {
+        await base44.entities.Order.update(id, {
+          status: "awaiting_payment",
+          item_cost: cost,
+          store_bill_note: billNote,
+        });
+        toast({ title: "Bill dikirim, menunggu pembayaran user" });
+      }
+      loadOrder();
+    } catch (e) {
+      toast({ title: "Gagal", description: e.message, variant: "destructive" });
+    } finally {
+      setActing(false);
+      setBillConfirm(null);
+    }
+  }
 
   async function loadOrder() {
     try {
@@ -50,7 +94,7 @@ export default function OrderTracking() {
   }, [id]);
 
   const role = user?.role || "user";
-  const isDriver = role === "driver" && order?.driver_id === user?.id;
+  const isDriver = order?.driver_id === user?.id;
   const isOwner = order?.created_by_id === user?.id;
 
   async function updateStatus(status, extra = {}) {
@@ -303,19 +347,19 @@ export default function OrderTracking() {
                   />
                   {isCash ? (
                     <button
-                      onClick={() => updateStatus("on_the_way", { item_cost: Number(itemCost) || 0, store_bill_note: billNote })}
+                      onClick={() => setBillConfirm("cash")}
                       disabled={acting}
                       className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
                     >
-                      Mulai Antar ke Tujuan
+                      Konfirmasi & Mulai Antar
                     </button>
                   ) : (
                     <button
-                      onClick={submitBill}
+                      onClick={() => setBillConfirm("bill")}
                       disabled={acting}
                       className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
                     >
-                      Kirim Bill ke Pengguna
+                      Konfirmasi Tagihan
                     </button>
                   )}
                 </div>
@@ -393,10 +437,30 @@ export default function OrderTracking() {
         {isOwner && order.status === "pending_match" && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
             <Loader2 className="w-6 h-6 animate-spin text-amber-600 mx-auto mb-2" />
-            <p className="text-sm text-amber-700 font-medium">Mencari driver terdekat untuk Anda...</p>
+            <p className="text-sm text-amber-700 font-medium">Menunggu driver menerima pesanan Anda...</p>
           </div>
         )}
       </div>
+
+      {/* Konfirmasi tagihan di restoran */}
+      <AlertDialog open={!!billConfirm} onOpenChange={(o) => !o && setBillConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Tagihan</AlertDialogTitle>
+            <AlertDialogDescription>
+              {Number(itemCost) > 0
+                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan diminta membayar."}`
+                : "Masukkan nominal bill dulu sebelum konfirmasi."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={acting}>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmBillAction} disabled={acting || !Number(itemCost)}>
+              {acting ? "Memproses..." : "Ya, Konfirmasi"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 }

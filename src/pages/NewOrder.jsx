@@ -113,25 +113,7 @@ export default function NewOrder() {
         distance_km: distance ? Math.round(distance * 100) / 100 : 0,
       });
 
-      try {
-        const res = await base44.functions.invoke("matchNearestDriver", {
-          orderId: order.id,
-        });
-        if (res.data?.driver_id) {
-          toast({ title: "Driver ditemukan!", description: `Driver ${Math.round(res.data.distance_km * 10) / 10} km dari toko` });
-        } else {
-          toast({ title: "Order dibuat, mencari driver...", description: res.data?.error || "Driver akan segera dihubungi" });
-        }
-      } catch (matchErr) {
-        // 404 = belum ada driver eligible (offline/belum verifikasi/saldo kurang).
-        // Order tetap tersimpan; pengguna diarahkan ke halaman pelacakan.
-        let msg = "Belum ada driver tersedia saat ini";
-        try {
-          const parsed = JSON.parse(matchErr?.message || "{}");
-          if (parsed?.error) msg = parsed.error;
-        } catch {}
-        toast({ title: "Order dibuat, mencari driver...", description: msg });
-      }
+      toast({ title: "Pesanan dibuat", description: "Menunggu driver menerima pesanan Anda..." });
       navigate(`/pesanan/${order.id}`);
     } catch (e) {
       toast({ title: "Gagal membuat pesanan", description: e.message, variant: "destructive" });
