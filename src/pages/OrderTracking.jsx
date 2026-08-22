@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
@@ -44,6 +44,29 @@ export default function OrderTracking() {
   const [billConfirm, setBillConfirm] = useState(null);
   const [qrisPhoto, setQrisPhoto] = useState(null);
   const [proofPhoto, setProofPhoto] = useState(null);
+  const prevStatusRef = useRef(null);
+  const selfUpdateRef = useRef(false);
+
+  function markSelfUpdate() {
+    selfUpdateRef.current = true;
+    setTimeout(() => { selfUpdateRef.current = false; }, 2000);
+  }
+
+  function notifyStatusTransition(o) {
+    const owner = o.created_by_id === user?.id;
+    const driver = o.driver_id === user?.id;
+    if (o.status === "awaiting_payment" && owner) {
+      toast({ title: "🔔 Tagihan dikirim driver", description: "Silakan lakukan pembayaran sekarang." });
+      if (navigator.vibrate) navigator.vibrate(100);
+    } else if (o.status === "paid" && driver) {
+      toast({ title: "✅ Bukti pembayaran diterima", description: "User sudah bayar, silakan antar ke tujuan." });
+      if (navigator.vibrate) navigator.vibrate(100);
+    } else if (o.status === "on_the_way" && owner) {
+      toast({ title: "🛵 Driver dalam perjalanan", description: "Pesanan menuju tujuan Anda." });
+    } else if (o.status === "completed" && owner) {
+      toast({ title: "🎉 Pesanan selesai", description: "Terima kasih sudah menggunakan layanan kami." });
+    }
+  }
 
   async function confirmBillAction() {
     const cost = Number(itemCost);
@@ -59,6 +82,7 @@ export default function OrderTracking() {
     }
     setActing(true);
     try {
+      markSelfUpdate();
       if (billConfirm === "cash") {
         await base44.entities.Order.update(id, {
           status: "on_the_way",
@@ -87,8 +111,13 @@ export default function OrderTracking() {
   async function loadOrder() {
     try {
       const o = await base44.entities.Order.get(id);
+      const prev = prevStatusRef.current;
+      prevStatusRef.current = o.status;
       setOrder(o);
       setItemCost(o.item_cost ? String(o.item_cost) : "");
+      if (prev && prev !== o.status && !selfUpdateRef.current) {
+        notifyStatusTransition(o);
+      }
     } catch (e) {
       toast({ title: "Pesanan tidak ditemukan", variant: "destructive" });
     } finally {
@@ -127,6 +156,7 @@ export default function OrderTracking() {
   async function updateStatus(status, extra = {}) {
     setActing(true);
     try {
+      markSelfUpdate();
       await base44.entities.Order.update(id, { status, ...extra });
       toast({ title: "Status diperbarui" });
       loadOrder();
@@ -145,6 +175,7 @@ export default function OrderTracking() {
     }
     setActing(true);
     try {
+      markSelfUpdate();
       await base44.entities.Order.update(id, {
         status: "awaiting_payment",
         item_cost: cost,
@@ -162,6 +193,7 @@ export default function OrderTracking() {
   async function pay() {
     setActing(true);
     try {
+      markSelfUpdate();
       await base44.entities.Order.update(id, {
         status: "paid",
         payment_proof_photo: proofPhoto || null,
@@ -178,6 +210,7 @@ export default function OrderTracking() {
   async function settleOrder() {
     setActing(true);
     try {
+      markSelfUpdate();
       const res = await base44.functions.invoke("completeOrderPayment", { orderId: id });
       if (res.data?.success) {
         toast({
