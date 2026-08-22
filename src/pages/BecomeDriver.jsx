@@ -90,8 +90,9 @@ export default function BecomeDriver() {
         current_address: location.address,
         ktp_photo: ktpPhoto,
         selfie_with_ktp: selfiePhoto,
+        verification_status: "pending",
       });
-      toast({ title: "Selamat! Anda sekarang driver OjekKu 🎉" });
+      toast({ title: "Pendaftaran terkirim", description: "Menunggu verifikasi admin sebelum bisa menerima pesanan." });
       navigate("/driver");
     } catch (e) {
       toast({ title: "Gagal mendaftar", description: e.message, variant: "destructive" });

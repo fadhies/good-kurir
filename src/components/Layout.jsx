@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
-import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard } from "lucide-react";
+import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const USER_ITEMS = [
@@ -13,6 +13,9 @@ const USER_ITEMS = [
 const DRIVER_ITEMS = [
   { to: "/driver", label: "Dashboard", icon: LayoutDashboard },
   { to: "/driver/dompet", label: "Dompet", icon: Wallet },
+];
+const ADMIN_ITEMS = [
+  { to: "/admin", label: "Admin", icon: ShieldCheck },
 ];
 
 export default function Layout({ children }) {
@@ -34,7 +37,7 @@ export default function Layout({ children }) {
     return () => { active = false; };
   }, [user.id, role]);
 
-  const items = [...USER_ITEMS, ...(isDriver ? DRIVER_ITEMS : [])];
+  const items = [...USER_ITEMS, ...(isDriver ? DRIVER_ITEMS : []), ...(role === "admin" ? ADMIN_ITEMS : [])];
 
   const handleLogout = () => {
     logout();

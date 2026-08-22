@@ -137,6 +137,19 @@ export default function DriverDashboard() {
       <h1 className="font-display text-2xl font-extrabold mb-1">Dashboard Driver</h1>
       <p className="text-muted-foreground text-sm mb-6">Kelola ketersediaan & lihat pesanan masuk.</p>
 
+      {/* Verification banner */}
+      {profile.verification_status !== "approved" && (
+        <div className={`rounded-2xl px-4 py-3 mb-4 text-sm font-medium ${
+          profile.verification_status === "rejected"
+            ? "bg-red-50 text-red-700 border border-red-200"
+            : "bg-amber-50 text-amber-800 border border-amber-200"
+        }`}>
+          {profile.verification_status === "rejected"
+            ? "Pendaftaran Anda ditolak. Hubungi admin untuk informasi lebih lanjut."
+            : "Akun Anda sedang menunggu verifikasi admin. Anda belum bisa menerima pesanan."}
+        </div>
+      )}
+
       {/* Status card */}
       <div className={`rounded-2xl p-5 mb-4 ${profile.is_online ? "bg-gradient-to-br from-primary to-emerald-700 text-white" : "bg-card border border-border"}`}>
         <div className="flex items-center justify-between">

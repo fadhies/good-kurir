@@ -51,6 +51,8 @@ export default async function(req) {
     let nearest = null;
     let minDist = Infinity;
     for (const d of drivers) {
+      // hanya driver yang sudah diverifikasi admin yang dapat orderan
+      if (d.verification_status !== 'approved') continue;
       if (d.current_lat == null || d.current_lng == null) continue;
       const activeCount = activeCountByDriver[d.user_id] || 0;
       // hemat: maks 3 orderan aktif sekaligus; cepat: harus tanpa orderan aktif

@@ -22,6 +22,18 @@
     "selfie_with_ktp": {
       "type": "string"
     },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
     "is_online": {
       "type": "boolean",
       "default": false

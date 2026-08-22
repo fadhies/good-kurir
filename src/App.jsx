@@ -19,6 +19,11 @@ import MyOrders from '@/pages/MyOrders';
 import DriverDashboard from '@/pages/DriverDashboard';
 import DriverWallet from '@/pages/DriverWallet';
 import BecomeDriver from '@/pages/BecomeDriver';
+import AdminRoute from '@/components/AdminRoute';
+import AdminDashboard from '@/pages/AdminDashboard';
+import AdminDrivers from '@/pages/AdminDrivers';
+import AdminUsers from '@/pages/AdminUsers';
+import AdminOrders from '@/pages/AdminOrders';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,6 +57,12 @@ const AuthenticatedApp = () => {
         <Route path="/driver" element={<DriverDashboard />} />
         <Route path="/driver/dompet" element={<DriverWallet />} />
         <Route path="/jadi-driver" element={<BecomeDriver />} />
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/driver" element={<AdminDrivers />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+        </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
