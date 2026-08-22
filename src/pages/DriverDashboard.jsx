@@ -173,8 +173,8 @@ export default function DriverDashboard() {
             <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Rating</p>
           </div>
           <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-white/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold ${profile.is_online ? "text-white" : ""}`}>{profile.is_available ? "Siap" : "Sibuk"}</p>
-            <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Status</p>
+            <p className={`text-lg font-bold ${profile.is_online ? "text-white" : ""}`}>{orders.length}</p>
+            <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Orderan Aktif</p>
           </div>
         </div>
       </div>
