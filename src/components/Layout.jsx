@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
+import { useIsDriver } from "@/hooks/useIsDriver";
 import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";
@@ -24,19 +24,7 @@ export default function Layout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const role = user?.role || "user";
-  const [isDriver, setIsDriver] = useState(role === "driver" || role === "admin");
-
-  useEffect(() => {
-    if (role === "driver" || role === "admin") {
-      setIsDriver(true);
-      return;
-    }
-    let active = true;
-    base44.entities.DriverProfile.filter({ user_id: user.id })
-      .then((list) => active && setIsDriver(list.length > 0))
-      .catch(() => active && setIsDriver(false));
-    return () => { active = false; };
-  }, [user.id, role]);
+  const isDriver = useIsDriver();
 
   const items = [...USER_ITEMS, ...(isDriver ? DRIVER_ITEMS : []), ...(role === "admin" ? ADMIN_ITEMS : [])];
 
