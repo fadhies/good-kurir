@@ -103,7 +103,7 @@ export default function NewOrder() {
         type,
         mode,
         payment_method: paymentMethod,
-        store_name: store.address.split(",")[0],
+        store_name: store.name || store.address.split(",")[0],
         store_address: store.address,
         store_lat: store.lat,
         store_lng: store.lng,

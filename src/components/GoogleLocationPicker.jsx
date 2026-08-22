@@ -148,8 +148,9 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
   function pickPrediction(p) {
     setShowResults(false);
     setQuery(p.description);
+    const fallbackName = p.structured_formatting?.main_text || "";
     placesRef.current.getDetails(
-      { placeId: p.place_id, fields: ["geometry", "formatted_address"] },
+      { placeId: p.place_id, fields: ["geometry", "formatted_address", "name"] },
       (r, status) => {
         if (status === "OK" && r?.geometry?.location) {
           const loc = r.geometry.location;
@@ -157,27 +158,44 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
             lat: loc.lat(),
             lng: loc.lng(),
             address: r.formatted_address || p.description,
+            name: r.name || fallbackName,
           });
         } else {
-          onChange({ address: p.description });
+          onChange({ address: p.description, name: fallbackName });
         }
       }
     );
   }
 
+  function extractPoiName(components) {
+    if (!components) return "";
+    const poiTypes = ["point_of_interest", "establishment", "premise", "subpremise", "neighborhood"];
+    for (const t of poiTypes) {
+      const c = components.find((c) => c.types.includes(t));
+      if (c?.long_name) return c.long_name;
+    }
+    return "";
+  }
+
   function reverseGeocode(lat, lng) {
     return new Promise((resolve) => {
       geocoderRef.current.geocode({ location: { lat, lng } }, (res, status) => {
-        if (status === "OK" && res?.[0]) resolve(res[0].formatted_address);
-        else resolve(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+        if (status === "OK" && res?.[0]) {
+          resolve({
+            address: res[0].formatted_address,
+            name: extractPoiName(res[0].address_components),
+          });
+        } else {
+          resolve({ address: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, name: "" });
+        }
       });
     });
   }
 
   async function pickFromMap(lat, lng) {
-    const address = await reverseGeocode(lat, lng);
+    const { address, name } = await reverseGeocode(lat, lng);
     setQuery(address);
-    onChange({ lat, lng, address });
+    onChange({ lat, lng, address, name });
   }
 
   return (
