@@ -118,6 +118,9 @@
           "data.driver_id": "{{user.id}}"
         },
         {
+          "data.status": "pending_match"
+        },
+        {
           "user_condition": {
             "role": "admin"
           }
