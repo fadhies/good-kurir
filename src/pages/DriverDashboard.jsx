@@ -288,9 +288,10 @@ export default function DriverDashboard() {
               {visibleAvailable.map((o) => (
                 <div key={o.id} className="bg-card rounded-2xl border-2 border-primary/30 p-4">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <p className="font-semibold truncate">{o.store_name}</p>
+                    <p className="font-semibold truncate">{o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}</p>
                     <OrderStatusBadge status={o.status} />
                   </div>
+                  <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
                   <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
                   {o.notes && <p className="text-xs text-muted-foreground truncate mt-0.5">📝 {o.notes}</p>}
                   <div className="flex items-center justify-between mt-3">
@@ -336,9 +337,10 @@ export default function DriverDashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-semibold truncate">{o.store_name}</p>
+                    <p className="font-semibold truncate">{o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}</p>
                     <OrderStatusBadge status={o.status} />
                   </div>
+                  <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
                   <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
                   <p className="text-sm font-semibold text-primary mt-1">Ongkir {formatRupiah(o.delivery_fee)}</p>
                 </div>

@@ -112,10 +112,11 @@ export default function MyOrders() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-semibold truncate">{o.store_name || "Pesanan"}</p>
+                  <p className="font-semibold truncate">{o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}</p>
                   <OrderStatusBadge status={o.status} />
                 </div>
-                <p className="text-sm text-muted-foreground truncate">{o.destination_address}</p>
+                <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
+                <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
                 <p className="text-sm font-semibold text-primary mt-1">{formatRupiah((o.item_cost || 0) + (o.delivery_fee || 0))}</p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
