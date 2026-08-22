@@ -55,6 +55,9 @@
     "destination_lng": {
       "type": "number"
     },
+    "destination_detail": {
+      "type": "string"
+    },
     "notes": {
       "type": "string"
     },

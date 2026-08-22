@@ -219,6 +219,9 @@ export default function OrderTracking() {
             <div>
               <p className="text-xs text-muted-foreground">Tujuan</p>
               <p className="font-semibold text-sm">{order.destination_address}</p>
+              {order.destination_detail && (
+                <p className="text-sm text-muted-foreground mt-1">{order.destination_detail}</p>
+              )}
             </div>
           </div>
           {order.notes && (

@@ -25,6 +25,7 @@ export default function NewOrder() {
   const [store, setStore] = useState(null);
   const [destination, setDestination] = useState(null);
   const [notes, setNotes] = useState("");
+  const [destDetail, setDestDetail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cashAvailable, setCashAvailable] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -105,6 +106,7 @@ export default function NewOrder() {
         destination_address: destination.address,
         destination_lat: destination.lat,
         destination_lng: destination.lng,
+        destination_detail: destDetail,
         notes,
         status: "pending_match",
         delivery_fee: deliveryFee,
@@ -269,6 +271,15 @@ export default function NewOrder() {
             accent="158 64% 45%"
             biasCenter={userLoc}
           />
+          <div className="mt-3">
+            <label className="text-sm font-semibold text-foreground/80 block mb-1.5">Detil alamat (catatan untuk driver)</label>
+            <input
+              value={destDetail}
+              onChange={(e) => setDestDetail(e.target.value)}
+              placeholder="Mis: Rumah cat hijau, pintu kayu, sebelah warung"
+              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
         </div>
 
         {/* Notes */}
