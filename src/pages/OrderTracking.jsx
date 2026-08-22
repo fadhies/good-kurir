@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
-import PhotoUpload from "@/components/PhotoUpload";
 import { reverseGeocodePoi } from "@/lib/googleMaps";
 
 const TIMELINE = [
@@ -75,11 +74,6 @@ export default function OrderTracking() {
       setBillConfirm(null);
       return;
     }
-    if (billConfirm === "qris" && !qrisPhoto) {
-      toast({ title: "Unggah foto QRIS dulu", variant: "destructive" });
-      setBillConfirm(null);
-      return;
-    }
     setActing(true);
     try {
       markSelfUpdate();
@@ -95,9 +89,8 @@ export default function OrderTracking() {
           status: "awaiting_payment",
           item_cost: cost,
           store_bill_note: billNote,
-          qris_photo: qrisPhoto,
         });
-        toast({ title: "QRIS & tagihan dikirim, menunggu pembayaran user" });
+        toast({ title: "Tagihan dikirim, menunggu pembayaran user" });
       }
       loadOrder();
     } catch (e) {
@@ -202,6 +195,53 @@ export default function OrderTracking() {
       loadOrder();
     } catch (e) {
       toast({ title: "Gagal", description: e.message, variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
+  }
+
+  function loadSnapScript(clientKey) {
+    return new Promise((resolve, reject) => {
+      if (window.snap) return resolve();
+      const s = document.createElement("script");
+      s.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+      s.setAttribute("data-client-key", clientKey);
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("Gagal memuat Midtrans"));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function startMidtransPayment() {
+    setActing(true);
+    try {
+      const res = await base44.functions.invoke("createMidtransTransaction", { orderId: id });
+      const { token, client_key } = res.data || {};
+      if (!token) {
+        toast({ title: "Gagal membuat transaksi", description: res.data?.error, variant: "destructive" });
+        return;
+      }
+      await loadSnapScript(client_key);
+      window.snap.pay(token, {
+        onSuccess: () => {
+          toast({ title: "Pembayaran berhasil", description: "Menunggu konfirmasi sistem." });
+          loadOrder();
+        },
+        onPending: () => {
+          toast({ title: "Pembayaran menunggu", description: "Selesaikan pembayaran untuk lanjut." });
+          loadOrder();
+        },
+        onError: () => {
+          toast({ title: "Pembayaran gagal", variant: "destructive" });
+        },
+        onClose: () => {
+          loadOrder();
+        },
+      });
+    } catch (e) {
+      let msg = e.message;
+      try { const p = JSON.parse(msg); if (p?.error) msg = p.error; } catch {}
+      toast({ title: "Gagal memulai pembayaran", description: msg, variant: "destructive" });
     } finally {
       setActing(false);
     }
@@ -394,14 +434,6 @@ export default function OrderTracking() {
               order.type === "food" ? (
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">Input total bill dari toko/restoran:</p>
-                  {isQris && (
-                    <PhotoUpload
-                      label="Foto QRIS di resto/toko"
-                      value={qrisPhoto}
-                      onChange={setQrisPhoto}
-                      hint="Ambil foto kode QRIS yang jelas agar user bisa scan."
-                    />
-                  )}
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
                     <input
@@ -432,7 +464,7 @@ export default function OrderTracking() {
                       disabled={acting}
                       className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
                     >
-                      Kirim QRIS & Tagihan
+                      Kirim Tagihan
                     </button>
                   )}
                 </div>
@@ -484,7 +516,7 @@ export default function OrderTracking() {
 
             {order.status === "awaiting_payment" && (
               <p className="text-sm text-muted-foreground text-center py-2">
-                {isQris ? "Menunggu user scan QRIS & kirim bukti bayar..." : "Menunggu pengguna membayar..."}
+                {isQris ? "Menunggu user membayar via Midtrans..." : "Menunggu pengguna membayar..."}
               </p>
             )}
             {order.status === "completed" && (
@@ -500,32 +532,21 @@ export default function OrderTracking() {
           isQris && order.type === "food" ? (
             <div className="bg-card rounded-2xl border-2 border-primary/30 p-5 space-y-4">
               <h3 className="font-bold flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-primary" /> Scan & Bayar QRIS
+                <CreditCard className="w-5 h-5 text-primary" /> Bayar Tagihan Toko
               </h3>
               <p className="text-sm text-muted-foreground">
-                Bayar langsung ke toko via QRIS: <span className="font-semibold text-foreground">{formatRupiah(order.item_cost)}</span>
+                Total tagihan: <span className="font-semibold text-foreground">{formatRupiah(order.item_cost)}</span>
               </p>
               <p className="text-xs text-muted-foreground">
-                Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
+                Bisa pakai QRIS, GoPay, Dana, kartu, atau VA. Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
               </p>
-              {order.qris_photo && (
-                <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
-                  <Image src={order.qris_photo} fittingType="fit" className="w-full h-auto" />
-                </div>
-              )}
-              <PhotoUpload
-                label="Bukti pembayaran"
-                value={proofPhoto}
-                onChange={setProofPhoto}
-                hint="Scan QRIS di atas, bayar, lalu unggah bukti transfer/pembayaran."
-              />
               <button
-                onClick={pay}
-                disabled={acting || !proofPhoto}
+                onClick={startMidtransPayment}
+                disabled={acting}
                 className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-                Saya Sudah Bayar, Kirim Bukti
+                Bayar dengan Midtrans
               </button>
             </div>
           ) : (
@@ -563,13 +584,13 @@ export default function OrderTracking() {
             <AlertDialogTitle>Konfirmasi Tagihan</AlertDialogTitle>
             <AlertDialogDescription>
               {Number(itemCost) > 0
-                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan scan QRIS & kirim bukti bayar."}`
+                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan membayar via Midtrans (QRIS/e-wallet)."}`
                 : "Masukkan nominal bill dulu sebelum konfirmasi."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={acting}>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmBillAction} disabled={acting || !Number(itemCost) || (billConfirm === "qris" && !qrisPhoto)}>
+            <AlertDialogAction onClick={confirmBillAction} disabled={acting || !Number(itemCost)}>
               {acting ? "Memproses..." : "Ya, Konfirmasi"}
             </AlertDialogAction>
           </AlertDialogFooter>
