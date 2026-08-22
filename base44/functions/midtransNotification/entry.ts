@@ -34,6 +34,7 @@ export default async function(req) {
       if (order && order.status === "awaiting_payment") {
         await base44.asServiceRole.entities.Order.update(realId, {
           status: "paid",
+          midtrans_paid: true,
         });
       }
     }

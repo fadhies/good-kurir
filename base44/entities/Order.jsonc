@@ -102,6 +102,10 @@
     },
     "payment_proof_photo": {
       "type": "string"
+    },
+    "midtrans_paid": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [

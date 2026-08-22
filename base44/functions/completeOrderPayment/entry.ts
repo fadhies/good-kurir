@@ -42,15 +42,26 @@ export default async function(req) {
     });
 
     if (order.driver_id) {
-      // QRIS: item dibayar langsung ke toko, ongkir dibayar ke driver via dompet
-      if (method === 'qris' && deliveryFee > 0) {
-        await base44.asServiceRole.entities.WalletTransaction.create({
-          user_id: order.driver_id,
-          type: 'credit',
-          amount: deliveryFee,
-          description: `Ongkir order #${String(orderId).slice(-6)}`,
-          order_id: orderId,
-        });
+      if (method === 'qris') {
+        // Midtrans escrow: user paid item_cost ke rekening app, driver bayar toko tunai → reimburse
+        if (order.midtrans_paid && order.type === 'food' && (order.item_cost || 0) > 0) {
+          await base44.asServiceRole.entities.WalletTransaction.create({
+            user_id: order.driver_id,
+            type: 'credit',
+            amount: order.item_cost,
+            description: `Reimburse tagihan toko #${String(orderId).slice(-6)}`,
+            order_id: orderId,
+          });
+        }
+        if (deliveryFee > 0) {
+          await base44.asServiceRole.entities.WalletTransaction.create({
+            user_id: order.driver_id,
+            type: 'credit',
+            amount: deliveryFee,
+            description: `Ongkir order #${String(orderId).slice(-6)}`,
+            order_id: orderId,
+          });
+        }
       }
       // Fee admin dipotong dari dompet driver
       await base44.asServiceRole.entities.WalletTransaction.create({
