@@ -29,6 +29,7 @@ import AdminOrders from '@/pages/AdminOrders';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const location = useLocation();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -45,7 +46,6 @@ const AuthenticatedApp = () => {
   }
 
   // Render the main app
-  const location = useLocation();
   return (
     <AnimatePresence mode="wait">
     <motion.div
