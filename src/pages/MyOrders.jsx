@@ -7,6 +7,7 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { useIsDriver } from "@/hooks/useIsDriver";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
+import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { Loader2, ShoppingBag, Bike, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,9 @@ export default function MyOrders() {
     try {
       const list = await base44.entities.Order.filter({}, "-created_date", 50);
       setOrders(list);
+      enrichOrdersStoreName(list, (id, name) =>
+        setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, store_name: name } : o)))
+      );
     } catch (e) {
       setOrders([]);
     }

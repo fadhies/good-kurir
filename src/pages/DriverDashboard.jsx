@@ -7,6 +7,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
+import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package } from "lucide-react";
 import {
   AlertDialog,
@@ -53,6 +54,9 @@ export default function DriverDashboard() {
         20
       );
       setOrders(active);
+      enrichOrdersStoreName(active, (id, name) =>
+        setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, store_name: name } : o)))
+      );
     } catch (e) {
       setOrders([]);
     }
