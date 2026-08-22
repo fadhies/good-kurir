@@ -147,18 +147,20 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
 
   function pickPrediction(p) {
     setShowResults(false);
-    setQuery(p.description);
     const fallbackName = p.structured_formatting?.main_text || "";
+    setQuery(fallbackName || p.description);
     placesRef.current.getDetails(
       { placeId: p.place_id, fields: ["geometry", "formatted_address", "name"] },
       (r, status) => {
         if (status === "OK" && r?.geometry?.location) {
           const loc = r.geometry.location;
+          const name = r.name || fallbackName;
+          if (name) setQuery(name);
           onChange({
             lat: loc.lat(),
             lng: loc.lng(),
             address: r.formatted_address || p.description,
-            name: r.name || fallbackName,
+            name,
           });
         } else {
           onChange({ address: p.description, name: fallbackName });
@@ -194,7 +196,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
 
   async function pickFromMap(lat, lng) {
     const { address, name } = await reverseGeocode(lat, lng);
-    setQuery(address);
+    setQuery(name || address);
     onChange({ lat, lng, address, name });
   }
 
