@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
 import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AccountDeletionDialog from "@/components/AccountDeletionDialog";
 
 const USER_ITEMS = [
   { to: "/", label: "Beranda", icon: Home },
@@ -46,7 +47,7 @@ export default function Layout({ children }) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 glass-card border-b border-border/60">
+      <header className="sticky top-0 z-40 glass-card border-b border-border/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/30">
@@ -66,6 +67,7 @@ export default function Layout({ children }) {
                 {role === "driver" ? "Driver" : role === "admin" ? "Admin" : "User"}
               </span>
             </div>
+            <AccountDeletionDialog />
             <button
               onClick={handleLogout}
               className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
@@ -83,7 +85,7 @@ export default function Layout({ children }) {
       </main>
 
       {/* Bottom nav (mobile) */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/60">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/60" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex items-center justify-around h-16">
           {items.map((item) => {
             const active = location.pathname === item.to;
