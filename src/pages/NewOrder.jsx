@@ -288,7 +288,7 @@ export default function NewOrder() {
             <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
               <FileText className="w-4 h-4 text-muted-foreground" />
             </div>
-            <h3 className="font-bold">Catatan untuk Driver</h3>
+            <h3 className="font-bold">{type === "food" ? "Tuliskan rincian pesanan" : "Catatan untuk Driver"}</h3>
           </div>
           <textarea
             value={notes}
