@@ -4,8 +4,9 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/LocationPicker";
 import { base44 } from "@/api/base44Client";
-import { Bike, Loader2, CheckCircle2, MapPin, Crosshair } from "lucide-react";
+import { Bike, Loader2, CheckCircle2, MapPin, Crosshair, CreditCard, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Image } from "@/components/ui/image";
 
 export default function BecomeDriver() {
   const { user } = useAuth();
@@ -15,7 +16,23 @@ export default function BecomeDriver() {
   const [plate, setPlate] = useState("");
   const [location, setLocation] = useState(null);
   const [phone, setPhone] = useState("");
+  const [ktpPhoto, setKtpPhoto] = useState(null);
+  const [selfiePhoto, setSelfiePhoto] = useState(null);
+  const [uploading, setUploading] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  async function handleUpload(file, key, setter) {
+    if (!file) return;
+    setUploading(key);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setter(file_url);
+    } catch (e) {
+      toast({ title: "Gagal upload", description: e.message, variant: "destructive" });
+    } finally {
+      setUploading(null);
+    }
+  }
 
   async function useMyLocation() {
     if (!navigator.geolocation) {
@@ -49,6 +66,14 @@ export default function BecomeDriver() {
       toast({ title: "Tentukan lokasi Anda", variant: "destructive" });
       return;
     }
+    if (!ktpPhoto) {
+      toast({ title: "Upload foto KTP", variant: "destructive" });
+      return;
+    }
+    if (!selfiePhoto) {
+      toast({ title: "Upload selfie sambil memegang KTP", variant: "destructive" });
+      return;
+    }
     setSaving(true);
     try {
       if (phone) {
@@ -63,6 +88,8 @@ export default function BecomeDriver() {
         current_lat: location.lat,
         current_lng: location.lng,
         current_address: location.address,
+        ktp_photo: ktpPhoto,
+        selfie_with_ktp: selfiePhoto,
       });
       toast({ title: "Selamat! Anda sekarang driver OjekKu 🎉" });
       navigate("/driver");
@@ -136,6 +163,50 @@ export default function BecomeDriver() {
               </button>
             </div>
             <LocationPicker label="Posisi driver" value={location} onChange={setLocation} accent="158 64% 30%" />
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold mb-2 block">Foto KTP</label>
+            <label className="relative flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl p-4 cursor-pointer hover:border-primary/40 transition-colors min-h-[8rem]">
+              {ktpPhoto ? (
+                <Image src={ktpPhoto} alt="KTP" className="w-full h-32 rounded-lg" fittingType="fill" />
+              ) : uploading === "ktp" ? (
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              ) : (
+                <>
+                  <CreditCard className="w-8 h-8 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground text-center">Ketuk untuk unggah foto KTP</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleUpload(e.target.files?.[0], "ktp", setKtpPhoto)}
+              />
+            </label>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold mb-2 block">Selfie Sambil Memegang KTP</label>
+            <label className="relative flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl p-4 cursor-pointer hover:border-primary/40 transition-colors min-h-[8rem]">
+              {selfiePhoto ? (
+                <Image src={selfiePhoto} alt="Selfie KTP" className="w-full h-32 rounded-lg" fittingType="fill" />
+              ) : uploading === "selfie" ? (
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              ) : (
+                <>
+                  <Camera className="w-8 h-8 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground text-center">Ketuk untuk unggah selfie + KTP</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleUpload(e.target.files?.[0], "selfie", setSelfiePhoto)}
+              />
+            </label>
           </div>
 
           <button

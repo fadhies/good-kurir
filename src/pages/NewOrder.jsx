@@ -25,7 +25,20 @@ export default function NewOrder() {
   const [store, setStore] = useState(null);
   const [destination, setDestination] = useState(null);
   const [notes, setNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [cashAvailable, setCashAvailable] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    base44.functions
+      .invoke("checkCashAvailable", {})
+      .then((res) => setCashAvailable(!!res.data?.available))
+      .catch(() => setCashAvailable(false));
+  }, []);
+
+  useEffect(() => {
+    if (!cashAvailable && paymentMethod === "cash") setPaymentMethod("gopay");
+  }, [cashAvailable, paymentMethod]);
 
   const distance = useMemo(() => {
     if (store?.lat && destination?.lat) {
@@ -82,6 +95,7 @@ export default function NewOrder() {
         user_id: user.id,
         type,
         mode,
+        payment_method: paymentMethod,
         store_name: store.address.split(",")[0],
         store_address: store.address,
         store_lat: store.lat,
@@ -173,6 +187,44 @@ export default function NewOrder() {
         </div>
       </div>
 
+      {/* Payment method */}
+      <div className="mb-6">
+        <h3 className="font-bold mb-2 text-sm">Metode Pembayaran</h3>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { v: "gopay", l: "GoPay" },
+            { v: "dana", l: "Dana" },
+            { v: "qris", l: "QRIS" },
+            { v: "cash", l: "Tunai" },
+          ].map((o) => {
+            const active = paymentMethod === o.v;
+            const disabled = o.v === "cash" && !cashAvailable;
+            return (
+              <button
+                key={o.v}
+                disabled={disabled}
+                onClick={() => setPaymentMethod(o.v)}
+                className={`p-2.5 rounded-xl border-2 text-center transition-all ${
+                  active ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"
+                } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
+              >
+                <span className={`block text-xs font-bold ${active ? "text-primary" : ""}`}>{o.l}</span>
+              </button>
+            );
+          })}
+        </div>
+        {paymentMethod === "cash" && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Driver menerima uang tunai saat pesanan sampai. Biaya layanan Rp2.000 dipotong dari dompet driver.
+          </p>
+        )}
+        {!cashAvailable && (
+          <p className="text-xs text-destructive mt-2">
+            Pembayaran tunai tidak tersedia (tidak ada driver dengan saldo dompet cukup).
+          </p>
+        )}
+      </div>
+
       <div className="space-y-6">
         {/* Store */}
         <div className="bg-card rounded-2xl border border-border p-5">
@@ -245,6 +297,12 @@ export default function NewOrder() {
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Mode</span>
               <span className="font-semibold">{mode === "cepat" ? "Cepat" : "Hemat"}</span>
+            </div>
+            <div className="flex justify-between text-sm py-1">
+              <span className="text-muted-foreground">Pembayaran</span>
+              <span className="font-semibold capitalize">
+                {paymentMethod === "cash" ? "Tunai" : paymentMethod}
+              </span>
             </div>
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Ongkir</span>

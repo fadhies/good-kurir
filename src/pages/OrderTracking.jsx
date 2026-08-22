@@ -105,6 +105,23 @@ export default function OrderTracking() {
     }
   }
 
+  async function settleCash() {
+    setActing(true);
+    try {
+      const res = await base44.functions.invoke("completeOrderPayment", { orderId: id });
+      if (res.data?.success) {
+        toast({ title: "Pesanan selesai", description: "Biaya Rp2.000 dipotong dari dompet" });
+        loadOrder();
+      } else {
+        toast({ title: "Gagal menyelesaikan", description: res.data?.error, variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Gagal", description: e.message, variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
+  }
+
   if (loading) {
     return (
       <Layout>
@@ -123,7 +140,11 @@ export default function OrderTracking() {
     );
   }
 
-  const currentIdx = TIMELINE.findIndex((t) => t.key === order.status);
+  const isCash = order.payment_method === "cash";
+  const timeline = isCash
+    ? TIMELINE.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid")
+    : TIMELINE;
+  const currentIdx = timeline.findIndex((t) => t.key === order.status);
   const total = (order.item_cost || 0) + (order.delivery_fee || 0);
 
   return (
@@ -146,7 +167,7 @@ export default function OrderTracking() {
       {/* Timeline */}
       <div className="bg-card rounded-2xl border border-border p-5 mb-4">
         <div className="flex items-center justify-between">
-          {TIMELINE.map((t, i) => (
+          {timeline.map((t, i) => (
             <div key={t.key} className="flex flex-col items-center flex-1 relative">
               {i < TIMELINE.length - 1 && (
                 <div
@@ -271,13 +292,23 @@ export default function OrderTracking() {
                   placeholder="Catatan bill (opsional)"
                   className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
-                <button
-                  onClick={submitBill}
-                  disabled={acting}
-                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                >
-                  Kirim Bill ke Pengguna
-                </button>
+                {isCash ? (
+                  <button
+                    onClick={() => updateStatus("on_the_way", { item_cost: Number(itemCost) || 0, store_bill_note: billNote })}
+                    disabled={acting}
+                    className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                  >
+                    Mulai Antar ke Tujuan
+                  </button>
+                ) : (
+                  <button
+                    onClick={submitBill}
+                    disabled={acting}
+                    className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                  >
+                    Kirim Bill ke Pengguna
+                  </button>
+                )}
               </div>
             )}
 
@@ -293,7 +324,7 @@ export default function OrderTracking() {
 
             {order.status === "on_the_way" && (
               <button
-                onClick={() => updateStatus("completed")}
+                onClick={isCash ? settleCash : () => updateStatus("completed")}
                 disabled={acting}
                 className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
               >
@@ -307,7 +338,9 @@ export default function OrderTracking() {
               </p>
             )}
             {order.status === "completed" && (
-              <p className="text-sm text-emerald-600 text-center py-2 font-semibold">Pesanan selesai. Penghasilan masuk ke dompet.</p>
+              <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
+                {isCash ? "Pesanan selesai. Uang tunai diterima, biaya Rp2.000 dipotong dari dompet." : "Pesanan selesai. Penghasilan masuk ke dompet."}
+              </p>
             )}
           </div>
         )}

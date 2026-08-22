@@ -16,6 +16,12 @@
     "license_plate": {
       "type": "string"
     },
+    "ktp_photo": {
+      "type": "string"
+    },
+    "selfie_with_ktp": {
+      "type": "string"
+    },
     "is_online": {
       "type": "boolean",
       "default": false

@@ -24,6 +24,16 @@
       ],
       "default": "hemat"
     },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "gopay",
+        "dana",
+        "qris",
+        "cash"
+      ],
+      "default": "cash"
+    },
     "store_name": {
       "type": "string"
     },

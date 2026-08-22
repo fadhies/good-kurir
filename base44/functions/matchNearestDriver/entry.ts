@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { haversineKm } from '../../shared/geo.ts';
+import { walletBalancesByUser } from '../../shared/wallet.ts';
 
 export default async function(req) {
   try {
@@ -21,7 +22,9 @@ export default async function(req) {
     }
 
     const mode = order.mode || 'hemat';
+    const method = order.payment_method || 'cash';
     const MAX_HEMAT = 3;
+    const SERVICE_FEE = 2000;
 
     const drivers = await base44.asServiceRole.entities.DriverProfile.filter({
       is_online: true
@@ -40,6 +43,11 @@ export default async function(req) {
       if (o.driver_id) activeCountByDriver[o.driver_id] = (activeCountByDriver[o.driver_id] || 0) + 1;
     }
 
+    const balances = await walletBalancesByUser(
+      base44,
+      drivers.map((d) => d.user_id)
+    );
+
     let nearest = null;
     let minDist = Infinity;
     for (const d of drivers) {
@@ -47,6 +55,8 @@ export default async function(req) {
       const activeCount = activeCountByDriver[d.user_id] || 0;
       // hemat: maks 3 orderan aktif sekaligus; cepat: harus tanpa orderan aktif
       if (mode === 'cepat' ? activeCount !== 0 : activeCount >= MAX_HEMAT) continue;
+      // tunai: driver harus punya saldo dompet >= Rp2.000 untuk biaya layanan
+      if (method === 'cash' && (balances[d.user_id] || 0) < SERVICE_FEE) continue;
       const dist = haversineKm(order.store_lat, order.store_lng, d.current_lat, d.current_lng);
       if (dist < minDist) {
         minDist = dist;
@@ -55,11 +65,15 @@ export default async function(req) {
     }
 
     if (!nearest) {
-      return Response.json({
-        error: mode === 'cepat'
-          ? 'Tidak ada driver yang sedang kosong untuk mode cepat'
-          : 'Semua driver sudah mencapai batas 3 orderan'
-      }, { status: 404 });
+      let error;
+      if (method === 'cash') {
+        error = 'Tidak ada driver dengan saldo dompet cukup untuk pembayaran tunai';
+      } else if (mode === 'cepat') {
+        error = 'Tidak ada driver yang sedang kosong untuk mode cepat';
+      } else {
+        error = 'Semua driver sudah mencapai batas 3 orderan';
+      }
+      return Response.json({ error }, { status: 404 });
     }
 
     const distance = Math.round(minDist * 100) / 100;
