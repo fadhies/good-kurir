@@ -9,11 +9,17 @@ export function haversineKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Tarif antar berdasarkan mode:
-// - hemat: Rp7.000 untuk 0-4 km, +Rp1.000/km setelahnya
-// - cepat: Rp12.000 untuk 0-4 km, +Rp2.000/km setelahnya
-export function calcDeliveryFee(distanceKm: number, mode: string = "hemat"): number {
+// Tarif antar:
+// - antar barang & antar orang: tarif tunggal Rp12.000 / 4km, +Rp2.000/km
+// - beli makanan: mode hemat (Rp7.000/4km, +Rp1.000/km) atau cepat (Rp12.000/4km, +Rp2.000/km)
+export function calcDeliveryFee(distanceKm: number, mode: string = "hemat", type: string = "food"): number {
   const BASE_KM = 4;
+  if (type === "goods" || type === "person") {
+    const baseFare = 12000;
+    const perKm = 2000;
+    if (distanceKm <= BASE_KM) return baseFare;
+    return Math.round(baseFare + perKm * (distanceKm - BASE_KM));
+  }
   if (mode === "cepat") {
     const baseFare = 12000;
     const perKm = 2000;

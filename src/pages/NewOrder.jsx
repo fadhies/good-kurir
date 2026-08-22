@@ -47,7 +47,7 @@ export default function NewOrder() {
     return null;
   }, [store, destination]);
 
-  const deliveryFee = distance != null ? calcDeliveryFee(distance, mode) : 0;
+  const deliveryFee = distance != null ? calcDeliveryFee(distance, mode, type) : 0;
 
   // Default lokasi berdasarkan GPS user:
   // - food: tujuan = lokasi user
@@ -164,28 +164,35 @@ export default function NewOrder() {
         })}
       </div>
 
-      {/* Mode selector */}
-      <div className="mb-6">
-        <h3 className="font-bold mb-2 text-sm">Mode Pengantaran</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { v: "hemat", l: "Hemat", desc: "Rp7.000 / 4km", per: "+Rp1.000/km" },
-            { v: "cepat", l: "Cepat", desc: "Rp12.000 / 4km", per: "+Rp2.000/km" },
-          ].map((o) => (
-            <button
-              key={o.v}
-              onClick={() => setMode(o.v)}
-              className={`p-3 rounded-2xl border-2 text-left transition-all ${
-                mode === o.v ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"
-              }`}
-            >
-              <span className={`text-sm font-bold ${mode === o.v ? "text-primary" : ""}`}>{o.l}</span>
-              <p className="text-xs text-muted-foreground mt-0.5">{o.desc}</p>
-              <p className="text-[10px] text-muted-foreground">{o.per} setelahnya</p>
-            </button>
-          ))}
+      {/* Mode selector / Tarif info */}
+      {type === "food" ? (
+        <div className="mb-6">
+          <h3 className="font-bold mb-2 text-sm">Mode Pengantaran</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { v: "hemat", l: "Hemat", desc: "Rp7.000 / 4km", per: "+Rp1.000/km" },
+              { v: "cepat", l: "Cepat", desc: "Rp12.000 / 4km", per: "+Rp2.000/km" },
+            ].map((o) => (
+              <button
+                key={o.v}
+                onClick={() => setMode(o.v)}
+                className={`p-3 rounded-2xl border-2 text-left transition-all ${
+                  mode === o.v ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"
+                }`}
+              >
+                <span className={`text-sm font-bold ${mode === o.v ? "text-primary" : ""}`}>{o.l}</span>
+                <p className="text-xs text-muted-foreground mt-0.5">{o.desc}</p>
+                <p className="text-[10px] text-muted-foreground">{o.per} setelahnya</p>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="mb-6 bg-secondary/50 rounded-2xl border border-border p-4">
+          <h3 className="font-bold mb-1 text-sm">Tarif Antar</h3>
+          <p className="text-sm text-muted-foreground">Rp12.000 untuk 4 km pertama, +Rp2.000/km setelahnya.</p>
+        </div>
+      )}
 
       {/* Payment method */}
       <div className="mb-6">
@@ -294,10 +301,12 @@ export default function NewOrder() {
               <span className="text-muted-foreground">Jarak toko → tujuan</span>
               <span className="font-semibold">{(Math.round(distance * 10) / 10).toFixed(1)} km</span>
             </div>
-            <div className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">Mode</span>
-              <span className="font-semibold">{mode === "cepat" ? "Cepat" : "Hemat"}</span>
-            </div>
+            {type === "food" && (
+              <div className="flex justify-between text-sm py-1">
+                <span className="text-muted-foreground">Mode</span>
+                <span className="font-semibold">{mode === "cepat" ? "Cepat" : "Hemat"}</span>
+              </div>
+            )}
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Pembayaran</span>
               <span className="font-semibold capitalize">
@@ -308,9 +317,11 @@ export default function NewOrder() {
               <span className="text-muted-foreground">Ongkir</span>
               <span className="font-semibold">{formatRupiah(deliveryFee)}</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              *Harga barang dibayar terpisah setelah driver beli di toko
-            </p>
+            {type === "food" && (
+              <p className="text-xs text-muted-foreground mt-2">
+                *Harga barang dibayar terpisah setelah driver beli di toko
+              </p>
+            )}
           </div>
         )}
 

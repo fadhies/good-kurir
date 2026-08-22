@@ -141,9 +141,14 @@ export default function OrderTracking() {
   }
 
   const isCash = order.payment_method === "cash";
+  const labeledTimeline = TIMELINE.map((t) =>
+    t.key === "at_store"
+      ? { ...t, label: order.type === "person" ? "Di Lokasi Jemput" : order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" }
+      : t
+  );
   const timeline = isCash
-    ? TIMELINE.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid")
-    : TIMELINE;
+    ? labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid")
+    : labeledTimeline;
   const currentIdx = timeline.findIndex((t) => t.key === order.status);
   const total = (order.item_cost || 0) + (order.delivery_fee || 0);
 
@@ -269,47 +274,62 @@ export default function OrderTracking() {
                 disabled={acting}
                 className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
               >
-                Saya Sudah Sampai di Tokko
+                {order.type === "person" ? "Saya Sudah di Lokasi Jemput" : order.type === "goods" ? "Saya Sudah di Lokasi Ambil" : "Saya Sudah Sampai di Toko"}
               </button>
             )}
 
             {order.status === "at_store" && (
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Input total bill dari toko/restoran:</p>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
+              order.type === "food" ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">Input total bill dari toko/restoran:</p>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
+                    <input
+                      type="number"
+                      value={itemCost}
+                      onChange={(e) => setItemCost(e.target.value)}
+                      placeholder="25000"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
                   <input
-                    type="number"
-                    value={itemCost}
-                    onChange={(e) => setItemCost(e.target.value)}
-                    placeholder="25000"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
+                    value={billNote}
+                    onChange={(e) => setBillNote(e.target.value)}
+                    placeholder="Catatan bill (opsional)"
+                    className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
                   />
+                  {isCash ? (
+                    <button
+                      onClick={() => updateStatus("on_the_way", { item_cost: Number(itemCost) || 0, store_bill_note: billNote })}
+                      disabled={acting}
+                      className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                    >
+                      Mulai Antar ke Tujuan
+                    </button>
+                  ) : (
+                    <button
+                      onClick={submitBill}
+                      disabled={acting}
+                      className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                    >
+                      Kirim Bill ke Pengguna
+                    </button>
+                  )}
                 </div>
-                <input
-                  value={billNote}
-                  onChange={(e) => setBillNote(e.target.value)}
-                  placeholder="Catatan bill (opsional)"
-                  className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
-                />
-                {isCash ? (
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    {order.type === "person" ? "Konfirmasi penumpang sudah naik." : "Konfirmasi paket sudah diambil."}
+                  </p>
                   <button
-                    onClick={() => updateStatus("on_the_way", { item_cost: Number(itemCost) || 0, store_bill_note: billNote })}
+                    onClick={() => (isCash ? updateStatus("on_the_way") : updateStatus("awaiting_payment"))}
                     disabled={acting}
                     className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
                   >
-                    Mulai Antar ke Tujuan
+                    {isCash ? "Mulai Antar ke Tujuan" : "Konfirmasi & Minta Pembayaran"}
                   </button>
-                ) : (
-                  <button
-                    onClick={submitBill}
-                    disabled={acting}
-                    className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                  >
-                    Kirim Bill ke Pengguna
-                  </button>
-                )}
-              </div>
+                </div>
+              )
             )}
 
             {order.status === "paid" && (
@@ -352,7 +372,9 @@ export default function OrderTracking() {
               <CreditCard className="w-5 h-5" /> Waktunya Membayar
             </h3>
             <p className="text-white/80 text-sm mb-4">
-              Driver sudah beli barang. Total tagihan {formatRupiah(total)} (barang {formatRupiah(order.item_cost)} + ongkir {formatRupiah(order.delivery_fee)}).
+              {order.type === "food"
+                ? `Driver sudah beli makanan. Total tagihan ${formatRupiah(total)} (makanan ${formatRupiah(order.item_cost)} + ongkir ${formatRupiah(order.delivery_fee)}).`
+                : `Total tagihan ${formatRupiah(order.delivery_fee)} (ongkir antar).`}
             </p>
             <button
               onClick={pay}
