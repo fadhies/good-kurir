@@ -3,24 +3,28 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
+import WithdrawalDialog from "@/components/WithdrawalDialog";
+import WithdrawalList from "@/components/WithdrawalList";
 
 export default function DriverWallet() {
   const { user } = useAuth();
   const [txns, setTxns] = useState(null);
   const [balance, setBalance] = useState(0);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+
+  async function load() {
+    try {
+      const list = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 50);
+      setTxns(list);
+      const bal = list.reduce((acc, t) => acc + (t.type === "credit" ? t.amount : -t.amount), 0);
+      setBalance(bal);
+    } catch (e) {
+      setTxns([]);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      try {
-        const list = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 50);
-        setTxns(list);
-        const bal = list.reduce((acc, t) => acc + (t.type === "credit" ? t.amount : -t.amount), 0);
-        setBalance(bal);
-      } catch (e) {
-        setTxns([]);
-      }
-    }
     load();
     const unsub = base44.entities.WalletTransaction.subscribe(() => load());
     return unsub;
@@ -39,7 +43,14 @@ export default function DriverWallet() {
             <Wallet className="w-4 h-4" /> Saldo Tersedia
           </div>
           <p className="font-display text-4xl font-extrabold">{formatRupiah(balance)}</p>
-          <p className="text-white/70 text-xs mt-3">Penghasilan dipotong Rp2.000/order (fee admin + aplikasi)</p>
+          <button
+            onClick={() => setWithdrawOpen(true)}
+            disabled={balance < 10000}
+            className="mt-3 inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 disabled:opacity-50 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors"
+          >
+            <Banknote className="w-4 h-4" /> Tarik Saldo
+          </button>
+          <p className="text-white/70 text-xs mt-2">Minimal saldo tersisa Rp10.000 saat menarik</p>
         </div>
       </div>
 
@@ -83,6 +94,8 @@ export default function DriverWallet() {
           ))}
         </div>
       )}
+      <WithdrawalDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={balance} onDone={load} />
+      <WithdrawalList />
     </Layout>
   );
 }

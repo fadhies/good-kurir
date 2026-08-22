@@ -39,8 +39,12 @@ export default function NewOrder() {
   }, []);
 
   useEffect(() => {
-    if (!cashAvailable && paymentMethod === "cash") setPaymentMethod("qris");
-  }, [cashAvailable, paymentMethod]);
+    if (!cashAvailable && paymentMethod === "cash" && type === "food") setPaymentMethod("qris");
+  }, [cashAvailable, paymentMethod, type]);
+
+  useEffect(() => {
+    if (type !== "food" && paymentMethod === "qris") setPaymentMethod("cash");
+  }, [type, paymentMethod]);
 
   const distance = useMemo(() => {
     if (store?.lat && destination?.lat) {
@@ -199,7 +203,7 @@ export default function NewOrder() {
             { v: "cash", l: "Tunai" },
           ].map((o) => {
             const active = paymentMethod === o.v;
-            const disabled = o.v === "cash" && !cashAvailable;
+            const disabled = (o.v === "cash" && !cashAvailable) || (o.v === "qris" && type !== "food");
             return (
               <button
                 key={o.v}
@@ -216,7 +220,12 @@ export default function NewOrder() {
         </div>
         {paymentMethod === "cash" && (
           <p className="text-xs text-muted-foreground mt-2">
-            Driver menerima uang tunai saat pesanan sampai. Biaya layanan Rp2.000 dipotong dari dompet driver.
+            Driver menerima uang tunai saat pesanan sampai. Fee Rp2.000 dipotong ke admin.
+          </p>
+        )}
+        {paymentMethod === "qris" && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Bayar langsung ke toko via QRIS (hanya makanan). Ongkir dibayar ke driver setelah pesanan sampai. Fee Rp2.000 ke admin.
           </p>
         )}
         {!cashAvailable && (

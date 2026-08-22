@@ -145,26 +145,30 @@ export default function OrderTracking() {
   async function pay() {
     setActing(true);
     try {
-      const res = await base44.functions.invoke("completeOrderPayment", { orderId: id, proofUrl: proofPhoto || undefined });
-      if (res.data?.success) {
-        toast({ title: "Pembayaran berhasil!", description: `Total ${formatRupiah(res.data.total_amount)}` });
-        loadOrder();
-      } else {
-        toast({ title: "Gagal bayar", description: res.data?.error, variant: "destructive" });
-      }
+      await base44.entities.Order.update(id, {
+        status: "paid",
+        payment_proof_photo: proofPhoto || null,
+      });
+      toast({ title: "Pembayaran terkonfirmasi", description: "Ongkir dibayar ke driver setelah pesanan sampai." });
+      loadOrder();
     } catch (e) {
-      toast({ title: "Gagal bayar", description: e.message, variant: "destructive" });
+      toast({ title: "Gagal", description: e.message, variant: "destructive" });
     } finally {
       setActing(false);
     }
   }
 
-  async function settleCash() {
+  async function settleOrder() {
     setActing(true);
     try {
       const res = await base44.functions.invoke("completeOrderPayment", { orderId: id });
       if (res.data?.success) {
-        toast({ title: "Pesanan selesai", description: "Biaya Rp2.000 dipotong dari dompet" });
+        toast({
+          title: "Pesanan selesai",
+          description: isQris
+            ? `Ongkir ${formatRupiah(order.delivery_fee)} masuk ke dompet, fee Rp2.000 ke admin`
+            : "Fee Rp2.000 dipotong ke admin",
+        });
         loadOrder();
       } else {
         toast({ title: "Gagal menyelesaikan", description: res.data?.error, variant: "destructive" });
@@ -201,9 +205,9 @@ export default function OrderTracking() {
       ? { ...t, label: order.type === "person" ? "Di Lokasi Jemput" : order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" }
       : t
   );
-  const timeline = isCash
-    ? labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid")
-    : labeledTimeline;
+  const timeline = (isQris && order.type === "food")
+    ? labeledTimeline
+    : labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid");
   const currentIdx = timeline.findIndex((t) => t.key === order.status);
   const total = (order.item_cost || 0) + (order.delivery_fee || 0);
 
@@ -388,11 +392,11 @@ export default function OrderTracking() {
                     {order.type === "person" ? "Konfirmasi penumpang sudah naik." : "Konfirmasi paket sudah diambil."}
                   </p>
                   <button
-                    onClick={() => (isCash ? updateStatus("on_the_way") : updateStatus("awaiting_payment"))}
+                    onClick={() => updateStatus("on_the_way")}
                     disabled={acting}
                     className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
                   >
-                    {isCash ? "Mulai Antar ke Tujuan" : "Konfirmasi & Minta Pembayaran"}
+                    Mulai Antar ke Tujuan
                   </button>
                 </div>
               )
@@ -420,7 +424,7 @@ export default function OrderTracking() {
 
             {order.status === "on_the_way" && (
               <button
-                onClick={isCash ? settleCash : () => updateStatus("completed")}
+                onClick={settleOrder}
                 disabled={acting}
                 className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
               >
@@ -435,7 +439,7 @@ export default function OrderTracking() {
             )}
             {order.status === "completed" && (
               <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
-                {isCash ? "Pesanan selesai. Uang tunai diterima, biaya Rp2.000 dipotong dari dompet." : "Pesanan selesai. Penghasilan masuk ke dompet."}
+                {isQris ? "Pesanan selesai. Ongkir masuk ke dompet, fee Rp2.000 ke admin." : "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}
               </p>
             )}
           </div>
@@ -449,7 +453,10 @@ export default function OrderTracking() {
                 <CreditCard className="w-5 h-5 text-primary" /> Scan & Bayar QRIS
               </h3>
               <p className="text-sm text-muted-foreground">
-                Total tagihan <span className="font-semibold text-foreground">{formatRupiah(total)}</span> (makanan {formatRupiah(order.item_cost)} + ongkir {formatRupiah(order.delivery_fee)}).
+                Bayar langsung ke toko via QRIS: <span className="font-semibold text-foreground">{formatRupiah(order.item_cost)}</span>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
               </p>
               {order.qris_photo && (
                 <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
@@ -477,9 +484,7 @@ export default function OrderTracking() {
                 <CreditCard className="w-5 h-5" /> Waktunya Membayar
               </h3>
               <p className="text-white/80 text-sm mb-4">
-                {order.type === "food"
-                  ? `Driver sudah beli makanan. Total tagihan ${formatRupiah(total)} (makanan ${formatRupiah(order.item_cost)} + ongkir ${formatRupiah(order.delivery_fee)}).`
-                  : `Total tagihan ${formatRupiah(order.delivery_fee)} (ongkir antar).`}
+                Total ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
               </p>
               <button
                 onClick={pay}
@@ -487,7 +492,7 @@ export default function OrderTracking() {
                 className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-                Bayar {formatRupiah(total)}
+                Konfirmasi
               </button>
             </div>
           )

@@ -26,6 +26,7 @@ import AdminDashboard from '@/pages/AdminDashboard';
 import AdminDrivers from '@/pages/AdminDrivers';
 import AdminUsers from '@/pages/AdminUsers';
 import AdminOrders from '@/pages/AdminOrders';
+import AdminWithdrawals from '@/pages/AdminWithdrawals';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -73,6 +74,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/driver" element={<AdminDrivers />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/penarikan" element={<AdminWithdrawals />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

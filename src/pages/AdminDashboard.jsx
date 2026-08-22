@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
-import { Users, Bike, Clock, ListOrdered, Loader2, TrendingUp, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Users, Bike, Clock, ListOrdered, Loader2, TrendingUp, AlertCircle, CheckCircle2, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/lib/AuthContext";
+import { formatRupiah } from "@/lib/geo";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const [wallet, setWallet] = useState({ balance: 0, txs: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,6 +37,9 @@ export default function AdminDashboard() {
           totalOrders: orders.length,
           feeRevenue: revenue,
         });
+        const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
+        const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
+        setWallet({ balance: adminBalance, txs: adminTxs });
       } finally {
         setLoading(false);
       }
@@ -85,6 +92,33 @@ export default function AdminDashboard() {
           );
           return c.to ? <Link key={c.label} to={c.to}>{inner}</Link> : <div key={c.label}>{inner}</div>;
         })}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="font-display text-xl font-extrabold mb-1">Dompet Admin</h2>
+        <p className="text-muted-foreground text-sm mb-4">Akumulasi fee Rp2.000 dari setiap pesanan selesai.</p>
+        <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white mb-4">
+          <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
+            <Wallet className="w-4 h-4" /> Saldo Dompet Admin
+          </div>
+          <p className="font-display text-3xl font-extrabold">{formatRupiah(wallet.balance)}</p>
+        </div>
+        <h3 className="font-bold mb-2 text-sm">Rincian Transaksi</h3>
+        <div className="space-y-2">
+          {wallet.txs.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">Belum ada transaksi</p>
+          ) : (
+            wallet.txs.map((t) => (
+              <div key={t.id} className="bg-card rounded-xl border border-border p-3 flex items-center justify-between">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{t.description}</p>
+                  <p className="text-xs text-muted-foreground">{new Date(t.created_date).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                </div>
+                <p className={`font-bold text-sm shrink-0 ${t.type === "credit" ? "text-emerald-600" : "text-red-600"}`}>{t.type === "credit" ? "+" : "-"}{formatRupiah(t.amount)}</p>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </AdminLayout>
   );
