@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Search, Loader2, MapPin } from "lucide-react";
@@ -20,6 +20,16 @@ function ClickHandler({ onPick }) {
       onPick(e.latlng.lat, e.latlng.lng);
     },
   });
+  return null;
+}
+
+function Recenter({ value }) {
+  const map = useMap();
+  useEffect(() => {
+    if (value?.lat != null && value?.lng != null) {
+      map.setView([value.lat, value.lng], 15, { animate: true });
+    }
+  }, [value?.lat, value?.lng]);
   return null;
 }
 
@@ -131,6 +141,7 @@ export default function LocationPicker({ label, value, onChange, accent = "158 6
             attribution='&copy; OpenStreetMap'
           />
           <ClickHandler onPick={pickFromMap} />
+          <Recenter value={value} />
           {value?.lat && (
             <Marker position={[value.lat, value.lng]} icon={pinIcon(accent)} />
           )}
