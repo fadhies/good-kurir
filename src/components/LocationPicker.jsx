@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -28,6 +28,10 @@ export default function LocationPicker({ label, value, onChange, accent = "158 6
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+
+  useEffect(() => {
+    if (value?.address) setQuery(value.address);
+  }, [value?.address]);
 
   const center = value?.lat ? [value.lat, value.lng] : DEFAULT_CENTER;
 

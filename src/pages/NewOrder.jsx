@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
@@ -35,6 +35,37 @@ export default function NewOrder() {
   }, [store, destination]);
 
   const deliveryFee = distance != null ? calcDeliveryFee(distance, mode) : 0;
+
+  // Default lokasi berdasarkan GPS user:
+  // - food: tujuan = lokasi user
+  // - goods/person: lokasi jemput = lokasi user
+  useEffect(() => {
+    let active = true;
+    setStore(null);
+    setDestination(null);
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        let address = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            { headers: { "Accept-Language": "id" } }
+          );
+          const data = await res.json();
+          if (data.display_name) address = data.display_name;
+        } catch {}
+        if (!active) return;
+        const loc = { lat: latitude, lng: longitude, address };
+        if (type === "food") setDestination(loc);
+        else setStore(loc);
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+    return () => { active = false; };
+  }, [type]);
 
   async function handleSubmit() {
     if (!store) {
