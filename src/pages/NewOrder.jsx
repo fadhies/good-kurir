@@ -39,7 +39,7 @@ export default function NewOrder() {
   }, []);
 
   useEffect(() => {
-    if (!cashAvailable && paymentMethod === "cash") setPaymentMethod("gopay");
+    if (!cashAvailable && paymentMethod === "cash") setPaymentMethod("qris");
   }, [cashAvailable, paymentMethod]);
 
   const distance = useMemo(() => {
@@ -193,10 +193,8 @@ export default function NewOrder() {
       {/* Payment method */}
       <div className="mb-6">
         <h3 className="font-bold mb-2 text-sm">Metode Pembayaran</h3>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {[
-            { v: "gopay", l: "GoPay" },
-            { v: "dana", l: "Dana" },
             { v: "qris", l: "QRIS" },
             { v: "cash", l: "Tunai" },
           ].map((o) => {
@@ -316,8 +314,8 @@ export default function NewOrder() {
             )}
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Pembayaran</span>
-              <span className="font-semibold capitalize">
-                {paymentMethod === "cash" ? "Tunai" : paymentMethod}
+              <span className="font-semibold">
+                {paymentMethod === "cash" ? "Tunai" : "QRIS"}
               </span>
             </div>
             <div className="flex justify-between text-sm py-1">

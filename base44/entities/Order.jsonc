@@ -27,8 +27,6 @@
     "payment_method": {
       "type": "string",
       "enum": [
-        "gopay",
-        "dana",
         "qris",
         "cash"
       ],
@@ -97,6 +95,12 @@
       "type": "number"
     },
     "store_bill_note": {
+      "type": "string"
+    },
+    "qris_photo": {
+      "type": "string"
+    },
+    "payment_proof_photo": {
       "type": "string"
     }
   },

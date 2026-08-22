@@ -17,6 +17,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Image } from "@/components/ui/image";
+import PhotoUpload from "@/components/PhotoUpload";
 
 const TIMELINE = [
   { key: "pending_match", label: "Mencari Driver" },
@@ -39,11 +41,18 @@ export default function OrderTracking() {
   const [billNote, setBillNote] = useState("");
   const [acting, setActing] = useState(false);
   const [billConfirm, setBillConfirm] = useState(null);
+  const [qrisPhoto, setQrisPhoto] = useState(null);
+  const [proofPhoto, setProofPhoto] = useState(null);
 
   async function confirmBillAction() {
     const cost = Number(itemCost);
     if (!cost || cost <= 0) {
       toast({ title: "Masukkan nominal bill yang valid", variant: "destructive" });
+      setBillConfirm(null);
+      return;
+    }
+    if (billConfirm === "qris" && !qrisPhoto) {
+      toast({ title: "Unggah foto QRIS dulu", variant: "destructive" });
       setBillConfirm(null);
       return;
     }
@@ -61,8 +70,9 @@ export default function OrderTracking() {
           status: "awaiting_payment",
           item_cost: cost,
           store_bill_note: billNote,
+          qris_photo: qrisPhoto,
         });
-        toast({ title: "Bill dikirim, menunggu pembayaran user" });
+        toast({ title: "QRIS & tagihan dikirim, menunggu pembayaran user" });
       }
       loadOrder();
     } catch (e) {
@@ -135,7 +145,7 @@ export default function OrderTracking() {
   async function pay() {
     setActing(true);
     try {
-      const res = await base44.functions.invoke("completeOrderPayment", { orderId: id });
+      const res = await base44.functions.invoke("completeOrderPayment", { orderId: id, proofUrl: proofPhoto || undefined });
       if (res.data?.success) {
         toast({ title: "Pembayaran berhasil!", description: `Total ${formatRupiah(res.data.total_amount)}` });
         loadOrder();
@@ -185,6 +195,7 @@ export default function OrderTracking() {
   }
 
   const isCash = order.payment_method === "cash";
+  const isQris = order.payment_method === "qris";
   const labeledTimeline = TIMELINE.map((t) =>
     t.key === "at_store"
       ? { ...t, label: order.type === "person" ? "Di Lokasi Jemput" : order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" }
@@ -329,6 +340,14 @@ export default function OrderTracking() {
               order.type === "food" ? (
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">Input total bill dari toko/restoran:</p>
+                  {isQris && (
+                    <PhotoUpload
+                      label="Foto QRIS di resto/toko"
+                      value={qrisPhoto}
+                      onChange={setQrisPhoto}
+                      hint="Ambil foto kode QRIS yang jelas agar user bisa scan."
+                    />
+                  )}
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
                     <input
@@ -355,11 +374,11 @@ export default function OrderTracking() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => setBillConfirm("bill")}
+                      onClick={() => setBillConfirm("qris")}
                       disabled={acting}
                       className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
                     >
-                      Konfirmasi Tagihan
+                      Kirim QRIS & Tagihan
                     </button>
                   )}
                 </div>
@@ -380,13 +399,23 @@ export default function OrderTracking() {
             )}
 
             {order.status === "paid" && (
-              <button
-                onClick={() => updateStatus("on_the_way")}
-                disabled={acting}
-                className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-              >
-                Mulai Antar ke Tujuan
-              </button>
+              <div className="space-y-3">
+                {order.payment_proof_photo && (
+                  <div>
+                    <p className="text-sm font-semibold mb-1.5">Bukti pembayaran user:</p>
+                    <div className="w-full max-w-xs rounded-xl overflow-hidden border border-border bg-secondary">
+                      <Image src={order.payment_proof_photo} fittingType="fit" className="w-full h-auto" />
+                    </div>
+                  </div>
+                )}
+                <button
+                  onClick={() => updateStatus("on_the_way")}
+                  disabled={acting}
+                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                >
+                  Mulai Antar ke Tujuan
+                </button>
+              </div>
             )}
 
             {order.status === "on_the_way" && (
@@ -401,7 +430,7 @@ export default function OrderTracking() {
 
             {order.status === "awaiting_payment" && (
               <p className="text-sm text-muted-foreground text-center py-2">
-                Menunggu pengguna membayar...
+                {isQris ? "Menunggu user scan QRIS & kirim bukti bayar..." : "Menunggu pengguna membayar..."}
               </p>
             )}
             {order.status === "completed" && (
@@ -414,24 +443,54 @@ export default function OrderTracking() {
 
         {/* USER PAY ACTION */}
         {isOwner && order.status === "awaiting_payment" && (
-          <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
-            <h3 className="font-bold mb-1 flex items-center gap-2">
-              <CreditCard className="w-5 h-5" /> Waktunya Membayar
-            </h3>
-            <p className="text-white/80 text-sm mb-4">
-              {order.type === "food"
-                ? `Driver sudah beli makanan. Total tagihan ${formatRupiah(total)} (makanan ${formatRupiah(order.item_cost)} + ongkir ${formatRupiah(order.delivery_fee)}).`
-                : `Total tagihan ${formatRupiah(order.delivery_fee)} (ongkir antar).`}
-            </p>
-            <button
-              onClick={pay}
-              disabled={acting}
-              className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2"
-            >
-              {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-              Bayar {formatRupiah(total)}
-            </button>
-          </div>
+          isQris && order.type === "food" ? (
+            <div className="bg-card rounded-2xl border-2 border-primary/30 p-5 space-y-4">
+              <h3 className="font-bold flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-primary" /> Scan & Bayar QRIS
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Total tagihan <span className="font-semibold text-foreground">{formatRupiah(total)}</span> (makanan {formatRupiah(order.item_cost)} + ongkir {formatRupiah(order.delivery_fee)}).
+              </p>
+              {order.qris_photo && (
+                <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
+                  <Image src={order.qris_photo} fittingType="fit" className="w-full h-auto" />
+                </div>
+              )}
+              <PhotoUpload
+                label="Bukti pembayaran"
+                value={proofPhoto}
+                onChange={setProofPhoto}
+                hint="Scan QRIS di atas, bayar, lalu unggah bukti transfer/pembayaran."
+              />
+              <button
+                onClick={pay}
+                disabled={acting || !proofPhoto}
+                className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                Saya Sudah Bayar, Kirim Bukti
+              </button>
+            </div>
+          ) : (
+            <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
+              <h3 className="font-bold mb-1 flex items-center gap-2">
+                <CreditCard className="w-5 h-5" /> Waktunya Membayar
+              </h3>
+              <p className="text-white/80 text-sm mb-4">
+                {order.type === "food"
+                  ? `Driver sudah beli makanan. Total tagihan ${formatRupiah(total)} (makanan ${formatRupiah(order.item_cost)} + ongkir ${formatRupiah(order.delivery_fee)}).`
+                  : `Total tagihan ${formatRupiah(order.delivery_fee)} (ongkir antar).`}
+              </p>
+              <button
+                onClick={pay}
+                disabled={acting}
+                className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                Bayar {formatRupiah(total)}
+              </button>
+            </div>
+          )
         )}
 
         {isOwner && order.status === "pending_match" && (
@@ -449,13 +508,13 @@ export default function OrderTracking() {
             <AlertDialogTitle>Konfirmasi Tagihan</AlertDialogTitle>
             <AlertDialogDescription>
               {Number(itemCost) > 0
-                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan diminta membayar."}`
+                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan scan QRIS & kirim bukti bayar."}`
                 : "Masukkan nominal bill dulu sebelum konfirmasi."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={acting}>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmBillAction} disabled={acting || !Number(itemCost)}>
+            <AlertDialogAction onClick={confirmBillAction} disabled={acting || !Number(itemCost) || (billConfirm === "qris" && !qrisPhoto)}>
               {acting ? "Memproses..." : "Ya, Konfirmasi"}
             </AlertDialogAction>
           </AlertDialogFooter>

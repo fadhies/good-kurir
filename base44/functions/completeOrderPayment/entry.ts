@@ -8,7 +8,7 @@ export default async function(req) {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { orderId } = body;
+    const { orderId, proofUrl } = body;
     if (!orderId) return Response.json({ error: 'orderId required' }, { status: 400 });
 
     const order = await base44.entities.Order.get(orderId);
@@ -64,7 +64,8 @@ export default async function(req) {
       app_fee: appFee,
       admin_fee: adminFee,
       driver_earning: driverEarning,
-      total_amount: total
+      total_amount: total,
+      payment_proof_photo: proofUrl || null
     });
 
     if (order.driver_id && driverEarning > 0) {
