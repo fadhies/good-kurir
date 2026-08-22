@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
-import LocationPicker from "@/components/LocationPicker";
+import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
 import { Bike, Loader2, CheckCircle2, MapPin, Crosshair, CreditCard, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";

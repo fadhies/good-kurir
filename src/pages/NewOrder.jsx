@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
-import LocationPicker from "@/components/LocationPicker";
+import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
 import { haversineKm, calcDeliveryFee, formatRupiah } from "@/lib/geo";
 import { Bike, Package, User, Loader2, ArrowLeft, ShoppingBag, MapPin, FileText, Route } from "lucide-react";
