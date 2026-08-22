@@ -1,14 +1,30 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Users, Search } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2, Users, Search, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function AdminUsers() {
+  const { toast } = useToast();
   const [users, setUsers] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("admin");
+  const [inviting, setInviting] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -28,6 +44,25 @@ export default function AdminUsers() {
 
   const driverIds = useMemo(() => new Set(drivers.map((d) => d.user_id)), [drivers]);
 
+  async function handleInvite() {
+    const email = inviteEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ title: "Email tidak valid", variant: "destructive" });
+      return;
+    }
+    setInviting(true);
+    try {
+      await base44.users.inviteUser(email, inviteRole);
+      toast({ title: "Undangan terkirim", description: `Link pendaftaran admin dikirim ke ${email}.` });
+      setInviteOpen(false);
+      setInviteEmail("");
+    } catch (e) {
+      toast({ title: "Gagal mengundang", description: e.message, variant: "destructive" });
+    } finally {
+      setInviting(false);
+    }
+  }
+
   const filtered = useMemo(() => {
     if (!search) return users;
     const q = search.toLowerCase();
@@ -45,8 +80,15 @@ export default function AdminUsers() {
 
   return (
     <AdminLayout>
-      <h1 className="font-display text-2xl font-extrabold mb-1">Pengguna</h1>
-      <p className="text-muted-foreground text-sm mb-6">Daftar semua akun terdaftar di platform.</p>
+      <div className="flex items-start justify-between gap-3 mb-6">
+        <div>
+          <h1 className="font-display text-2xl font-extrabold mb-1">Pengguna</h1>
+          <p className="text-muted-foreground text-sm">Daftar semua akun terdaftar di platform.</p>
+        </div>
+        <Button onClick={() => { setInviteRole("admin"); setInviteOpen(true); }} className="shrink-0">
+          <UserPlus className="w-4 h-4 mr-1.5" /> Undang Admin
+        </Button>
+      </div>
 
       <div className="flex items-center gap-2 rounded-xl border border-input bg-card px-3 py-2 mb-4 max-w-sm">
         <Search className="w-4 h-4 text-muted-foreground" />
@@ -88,6 +130,31 @@ export default function AdminUsers() {
           ))}
         </div>
       )}
+
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Undang Admin Baru</DialogTitle>
+            <DialogDescription>
+              Masukkan email. Penerima akan dikirangi link pendaftaran; setelah selesai mendaftar, akun otomatis jadi admin.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            type="email"
+            placeholder="admin@email.com"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            disabled={inviting}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInviteOpen(false)} disabled={inviting}>Batal</Button>
+            <Button onClick={handleInvite} disabled={inviting || !inviteEmail.trim()}>
+              {inviting ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
+              Kirim Undangan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
