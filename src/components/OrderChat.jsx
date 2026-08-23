@@ -26,7 +26,8 @@ export default function OrderChat({ order }) {
     const unsub = base44.entities.ChatMessage.subscribe(() => {
       load();
     });
-    return unsub;
+    const poll = setInterval(load, 3000);
+    return () => { unsub(); clearInterval(poll); };
   }, [order.id]);
 
   useEffect(() => {
