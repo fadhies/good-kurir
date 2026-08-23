@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import PhotoUpload from "@/components/PhotoUpload";
+import OrderChat from "@/components/OrderChat";
 import { reverseGeocodePoi } from "@/lib/googleMaps";
 
 const TIMELINE = [
@@ -375,6 +376,9 @@ export default function OrderTracking() {
           </div>
         </div>
 
+        {/* CHAT */}
+        <OrderChat order={order} />
+
         {/* DRIVER ACTIONS */}
         {isDriver && (
           <div className="bg-card rounded-2xl border-2 border-primary/30 p-5">
@@ -467,13 +471,9 @@ export default function OrderTracking() {
             )}
 
             {order.status === "on_the_way" && (
-              <button
-                onClick={settleOrder}
-                disabled={acting}
-                className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-              >
-                Selesaikan Pesanan
-              </button>
+              <p className="text-sm text-muted-foreground text-center py-2">
+                Menunggu pemesan mengonfirmasi pesanan sudah diterima...
+              </p>
             )}
 
             {order.status === "awaiting_payment" && (
@@ -548,6 +548,21 @@ export default function OrderTracking() {
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
             <Loader2 className="w-6 h-6 animate-spin text-amber-600 mx-auto mb-2" />
             <p className="text-sm text-amber-700 font-medium">Menunggu driver menerima pesanan Anda...</p>
+          </div>
+        )}
+
+        {isOwner && order.status === "on_the_way" && (
+          <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
+            <h3 className="font-bold mb-1">Pesanan Sudah Sampai?</h3>
+            <p className="text-white/80 text-sm mb-4">Konfirmasi bahwa pesanan sudah Anda terima untuk menyelesaikan order.</p>
+            <button
+              onClick={settleOrder}
+              disabled={acting}
+              className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+              Selesaikan Pesanan
+            </button>
           </div>
         )}
       </div>
