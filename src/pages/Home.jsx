@@ -113,7 +113,7 @@ export default function Home() {
       {role === "user" && (
         <div className="mt-8 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold text-lg">Mau jadi driver KurirTa?</h3>
+            <h3 className="font-bold text-lg">Mau jadi driver Ojol Kita?</h3>
             <p className="text-sm text-muted-foreground">Daftar dan mulai dapat penghasilan hari ini.</p>
           </div>
           <Link
