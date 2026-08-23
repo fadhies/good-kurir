@@ -33,6 +33,7 @@ export default function DriverDashboard() {
   const [locModal, setLocModal] = useState(false);
   const [tempLoc, setTempLoc] = useState(null);
   const [available, setAvailable] = useState([]);
+  const [totalTrips, setTotalTrips] = useState(0);
   const [acceptTarget, setAcceptTarget] = useState(null);
   const [accepting, setAccepting] = useState(false);
   const seenAvailableIdsRef = useRef(new Set());
@@ -46,6 +47,15 @@ export default function DriverDashboard() {
       setProfile(null);
     } finally {
       setChecking(false);
+    }
+  }
+
+  async function loadTotalTrips() {
+    try {
+      const all = await base44.entities.Order.filter({ driver_id: user.id }, "-created_date", 500);
+      setTotalTrips(all.length);
+    } catch {
+      setTotalTrips(0);
     }
   }
 
@@ -126,9 +136,10 @@ export default function DriverDashboard() {
   }, []);
 
   useEffect(() => {
+    loadTotalTrips();
     loadOrders();
     loadAvailable();
-    const unsub = base44.entities.Order.subscribe(() => { loadOrders(); loadAvailable(); });
+    const unsub = base44.entities.Order.subscribe(() => { loadTotalTrips(); loadOrders(); loadAvailable(); });
     return unsub;
   }, [profile]);
 
@@ -218,7 +229,7 @@ export default function DriverDashboard() {
 
   return (
     <Layout>
-      <PullToRefresh onRefresh={async () => { await loadProfile(); await loadOrders(); }}>
+      <PullToRefresh onRefresh={async () => { await loadProfile(); await loadTotalTrips(); await loadOrders(); }}>
       <h1 className="font-display text-2xl font-extrabold mb-1">Dashboard Driver</h1>
       <p className="text-muted-foreground text-sm mb-6">Kelola ketersediaan & lihat pesanan masuk.</p>
 
@@ -261,7 +272,7 @@ export default function DriverDashboard() {
         </div>
         <div className="grid grid-cols-3 gap-3 mt-4">
           <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-white/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold ${profile.is_online ? "text-white" : ""}`}>{profile.total_trips || 0}</p>
+            <p className={`text-lg font-bold ${profile.is_online ? "text-white" : ""}`}>{totalTrips}</p>
             <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Trip</p>
           </div>
           <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-white/15" : "bg-secondary"}`}>

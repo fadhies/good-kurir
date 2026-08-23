@@ -106,6 +106,9 @@
     "store_qris_photo": {
       "type": "string"
     },
+    "user_rating": {
+      "type": "number"
+    },
     "midtrans_paid": {
       "type": "boolean",
       "default": false

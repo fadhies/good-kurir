@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import PhotoUpload from "@/components/PhotoUpload";
 import OrderChat from "@/components/OrderChat";
+import DriverRating from "@/components/DriverRating";
 import { reverseGeocodePoi } from "@/lib/googleMaps";
 
 const TIMELINE = [
@@ -249,9 +250,12 @@ export default function OrderTracking() {
       if (res.data?.success) {
         toast({
           title: "Pesanan selesai",
-          description: isQris
-            ? `Ongkir ${formatRupiah(order.delivery_fee)} masuk ke dompet, fee Rp2.000 ke admin`
-            : "Fee Rp2.000 dipotong ke admin",
+          description:
+            isQris && order.store_qris_photo
+              ? "Ongkir dibayar tunai ke driver"
+              : isQris
+              ? "Tagihan toko + ongkir masuk ke dompet driver, dipotong fee Rp2.000"
+              : "Fee Rp2.000 dipotong ke admin",
         });
         loadOrder();
       } else {
@@ -560,7 +564,11 @@ export default function OrderTracking() {
             )}
             {order.status === "completed" && (
               <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
-                {isQris ? "Pesanan selesai. Ongkir masuk ke dompet, fee Rp2.000 ke admin." : "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}
+                {isQris && order.store_qris_photo
+                  ? "Pesanan selesai. Ongkir diterima tunai dari pelanggan."
+                  : isQris
+                  ? "Pesanan selesai. Tagihan toko + ongkir masuk ke dompet, dipotong fee Rp2.000."
+                  : "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}
               </p>
             )}
           </div>
@@ -574,12 +582,14 @@ export default function OrderTracking() {
                 <CreditCard className="w-5 h-5 text-primary" /> Bayar Tagihan Toko
               </h3>
               <p className="text-sm text-muted-foreground">
-                Total tagihan: <span className="font-semibold text-foreground">{formatRupiah(order.item_cost)}</span>
+                Total tagihan: <span className="font-semibold text-foreground">
+                  {formatRupiah(order.store_qris_photo ? order.item_cost : (order.item_cost + order.delivery_fee))}
+                </span>
               </p>
               {order.store_qris_photo ? (
                 <>
                   <p className="text-xs text-muted-foreground">
-                    Scan QRIS toko di bawah, bayar sesuai nominal langsung ke toko. Pastikan nama merchant sesuai.
+                    Scan QRIS toko di bawah, bayar tagihan toko langsung ke toko. Ongkir {formatRupiah(order.delivery_fee)} dibayar tunai ke driver saat pesanan tiba.
                   </p>
                   <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
                     <Image src={order.store_qris_photo} fittingType="fit" className="w-full h-auto" />
@@ -588,7 +598,7 @@ export default function OrderTracking() {
               ) : (
                 <>
                   <p className="text-xs text-muted-foreground">
-                    Scan QRIS di bawah, bayar sesuai nominal, lalu unggah bukti. Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
+                    Scan QRIS di bawah, bayar tagihan toko + ongkir. Dana masuk ke dompet driver (tagihan toko + ongkir − biaya admin).
                   </p>
                   {ownerQris ? (
                     <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
@@ -654,6 +664,10 @@ export default function OrderTracking() {
               Selesaikan Pesanan
             </button>
           </div>
+        )}
+
+        {isOwner && order.status === "completed" && order.driver_id && (
+          <DriverRating order={order} onRated={loadOrder} />
         )}
       </div>
 
