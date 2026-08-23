@@ -23,8 +23,8 @@ export default function OrderChat({ order }) {
 
   useEffect(() => {
     load();
-    const unsub = base44.entities.ChatMessage.subscribe((event) => {
-      if (event?.data?.order_id === order.id) load();
+    const unsub = base44.entities.ChatMessage.subscribe(() => {
+      load();
     });
     return unsub;
   }, [order.id]);
@@ -38,7 +38,16 @@ export default function OrderChat({ order }) {
     if (!t) return;
     setSending(true);
     try {
-      await base44.functions.invoke("sendChatMessage", { orderId: order.id, text: t });
+      const participants = [order.created_by_id, order.driver_id].filter(Boolean);
+      const senderRole = user?.role === "admin" ? "admin" : (order.created_by_id === user?.id ? "user" : "driver");
+      await base44.entities.ChatMessage.create({
+        order_id: order.id,
+        sender_id: user.id,
+        sender_name: user.full_name || user.email,
+        sender_role: senderRole,
+        text: t,
+        participants,
+      });
       setText("");
       load();
     } catch (e) {
