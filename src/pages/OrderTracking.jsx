@@ -47,7 +47,7 @@ export default function OrderTracking() {
   const [proofPhoto, setProofPhoto] = useState(null);
   const [ownerQris, setOwnerQris] = useState(null);
   const [storeQrisPhoto, setStoreQrisPhoto] = useState(null);
-  const [directMode, setDirectMode] = useState(false);
+  const [billChoice, setBillChoice] = useState(null);
   const prevStatusRef = useRef(null);
   const selfUpdateRef = useRef(false);
 
@@ -126,7 +126,7 @@ export default function OrderTracking() {
         store_qris_photo: storeQrisPhoto,
       });
       toast({ title: "Tagihan dikirim", description: "User akan bayar langsung ke toko via QRIS." });
-      setDirectMode(false);
+      setBillChoice(null);
       loadOrder();
     } catch (e) {
       toast({ title: "Gagal", description: e.message, variant: "destructive" });
@@ -458,20 +458,37 @@ export default function OrderTracking() {
                   ) : (
                     <div className="space-y-2">
                       <button
-                        onClick={() => setBillConfirm("qris")}
+                        onClick={() => { setBillChoice("talangi"); setStoreQrisPhoto(null); }}
                         disabled={acting}
-                        className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                        className={`w-full font-semibold py-3 rounded-xl border transition-colors disabled:opacity-60 ${
+                          billChoice === "talangi"
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-border hover:opacity-90"
+                        }`}
                       >
-                        Saya Talangi (User Bayar ke QRIS Pemilik)
+                        Saya Talangi
                       </button>
                       <button
-                        onClick={() => setDirectMode(true)}
-                        disabled={acting || directMode}
-                        className="w-full bg-secondary text-secondary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 border border-border"
+                        onClick={() => setBillChoice("direct")}
+                        disabled={acting}
+                        className={`w-full font-semibold py-3 rounded-xl border transition-colors disabled:opacity-60 ${
+                          billChoice === "direct"
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-border hover:opacity-90"
+                        }`}
                       >
                         Pelanggan Bayar Langsung ke Toko
                       </button>
-                      {directMode && (
+                      {billChoice === "talangi" && (
+                        <button
+                          onClick={() => setBillConfirm("qris")}
+                          disabled={acting || !Number(itemCost)}
+                          className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                        >
+                          Kirim Tagihan
+                        </button>
+                      )}
+                      {billChoice === "direct" && (
                         <div className="space-y-3 pt-1">
                           <p className="text-xs text-muted-foreground">
                             Foto QRIS toko/resto untuk dikirim ke pelanggan. Pastikan nama merchant terlihat jelas.
