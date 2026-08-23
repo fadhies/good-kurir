@@ -46,6 +46,8 @@ export default function OrderTracking() {
   const [qrisPhoto, setQrisPhoto] = useState(null);
   const [proofPhoto, setProofPhoto] = useState(null);
   const [ownerQris, setOwnerQris] = useState(null);
+  const [storeQrisPhoto, setStoreQrisPhoto] = useState(null);
+  const [directMode, setDirectMode] = useState(false);
   const prevStatusRef = useRef(null);
   const selfUpdateRef = useRef(false);
 
@@ -101,6 +103,35 @@ export default function OrderTracking() {
     } finally {
       setActing(false);
       setBillConfirm(null);
+    }
+  }
+
+  async function confirmDirectBill() {
+    const cost = Number(itemCost);
+    if (!cost || cost <= 0) {
+      toast({ title: "Masukkan nominal bill yang valid", variant: "destructive" });
+      return;
+    }
+    if (!storeQrisPhoto) {
+      toast({ title: "Foto QRIS toko dulu", variant: "destructive" });
+      return;
+    }
+    setActing(true);
+    try {
+      markSelfUpdate();
+      await base44.entities.Order.update(id, {
+        status: "awaiting_payment",
+        item_cost: cost,
+        store_bill_note: billNote,
+        store_qris_photo: storeQrisPhoto,
+      });
+      toast({ title: "Tagihan dikirim", description: "User akan bayar langsung ke toko via QRIS." });
+      setDirectMode(false);
+      loadOrder();
+    } catch (e) {
+      toast({ title: "Gagal", description: e.message, variant: "destructive" });
+    } finally {
+      setActing(false);
     }
   }
 
@@ -425,13 +456,42 @@ export default function OrderTracking() {
                       Konfirmasi & Mulai Antar
                     </button>
                   ) : (
-                    <button
-                      onClick={() => setBillConfirm("qris")}
-                      disabled={acting}
-                      className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                    >
-                      Kirim Tagihan
-                    </button>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setBillConfirm("qris")}
+                        disabled={acting}
+                        className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                      >
+                        Saya Talangi (User Bayar ke QRIS Pemilik)
+                      </button>
+                      <button
+                        onClick={() => setDirectMode(true)}
+                        disabled={acting || directMode}
+                        className="w-full bg-secondary text-secondary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 border border-border"
+                      >
+                        Pelanggan Bayar Langsung ke Toko
+                      </button>
+                      {directMode && (
+                        <div className="space-y-3 pt-1">
+                          <p className="text-xs text-muted-foreground">
+                            Foto QRIS toko/resto untuk dikirim ke pelanggan. Pastikan nama merchant terlihat jelas.
+                          </p>
+                          <PhotoUpload
+                            label="Foto QRIS Toko/Resto"
+                            value={storeQrisPhoto}
+                            onChange={setStoreQrisPhoto}
+                            hint="Pastikan QRIS menampilkan nama merchant toko."
+                          />
+                          <button
+                            onClick={confirmDirectBill}
+                            disabled={acting || !storeQrisPhoto}
+                            className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
+                          >
+                            Kirim Tagihan ke User
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               ) : (
@@ -499,15 +559,28 @@ export default function OrderTracking() {
               <p className="text-sm text-muted-foreground">
                 Total tagihan: <span className="font-semibold text-foreground">{formatRupiah(order.item_cost)}</span>
               </p>
-              <p className="text-xs text-muted-foreground">
-                Scan QRIS di bawah, bayar sesuai nominal, lalu unggah bukti. Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
-              </p>
-              {ownerQris ? (
-                <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
-                  <Image src={ownerQris} fittingType="fit" className="w-full h-auto" />
-                </div>
+              {order.store_qris_photo ? (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    Scan QRIS toko di bawah, bayar sesuai nominal langsung ke toko. Pastikan nama merchant sesuai.
+                  </p>
+                  <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
+                    <Image src={order.store_qris_photo} fittingType="fit" className="w-full h-auto" />
+                  </div>
+                </>
               ) : (
-                <p className="text-sm text-amber-600 text-center">QRIS pemilik belum diatur admin.</p>
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    Scan QRIS di bawah, bayar sesuai nominal, lalu unggah bukti. Ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
+                  </p>
+                  {ownerQris ? (
+                    <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
+                      <Image src={ownerQris} fittingType="fit" className="w-full h-auto" />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-amber-600 text-center">QRIS pemilik belum diatur admin.</p>
+                  )}
+                </>
               )}
               <PhotoUpload
                 label="Bukti pembayaran"

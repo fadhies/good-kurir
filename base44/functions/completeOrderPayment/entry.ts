@@ -44,8 +44,9 @@ export default async function(req) {
 
     if (order.driver_id) {
       if (method === 'qris') {
-        // Escrow: user paid item_cost ke QRIS pemilik, driver bayar toko tunai → reimburse
-        if (order.type === 'food' && (order.item_cost || 0) > 0) {
+        // Escrow: user paid item_cost ke QRIS pemilik, driver bayar toko tunai → reimburse.
+        // Jika user bayar langsung ke toko (store_qris_photo terisi), driver tidak menalangi → tidak perlu reimburse.
+        if (order.type === 'food' && (order.item_cost || 0) > 0 && !order.store_qris_photo) {
           await base44.asServiceRole.entities.WalletTransaction.create({
             user_id: order.driver_id,
             type: 'credit',
