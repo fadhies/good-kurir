@@ -69,7 +69,7 @@ export default function AdminLayout({ children }) {
       <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 glass-card border-b border-border flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-primary" />
-          <span className="font-display font-extrabold">Admin KurirTa</span>
+          <span className="font-display font-extrabold">Admin Ojol Kita</span>
         </div>
         <button onClick={logout} className="text-muted-foreground"><LogOut className="w-5 h-5" /></button>
       </div>
