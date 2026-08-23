@@ -119,6 +119,8 @@ export default function NewOrder() {
 
       toast({ title: "Pesanan dibuat", description: "Menunggu driver menerima pesanan Anda..." });
       navigate(`/pesanan/${order.id}`);
+      // Beri tahu driver yang online: ada orderan baru
+      base44.functions.invoke("notifyNewOrder", { orderId: order.id }).catch(() => {});
     } catch (e) {
       toast({ title: "Gagal membuat pesanan", description: e.message, variant: "destructive" });
     } finally {

@@ -5,6 +5,7 @@ import { useIsDriver } from "@/hooks/useIsDriver";
 import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";
+import NotificationBell from "@/components/NotificationBell";
 
 const USER_ITEMS = [
   { to: "/", label: "Beranda", icon: Home },
@@ -76,6 +77,7 @@ export default function Layout({ children }) {
                 {role === "driver" ? "Driver" : role === "admin" ? "Admin" : "User"}
               </span>
             </div>
+            <NotificationBell />
             <AccountDeletionDialog />
             <button
               onClick={handleLogout}

@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { haversineKm } from '../../shared/geo.ts';
 import { walletBalancesByUser } from '../../shared/wallet.ts';
+import { createNotification } from '../../shared/notify.ts';
 
 export default async function(req) {
   try {
@@ -68,6 +69,15 @@ export default async function(req) {
     if (updated.driver_id !== user.id) {
       return Response.json({ error: 'Pesanan sudah diambil driver lain' }, { status: 409 });
     }
+
+    // Notifikasi ke pemilik pesanan: driver menerima pesanan
+    await createNotification(base44, {
+      user_id: order.created_by_id,
+      type: 'order_accepted',
+      title: 'Driver menerima pesanan Anda',
+      body: 'Driver sedang menuju lokasi.',
+      order_id: orderId,
+    });
 
     return Response.json({ success: true, driver_id: user.id, distance_km: distance });
   } catch (error) {

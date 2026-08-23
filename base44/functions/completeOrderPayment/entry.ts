@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { createNotification } from '../../shared/notify.ts';
 
 const ADMIN_FEE = 2000;
 
@@ -80,6 +81,24 @@ export default async function(req) {
         type: 'credit',
         amount: ADMIN_FEE,
         description: `Fee admin dari order #${String(orderId).slice(-6)}`,
+        order_id: orderId,
+      });
+    }
+
+    // Notifikasi ke pemilik & driver: pesanan selesai
+    await createNotification(base44, {
+      user_id: order.created_by_id,
+      type: 'order_completed',
+      title: 'Pesanan selesai',
+      body: 'Pesanan Anda telah selesai. Terima kasih!',
+      order_id: orderId,
+    });
+    if (order.driver_id) {
+      await createNotification(base44, {
+        user_id: order.driver_id,
+        type: 'order_completed',
+        title: 'Pesanan selesai',
+        body: 'Ongkir masuk ke dompet Anda.',
         order_id: orderId,
       });
     }

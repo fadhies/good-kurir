@@ -73,6 +73,15 @@ export default function ChatNotificationListener() {
             ),
           });
           if (navigator.vibrate) navigator.vibrate(100);
+          // Simpan ke pusat notifikasi (lonceng)
+          base44.entities.Notification.create({
+            user_id: user.id,
+            type: "new_message",
+            title: `💬 Pesan dari ${senderLabel}`,
+            body: preview || "Pesan baru",
+            order_id: m.order_id,
+            is_read: false,
+          }).catch(() => {});
         });
         lastSeenDate.current = latestDate;
       } catch (e) {
