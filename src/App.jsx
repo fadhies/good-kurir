@@ -27,6 +27,7 @@ import AdminDrivers from '@/pages/AdminDrivers';
 import AdminUsers from '@/pages/AdminUsers';
 import AdminOrders from '@/pages/AdminOrders';
 import AdminWithdrawals from '@/pages/AdminWithdrawals';
+import ChatNotificationListener from '@/components/ChatNotificationListener';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
     >
+    <ChatNotificationListener />
     <Routes location={location}>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
