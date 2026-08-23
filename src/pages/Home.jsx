@@ -66,22 +66,24 @@ export default function Home() {
       {/* Services */}
       <div className="mt-5">
         <h2 className="font-display text-lg font-bold mb-3">Pilih Layanan</h2>
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 gap-3">
           {SERVICES.map((s) => {
             const Icon = s.icon;
             return (
               <button
                 key={s.key}
                 onClick={() => navigate(`/pesan?type=${s.key}`)}
-                className="group text-left bg-card rounded-2xl p-5 border border-border hover:border-primary/40 hover:shadow-lg transition-all"
+                className="group text-left bg-card rounded-xl p-3 border border-border hover:border-primary/40 hover:shadow-lg transition-all flex items-center gap-3 sm:flex-col sm:items-start"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md mb-4`}>
-                  <Icon className="w-6 h-6 text-white" />
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md sm:mb-2 shrink-0`}>
+                  <Icon className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-bold text-lg">{s.title}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{s.desc}</p>
-                <div className="mt-4 inline-flex items-center gap-1 text-primary text-sm font-semibold group-hover:gap-2 transition-all">
-                  Pesan <ArrowRight className="w-4 h-4" />
+                <div className="min-w-0">
+                  <h3 className="font-bold text-base leading-tight">{s.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 sm:line-clamp-none">{s.desc}</p>
+                  <div className="mt-1 sm:mt-2 inline-flex items-center gap-1 text-primary text-xs font-semibold group-hover:gap-2 transition-all">
+                    Pesan <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </button>
             );
