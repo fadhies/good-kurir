@@ -40,7 +40,7 @@ export default function OrderChat({ order }) {
     setSending(true);
     try {
       const participants = [order.created_by_id, order.driver_id].filter(Boolean);
-      const senderRole = user?.role === "admin" ? "admin" : (order.created_by_id === user?.id ? "user" : "driver");
+      const senderRole = order.created_by_id === user?.id ? "user" : (order.driver_id === user?.id ? "driver" : "admin");
       await base44.entities.ChatMessage.create({
         order_id: order.id,
         sender_id: user.id,

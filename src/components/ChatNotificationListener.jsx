@@ -56,7 +56,7 @@ export default function ChatNotificationListener() {
               ? "Driver"
               : m.sender_role === "admin"
               ? "Admin"
-              : "Pengguna";
+              : "Pelanggan";
           const preview =
             m.text && m.text.length > 60 ? m.text.slice(0, 60) + "…" : m.text;
           toast({
