@@ -106,7 +106,7 @@ export default function AdminDashboard() {
         {cards.map((c) => {
           const Icon = c.icon;
           const inner =
-          <div className="bg-card border border-border p-5 hover:shadow-md transition-shadow rounded-1xl">
+          <div className="bg-card border border-border p-5 hover:shadow-md transition-shadow rounded-2xl">
               <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center mb-3 shadow-md`}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
