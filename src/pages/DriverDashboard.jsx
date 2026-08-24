@@ -117,6 +117,7 @@ export default function DriverDashboard() {
       if (res.data?.success) {
         toast({ title: "Pesanan diterima!", description: "Buka detail untuk lanjut." });
         setAcceptTarget(null);
+        await loadTotalTrips();
         await loadOrders();
         await loadAvailable();
       } else {
@@ -139,8 +140,12 @@ export default function DriverDashboard() {
     loadTotalTrips();
     loadOrders();
     loadAvailable();
-    const unsub = base44.entities.Order.subscribe(() => { loadTotalTrips(); loadOrders(); loadAvailable(); });
-    return unsub;
+    let timer;
+    const unsub = base44.entities.Order.subscribe(() => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600);
+    });
+    return () => { unsub(); if (timer) clearTimeout(timer); };
   }, [profile]);
 
   async function toggleOnline() {

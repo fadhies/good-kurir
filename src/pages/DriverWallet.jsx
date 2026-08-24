@@ -26,8 +26,12 @@ export default function DriverWallet() {
 
   useEffect(() => {
     load();
-    const unsub = base44.entities.WalletTransaction.subscribe(() => load());
-    return unsub;
+    let timer;
+    const unsub = base44.entities.WalletTransaction.subscribe(() => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => load(), 600);
+    });
+    return () => { unsub(); if (timer) clearTimeout(timer); };
   }, []);
 
   return (
