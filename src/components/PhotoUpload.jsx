@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
 import { Upload, Loader2, X } from "lucide-react";
+import { compressImage } from "@/lib/compressImage";
 
 export default function PhotoUpload({ label, value, onChange, hint }) {
   const [uploading, setUploading] = useState(false);
@@ -11,7 +12,8 @@ export default function PhotoUpload({ label, value, onChange, hint }) {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const compressed = await compressImage(file);
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: compressed });
       onChange(file_url);
     } catch {
       // ignore

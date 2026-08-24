@@ -7,6 +7,7 @@ import { base44 } from "@/api/base44Client";
 import { Bike, Loader2, CheckCircle2, MapPin, Crosshair, CreditCard, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
+import { compressImage } from "@/lib/compressImage";
 
 export default function BecomeDriver() {
   const { user } = useAuth();
@@ -25,7 +26,8 @@ export default function BecomeDriver() {
     if (!file) return;
     setUploading(key);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const compressed = await compressImage(file);
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: compressed });
       setter(file_url);
     } catch (e) {
       toast({ title: "Gagal upload", description: e.message, variant: "destructive" });
