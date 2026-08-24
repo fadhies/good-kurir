@@ -20,14 +20,14 @@ export default function AdminDashboard() {
     async function load() {
       try {
         const [users, drivers, orders, txs] = await Promise.all([
-          base44.entities.User.list(),
-          base44.entities.DriverProfile.list(),
-          base44.entities.Order.list("-created_date", 100),
-          base44.entities.WalletTransaction.list("-created_date", 100),
-        ]);
+        base44.entities.User.list(),
+        base44.entities.DriverProfile.list(),
+        base44.entities.Order.list("-created_date", 100),
+        base44.entities.WalletTransaction.list("-created_date", 100)]
+        );
         const pending = drivers.filter((d) => d.verification_status === "pending");
         const active = orders.filter((o) =>
-          ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"].includes(o.status)
+        ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"].includes(o.status)
         );
         const completed = orders.filter((o) => o.status === "completed");
         const revenue = txs.filter((t) => t.type === "debit").reduce((s, t) => s + (t.amount || 0), 0);
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
           activeOrders: active.length,
           completedOrders: completed.length,
           totalOrders: orders.length,
-          feeRevenue: revenue,
+          feeRevenue: revenue
         });
         const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
         const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
@@ -75,45 +75,45 @@ export default function AdminDashboard() {
     return (
       <AdminLayout>
         <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
-      </AdminLayout>
-    );
+      </AdminLayout>);
+
   }
 
   const cards = [
-    { label: "Total Pengguna", value: stats.users, icon: Users, color: "from-sky-500 to-indigo-500" },
-    { label: "Driver Disetujui", value: stats.approved, icon: CheckCircle2, color: "from-emerald-500 to-teal-500" },
-    { label: "Menunggu Verifikasi", value: stats.pending, icon: AlertCircle, color: "from-amber-500 to-orange-500", to: "/admin/driver" },
-    { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-cyan-500 to-blue-500" },
-    { label: "Total Pesanan", value: stats.totalOrders, icon: ListOrdered, color: "from-violet-500 to-purple-500" },
-    { label: "Pendapatan Biaya Layanan", value: `Rp ${stats.feeRevenue.toLocaleString("id-ID")}`, icon: TrendingUp, color: "from-rose-500 to-pink-500" },
-  ];
+  { label: "Total Pengguna", value: stats.users, icon: Users, color: "from-sky-500 to-indigo-500" },
+  { label: "Driver Disetujui", value: stats.approved, icon: CheckCircle2, color: "from-emerald-500 to-teal-500" },
+  { label: "Menunggu Verifikasi", value: stats.pending, icon: AlertCircle, color: "from-amber-500 to-orange-500", to: "/admin/driver" },
+  { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-cyan-500 to-blue-500" },
+  { label: "Total Pesanan", value: stats.totalOrders, icon: ListOrdered, color: "from-violet-500 to-purple-500" },
+  { label: "Pendapatan Biaya Layanan", value: `Rp ${stats.feeRevenue.toLocaleString("id-ID")}`, icon: TrendingUp, color: "from-rose-500 to-pink-500" }];
+
 
   return (
     <AdminLayout>
       <h1 className="font-display text-2xl font-extrabold mb-1">Ringkasan</h1>
       <p className="text-muted-foreground text-sm mb-6">Pantau aktivitas platform Ojol Kita.</p>
 
-      {stats.pending > 0 && (
-        <Link
-          to="/admin/driver"
-          className="block mb-6 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors"
-        >
+      {stats.pending > 0 &&
+      <Link
+        to="/admin/driver"
+        className="block mb-6 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors">
+        
           {stats.pending} pendaftar driver menunggu verifikasi Anda →
         </Link>
-      )}
+      }
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {cards.map((c) => {
           const Icon = c.icon;
-          const inner = (
-            <div className="bg-card rounded-2xl border border-border p-5 hover:shadow-md transition-shadow">
+          const inner =
+          <div className="bg-card border border-border p-5 hover:shadow-md transition-shadow rounded-1xl">
               <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center mb-3 shadow-md`}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
               <p className="text-2xl font-extrabold">{c.value}</p>
               <p className="text-sm text-muted-foreground">{c.label}</p>
-            </div>
-          );
+            </div>;
+
           return c.to ? <Link key={c.label} to={c.to}>{inner}</Link> : <div key={c.label}>{inner}</div>;
         })}
       </div>
@@ -128,13 +128,13 @@ export default function AdminDashboard() {
             label="Gambar QRIS"
             value={qrisPhoto}
             onChange={setQrisPhoto}
-            hint="Unggah screenshot/foto QRIS dari e-wallet/bank Anda."
-          />
+            hint="Unggah screenshot/foto QRIS dari e-wallet/bank Anda." />
+          
           <button
             onClick={saveQris}
             disabled={savingQris || !qrisPhoto}
-            className="w-full mt-3 bg-primary text-primary-foreground font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-60"
-          >
+            className="w-full mt-3 bg-primary text-primary-foreground font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-60">
+            
             {savingQris ? "Menyimpan..." : "Simpan QRIS"}
           </button>
         </div>
@@ -151,21 +151,21 @@ export default function AdminDashboard() {
         </div>
         <h3 className="font-bold mb-2 text-sm">Rincian Transaksi</h3>
         <div className="space-y-2">
-          {wallet.txs.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">Belum ada transaksi</p>
-          ) : (
-            wallet.txs.map((t) => (
-              <div key={t.id} className="bg-card rounded-xl border border-border p-3 flex items-center justify-between">
+          {wallet.txs.length === 0 ?
+          <p className="text-sm text-muted-foreground text-center py-6">Belum ada transaksi</p> :
+
+          wallet.txs.map((t) =>
+          <div key={t.id} className="bg-card rounded-xl border border-border p-3 flex items-center justify-between">
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{t.description}</p>
                   <p className="text-xs text-muted-foreground">{new Date(t.created_date).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                 </div>
                 <p className={`font-bold text-sm shrink-0 ${t.type === "credit" ? "text-emerald-600" : "text-red-600"}`}>{t.type === "credit" ? "+" : "-"}{formatRupiah(t.amount)}</p>
               </div>
-            ))
-          )}
+          )
+          }
         </div>
       </div>
-    </AdminLayout>
-  );
+    </AdminLayout>);
+
 }
