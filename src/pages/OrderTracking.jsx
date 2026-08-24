@@ -51,6 +51,8 @@ export default function OrderTracking() {
   const [billChoice, setBillChoice] = useState(null);
   const prevStatusRef = useRef(null);
   const selfUpdateRef = useRef(false);
+  const prevItemCostRef = useRef(null);
+  const prevBillNoteRef = useRef(null);
 
   function markSelfUpdate() {
     selfUpdateRef.current = true;
@@ -142,7 +144,16 @@ export default function OrderTracking() {
       const prev = prevStatusRef.current;
       prevStatusRef.current = o.status;
       setOrder(o);
-      setItemCost(o.item_cost ? String(o.item_cost) : "");
+      // Hanya isi ulang input dari server saat nilai tersimpan berubah,
+      // agar input yang sedang diketik driver tidak terus-terusan direset oleh polling.
+      if (o.item_cost !== prevItemCostRef.current) {
+        setItemCost(o.item_cost ? String(o.item_cost) : "");
+        prevItemCostRef.current = o.item_cost;
+      }
+      if (o.store_bill_note !== prevBillNoteRef.current) {
+        setBillNote(o.store_bill_note || "");
+        prevBillNoteRef.current = o.store_bill_note;
+      }
       if (prev && prev !== o.status && !selfUpdateRef.current) {
         notifyStatusTransition(o);
       }
