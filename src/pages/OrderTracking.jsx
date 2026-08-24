@@ -330,10 +330,10 @@ export default function OrderTracking() {
 
       {/* Timeline */}
       <div className="bg-card rounded-2xl border border-border p-5 mb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-start overflow-x-auto scrollbar-hide">
           {timeline.map((t, i) => (
-            <div key={t.key} className="flex flex-col items-center flex-1 relative">
-              {i < TIMELINE.length - 1 && (
+            <div key={t.key} className="flex flex-col items-center flex-1 min-w-[60px] relative">
+              {i < timeline.length - 1 && (
                 <div
                   className={`absolute top-3 left-1/2 w-full h-0.5 ${
                     i < currentIdx ? "bg-primary" : "bg-border"
@@ -472,28 +472,43 @@ export default function OrderTracking() {
                       Konfirmasi & Mulai Antar
                     </button>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
+                      <p className="text-sm text-muted-foreground">Pilih metode pembayaran tagihan toko:</p>
                       <button
+                        type="button"
                         onClick={() => { setBillChoice("talangi"); setStoreQrisPhoto(null); }}
                         disabled={acting}
-                        className={`w-full font-semibold py-3 rounded-xl border transition-colors disabled:opacity-60 ${
+                        className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors disabled:opacity-60 ${
                           billChoice === "talangi"
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-secondary text-secondary-foreground border-border hover:opacity-90"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:bg-secondary/50"
                         }`}
                       >
-                        Saya Talangi
+                        <span className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${billChoice === "talangi" ? "border-primary" : "border-muted-foreground/40"}`}>
+                          {billChoice === "talangi" && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </span>
+                        <span>
+                          <span className="block font-semibold text-sm">Saya Talangi</span>
+                          <span className="block text-xs text-muted-foreground">Saya bayar ke toko dulu, lalu tagih ke pelanggan via QRIS.</span>
+                        </span>
                       </button>
                       <button
+                        type="button"
                         onClick={() => setBillChoice("direct")}
                         disabled={acting}
-                        className={`w-full font-semibold py-3 rounded-xl border transition-colors disabled:opacity-60 ${
+                        className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors disabled:opacity-60 ${
                           billChoice === "direct"
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-secondary text-secondary-foreground border-border hover:opacity-90"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:bg-secondary/50"
                         }`}
                       >
-                        Pelanggan Bayar Langsung ke Toko
+                        <span className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${billChoice === "direct" ? "border-primary" : "border-muted-foreground/40"}`}>
+                          {billChoice === "direct" && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </span>
+                        <span>
+                          <span className="block font-semibold text-sm">Pelanggan Bayar Langsung</span>
+                          <span className="block text-xs text-muted-foreground">Pelanggan scan QRIS toko & bayar langsung; ongkir tunai ke saya.</span>
+                        </span>
                       </button>
                       {billChoice === "talangi" && (
                         <button
