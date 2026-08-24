@@ -15,41 +15,46 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [qrisPhoto, setQrisPhoto] = useState(null);
   const [savingQris, setSavingQris] = useState(false);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const [users, drivers, orders, txs] = await Promise.all([
+  async function load() {
+    setLoading(true);
+    try {
+      const [users, drivers, orders, txs] = await Promise.all([
         base44.entities.User.list(),
         base44.entities.DriverProfile.list(),
         base44.entities.Order.list("-created_date", 100),
-        base44.entities.WalletTransaction.list("-created_date", 100)]
-        );
-        const pending = drivers.filter((d) => d.verification_status === "pending");
-        const active = orders.filter((o) =>
+        base44.entities.WalletTransaction.list("-created_date", 100),
+      ]);
+      const pending = drivers.filter((d) => d.verification_status === "pending");
+      const active = orders.filter((o) =>
         ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"].includes(o.status)
-        );
-        const completed = orders.filter((o) => o.status === "completed");
-        const revenue = txs.filter((t) => t.type === "debit").reduce((s, t) => s + (t.amount || 0), 0);
-        setStats({
-          users: users.length,
-          drivers: drivers.length,
-          pending: pending.length,
-          approved: drivers.filter((d) => d.verification_status === "approved").length,
-          activeOrders: active.length,
-          completedOrders: completed.length,
-          totalOrders: orders.length,
-          feeRevenue: revenue
-        });
-        const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
-        const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
-        setWallet({ balance: adminBalance, txs: adminTxs });
-        const qrisRows = await base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1);
-        setQrisPhoto(qrisRows[0]?.value || null);
-      } finally {
-        setLoading(false);
-      }
+      );
+      const completed = orders.filter((o) => o.status === "completed");
+      const revenue = txs.filter((t) => t.type === "debit").reduce((s, t) => s + (t.amount || 0), 0);
+      setStats({
+        users: users.length,
+        drivers: drivers.length,
+        pending: pending.length,
+        approved: drivers.filter((d) => d.verification_status === "approved").length,
+        activeOrders: active.length,
+        completedOrders: completed.length,
+        totalOrders: orders.length,
+        feeRevenue: revenue,
+      });
+      const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
+      const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
+      setWallet({ balance: adminBalance, txs: adminTxs });
+      const qrisRows = await base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1);
+      setQrisPhoto(qrisRows[0]?.value || null);
+    } catch (e) {
+      setError(e.message || "Gagal memuat data");
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     load();
   }, []);
 
@@ -77,6 +82,21 @@ export default function AdminDashboard() {
         <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
       </AdminLayout>);
 
+  }
+
+  if (error || !stats) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <AlertCircle className="w-10 h-10 text-amber-500 mb-3" />
+          <p className="font-semibold mb-1">Gagal memuat data</p>
+          <p className="text-sm text-muted-foreground mb-4">{error || "Terjadi kesalahan. Coba lagi sebentar."}</p>
+          <button onClick={load} className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl">
+            Coba Lagi
+          </button>
+        </div>
+      </AdminLayout>
+    );
   }
 
   const cards = [
