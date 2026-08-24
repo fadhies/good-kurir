@@ -158,7 +158,8 @@ export default function OrderTracking() {
     const unsub = base44.entities.Order.subscribe((event) => {
       if (event.id === id) loadOrder();
     });
-    return unsub;
+    const poll = setInterval(loadOrder, 3000);
+    return () => { unsub(); clearInterval(poll); };
   }, [id]);
 
   // Ambil QRIS pemilik (setting admin) untuk pembayaran
@@ -228,13 +229,13 @@ export default function OrderTracking() {
   async function pay() {
     setActing(true);
     try {
-      markSelfUpdate();
-      await base44.entities.Order.update(id, {
-        status: "paid",
-        payment_proof_photo: proofPhoto || null,
-      });
-      toast({ title: "Pembayaran terkonfirmasi", description: "Ongkir dibayar ke driver setelah pesanan sampai." });
-      loadOrder();
+      const res = await base44.functions.invoke("payOrder", { orderId: id, proofPhoto: proofPhoto || null });
+      if (res.data?.success) {
+        toast({ title: "Pembayaran terkonfirmasi", description: "Bukti terkirim ke driver." });
+        loadOrder();
+      } else {
+        toast({ title: "Gagal", description: res.data?.error, variant: "destructive" });
+      }
     } catch (e) {
       toast({ title: "Gagal", description: e.message, variant: "destructive" });
     } finally {
@@ -252,7 +253,7 @@ export default function OrderTracking() {
           title: "Pesanan selesai",
           description:
             isQris && order.store_qris_photo
-              ? "Ongkir dibayar tunai ke driver"
+              ? "Ongkir dibayar tunai ke driver, fee Rp2.000 dipotong ke admin"
               : isQris
               ? "Tagihan toko + ongkir masuk ke dompet driver, dipotong fee Rp2.000"
               : "Fee Rp2.000 dipotong ke admin",
@@ -565,7 +566,7 @@ export default function OrderTracking() {
             {order.status === "completed" && (
               <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
                 {isQris && order.store_qris_photo
-                  ? "Pesanan selesai. Ongkir diterima tunai dari pelanggan."
+                  ? "Pesanan selesai. Ongkir diterima tunai, fee Rp2.000 dipotong ke admin."
                   : isQris
                   ? "Pesanan selesai. Tagihan toko + ongkir masuk ke dompet, dipotong fee Rp2.000."
                   : "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}

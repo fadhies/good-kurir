@@ -13,6 +13,7 @@ const TYPE_META = {
   order_completed: { icon: CheckCircle2, tint: "text-green-600 bg-green-100" },
   new_message: { icon: MessageCircle, tint: "text-primary bg-primary/10" },
   order_cancelled: { icon: Package, tint: "text-red-600 bg-red-100" },
+  payment_received: { icon: CheckCircle2, tint: "text-green-600 bg-green-100" },
 };
 
 export default function NotificationBell() {
@@ -66,6 +67,10 @@ export default function NotificationBell() {
 
   function handleClick(item) {
     setOpen(false);
+    if (item.type === "new_order") {
+      navigate("/driver");
+      return;
+    }
     if (item.order_id) navigate(`/pesanan/${item.order_id}`);
   }
 

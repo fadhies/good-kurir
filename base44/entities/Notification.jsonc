@@ -12,7 +12,8 @@
         "order_accepted",
         "order_completed",
         "new_message",
-        "order_cancelled"
+        "order_cancelled",
+        "payment_received"
       ]
     },
     "title": {
