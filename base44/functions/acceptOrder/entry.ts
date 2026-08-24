@@ -44,7 +44,10 @@ export default async function(req) {
       status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] }
     });
     const activeCount = activeOrders.length;
-    if (mode === 'cepat' ? activeCount !== 0 : activeCount >= MAX_HEMAT) {
+    const activeHematCount = activeOrders.filter((o) => (o.mode || 'hemat') === 'hemat').length;
+    // Cepat: driver harus kosong (tidak ada order aktif sama sekali).
+    // Hemat: maksimal 3 order hemat aktif (dihitung hanya order mode hemat).
+    if (mode === 'cepat' ? activeCount !== 0 : activeHematCount >= MAX_HEMAT) {
       return Response.json({ error: 'Anda sudah mencapai batas orderan aktif' }, { status: 400 });
     }
 

@@ -195,10 +195,12 @@ export default function DriverDashboard() {
     }
   }
 
-  // Mode hemat (makanan) hanya terlihat driver yang sedang ada pesanan aktif (batching)
+  // Mode cepat hanya muncul untuk driver yang sedang kosong (tidak ada order aktif).
+  // Mode hemat muncul selama driver masih membawa < 3 order hemat aktif (0, 1, atau 2).
+  const activeHematCount = orders.filter((o) => o.mode === "hemat").length;
   const visibleAvailable = available.filter((o) => {
-    if (o.type === "food" && o.mode === "hemat") return orders.length > 0;
-    return true;
+    if (o.mode === "cepat") return orders.length === 0;
+    return activeHematCount < 3;
   });
 
   if (checking) {
@@ -318,7 +320,9 @@ export default function DriverDashboard() {
             <div className="text-center py-6 bg-card rounded-2xl border border-dashed border-border">
               <p className="text-sm text-muted-foreground">Belum ada pesanan tersedia</p>
               <p className="text-xs text-muted-foreground mt-1">
-                {orders.length > 0 ? "Tidak ada pesanan baru saat ini" : "Pesanan hemat akan muncul saat Anda sedang mengantar"}
+                {orders.length > 0
+                  ? "Pesanan cepat hanya muncul saat Anda tidak sedang mengantar"
+                  : "Pesanan baru akan muncul di sini"}
               </p>
             </div>
           ) : (
