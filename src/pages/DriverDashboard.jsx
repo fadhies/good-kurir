@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { getFunctionError } from "@/lib/functionError";
 
 export default function DriverDashboard() {
   const { user } = useAuth();
@@ -124,9 +125,7 @@ export default function DriverDashboard() {
         toast({ title: "Gagal menerima", description: res.data?.error, variant: "destructive" });
       }
     } catch (e) {
-      let msg = e.message;
-      try { const p = JSON.parse(msg); if (p?.error) msg = p.error; } catch {}
-      toast({ title: "Gagal menerima", description: msg, variant: "destructive" });
+      toast({ title: "Gagal menerima", description: getFunctionError(e), variant: "destructive" });
     } finally {
       setAccepting(false);
     }

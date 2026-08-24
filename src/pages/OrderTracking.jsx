@@ -22,6 +22,7 @@ import PhotoUpload from "@/components/PhotoUpload";
 import OrderChat from "@/components/OrderChat";
 import DriverRating from "@/components/DriverRating";
 import { reverseGeocodePoi } from "@/lib/googleMaps";
+import { getFunctionError } from "@/lib/functionError";
 
 const TIMELINE = [
   { key: "pending_match", label: "Mencari Driver" },
@@ -248,7 +249,7 @@ export default function OrderTracking() {
         toast({ title: "Gagal", description: res.data?.error, variant: "destructive" });
       }
     } catch (e) {
-      toast({ title: "Gagal", description: e.message, variant: "destructive" });
+      toast({ title: "Gagal", description: getFunctionError(e), variant: "destructive" });
     } finally {
       setActing(false);
     }
@@ -274,7 +275,7 @@ export default function OrderTracking() {
         toast({ title: "Gagal menyelesaikan", description: res.data?.error, variant: "destructive" });
       }
     } catch (e) {
-      toast({ title: "Gagal", description: e.message, variant: "destructive" });
+      toast({ title: "Gagal", description: getFunctionError(e), variant: "destructive" });
     } finally {
       setActing(false);
     }
