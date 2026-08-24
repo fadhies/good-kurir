@@ -8,6 +8,8 @@ import { formatRupiah } from "@/lib/geo";
 import PhotoUpload from "@/components/PhotoUpload";
 import { QrCode } from "lucide-react";
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
@@ -21,10 +23,13 @@ export default function AdminDashboard() {
     setLoading(true);
     setError(null);
     try {
-      // Jalankan secara berurutan agar tidak membebani rate-limit platform
+      // Panggilan berurutan + jeda kecil agar tidak kena burst rate-limit platform
       const users = await base44.entities.User.list();
+      await sleep(250);
       const drivers = await base44.entities.DriverProfile.list();
+      await sleep(250);
       const orders = await base44.entities.Order.list("-created_date", 100);
+      await sleep(250);
       const txs = await base44.entities.WalletTransaction.list("-created_date", 100);
 
       const pending = drivers.filter((d) => d.verification_status === "pending");
@@ -44,11 +49,12 @@ export default function AdminDashboard() {
         feeRevenue: revenue,
       });
 
-      // Saldo admin: ambil transaksi milik admin secara berurutan (akurat, bukan bagian burst)
-      const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
+      // Saldo & transaksi admin dihitung dari daftar txs (menghindari panggilan tambahan)
+      const adminTxs = txs.filter((t) => t.user_id === user.id).slice(0, 20);
       const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
       setWallet({ balance: adminBalance, txs: adminTxs });
 
+      await sleep(250);
       const qrisRows = await base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1);
       setQrisPhoto(qrisRows[0]?.value || null);
     } catch (e) {

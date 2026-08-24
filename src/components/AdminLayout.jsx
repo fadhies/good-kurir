@@ -1,8 +1,9 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Wallet } from "lucide-react";
+import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Wallet, Home, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exitApp } from "@/lib/exitApp";
 
 const NAV = [
   { to: "/admin", label: "Ringkasan", icon: LayoutDashboard },
@@ -16,6 +17,11 @@ export default function AdminLayout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleExit = async () => {
+    const ok = await exitApp();
+    if (!ok) alert("Tekan tombol Back pada ponsel untuk keluar dari aplikasi.");
+  };
 
   return (
     <div className="min-h-[100dvh] bg-background flex">
@@ -54,13 +60,19 @@ export default function AdminLayout({ children }) {
             onClick={() => navigate("/")}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
-            <Bike className="w-4 h-4" /> Kembali ke App
+            <Home className="w-4 h-4" /> Kembali ke App
           </button>
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
-            <LogOut className="w-4 h-4" /> Keluar
+            <LogOut className="w-4 h-4" /> Keluar Akun
+          </button>
+          <button
+            onClick={handleExit}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          >
+            <Power className="w-4 h-4" /> Keluar Aplikasi
           </button>
         </div>
       </aside>
@@ -72,7 +84,17 @@ export default function AdminLayout({ children }) {
             <ShieldCheck className="w-5 h-5 text-primary" />
             <span className="font-display font-extrabold">Admin Ojol Kita</span>
           </div>
-          <button onClick={logout} className="text-muted-foreground"><LogOut className="w-5 h-5" /></button>
+          <div className="flex items-center gap-1">
+            <button onClick={() => navigate("/")} className="p-2 text-muted-foreground" title="Kembali ke App">
+              <Home className="w-5 h-5" />
+            </button>
+            <button onClick={handleExit} className="p-2 text-muted-foreground" title="Keluar Aplikasi">
+              <Power className="w-5 h-5" />
+            </button>
+            <button onClick={logout} className="p-2 text-muted-foreground" title="Keluar Akun">
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 

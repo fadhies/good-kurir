@@ -2,8 +2,9 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useIsDriver } from "@/hooks/useIsDriver";
-import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { exitApp } from "@/lib/exitApp";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -39,6 +40,11 @@ export default function Layout({ children }) {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleExit = async () => {
+    const ok = await exitApp();
+    if (!ok) alert("Tekan tombol Back pada ponsel untuk keluar dari aplikasi.");
   };
 
   return (
@@ -79,6 +85,13 @@ export default function Layout({ children }) {
             </div>
             <NotificationBell />
             <AccountDeletionDialog />
+            <button
+              onClick={handleExit}
+              className="md:hidden p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              title="Keluar Aplikasi"
+            >
+              <Power className="w-5 h-5" />
+            </button>
             <button
               onClick={handleLogout}
               className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
