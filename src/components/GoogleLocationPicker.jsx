@@ -21,6 +21,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
   const geocoderRef = useRef(null);
   const acServiceRef = useRef(null);
   const placesRef = useRef(null);
+  const sessionTokenRef = useRef(null);
   const debounceRef = useRef(null);
   const userCenterRef = useRef(null);
 
@@ -46,6 +47,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
         geocoderRef.current = new gmaps.Geocoder();
         acServiceRef.current = new gmaps.places.AutocompleteService();
         placesRef.current = new gmaps.places.PlacesService(mapRef.current);
+        sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
 
         const color = accentToHsl(accent);
         markerRef.current = new gmaps.Marker({
@@ -123,6 +125,10 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     setSearching(true);
     try {
       const req = { input: q, componentRestrictions: { country: "id" } };
+      if (!sessionTokenRef.current) {
+        sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
+      }
+      req.sessionToken = sessionTokenRef.current;
       const bias = biasCenter?.lat != null ? biasCenter : userCenterRef.current;
       if (bias?.lat != null) {
         req.location = new window.google.maps.LatLng(bias.lat, bias.lng);
@@ -149,9 +155,12 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     setShowResults(false);
     const fallbackName = p.structured_formatting?.main_text || "";
     setQuery(fallbackName || p.description);
+    const usedToken = sessionTokenRef.current;
     placesRef.current.getDetails(
-      { placeId: p.place_id, fields: ["geometry", "formatted_address", "name"] },
+      { placeId: p.place_id, fields: ["geometry", "formatted_address", "name"], sessionToken: usedToken },
       (r, status) => {
+        // Tutup sesi ini & siapkan token baru untuk pencarian berikutnya
+        sessionTokenRef.current = new window.google.maps.places.AutocompleteSessionToken();
         if (status === "OK" && r?.geometry?.location) {
           const loc = r.geometry.location;
           const name = r.name || fallbackName;
