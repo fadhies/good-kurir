@@ -18,7 +18,7 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-[100dvh] bg-background flex">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-card sticky top-0 h-screen">
         <div className="h-16 flex items-center gap-2 px-5 border-b border-border">
@@ -66,17 +66,19 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 glass-card border-b border-border flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-primary" />
-          <span className="font-display font-extrabold">Admin Ojol Kita</span>
+      <div className="md:hidden fixed top-0 inset-x-0 z-40 glass-card border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="h-14 flex items-center justify-between px-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-primary" />
+            <span className="font-display font-extrabold">Admin Ojol Kita</span>
+          </div>
+          <button onClick={logout} className="text-muted-foreground"><LogOut className="w-5 h-5" /></button>
         </div>
-        <button onClick={logout} className="text-muted-foreground"><LogOut className="w-5 h-5" /></button>
       </div>
 
-      <div className="flex-1 min-w-0 pt-14 md:pt-0">
+      <div className="flex-1 min-w-0 pt-[calc(3.5rem+env(safe-area-inset-top))] md:pt-0">
         <main className="p-4 md:p-8 max-w-6xl mx-auto">{children}</main>
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border flex h-16">
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border flex h-16" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {NAV.map((item) => {
             const active = location.pathname === item.to;
             const Icon = item.icon;
