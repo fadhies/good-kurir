@@ -78,7 +78,8 @@ export default function AdminLayout({ children }) {
 
       <div className="flex-1 min-w-0 pt-[calc(3.5rem+env(safe-area-inset-top))] md:pt-0">
         <main className="p-4 md:p-8 max-w-6xl mx-auto">{children}</main>
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border flex h-16" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <div className="flex h-16">
           {NAV.map((item) => {
             const active = location.pathname === item.to;
             const Icon = item.icon;
@@ -96,6 +97,7 @@ export default function AdminLayout({ children }) {
               </Link>
             );
           })}
+          </div>
         </nav>
       </div>
     </div>
