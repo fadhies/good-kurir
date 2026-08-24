@@ -19,13 +19,14 @@ export default function AdminDashboard() {
 
   async function load() {
     setLoading(true);
+    setError(null);
     try {
-      const [users, drivers, orders, txs] = await Promise.all([
-        base44.entities.User.list(),
-        base44.entities.DriverProfile.list(),
-        base44.entities.Order.list("-created_date", 100),
-        base44.entities.WalletTransaction.list("-created_date", 100),
-      ]);
+      // Jalankan secara berurutan agar tidak membebani rate-limit platform
+      const users = await base44.entities.User.list();
+      const drivers = await base44.entities.DriverProfile.list();
+      const orders = await base44.entities.Order.list("-created_date", 100);
+      const txs = await base44.entities.WalletTransaction.list("-created_date", 100);
+
       const pending = drivers.filter((d) => d.verification_status === "pending");
       const active = orders.filter((o) =>
         ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"].includes(o.status)
@@ -42,9 +43,12 @@ export default function AdminDashboard() {
         totalOrders: orders.length,
         feeRevenue: revenue,
       });
+
+      // Saldo admin: ambil transaksi milik admin secara berurutan (akurat, bukan bagian burst)
       const adminTxs = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20);
       const adminBalance = adminTxs.reduce((s, t) => s + (t.type === "credit" ? t.amount : -t.amount), 0);
       setWallet({ balance: adminBalance, txs: adminTxs });
+
       const qrisRows = await base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1);
       setQrisPhoto(qrisRows[0]?.value || null);
     } catch (e) {
