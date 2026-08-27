@@ -38,7 +38,6 @@ export default function AppBottomNav() {
   return (
     <nav
       className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/60"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-center justify-around h-16">
         {items.map((item) => {
