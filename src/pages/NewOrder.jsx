@@ -5,7 +5,7 @@ import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
 import { haversineKm, calcDeliveryFee, formatRupiah } from "@/lib/geo";
-import { Bike, Package, User, Loader2, ArrowLeft, ShoppingBag, MapPin, FileText, Route } from "lucide-react";
+import { Bike, Package, User, Loader2, ShoppingBag, MapPin, FileText, Route } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 const TYPES = {
@@ -132,13 +132,6 @@ export default function NewOrder() {
 
   return (
     <Layout>
-      <button
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" /> Kembali
-      </button>
-
       <h1 className="font-display text-2xl font-extrabold mb-1">Buat Pesanan</h1>
       <p className="text-muted-foreground text-sm mb-6">Pilih layanan, tentukan toko & tujuan, lalu kami carikan driver terdekat.</p>
 

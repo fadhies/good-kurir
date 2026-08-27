@@ -102,4 +102,8 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .selectable {
+    user-select: text;
+    -webkit-user-select: text;
+  }
 }

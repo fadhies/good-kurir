@@ -91,7 +91,7 @@ export default function OrderChat({ order }) {
                       {m.sender_role === "driver" ? "Driver" : m.sender_role === "admin" ? "Admin" : "Pemesan"}
                     </p>
                   )}
-                  <p className="whitespace-pre-wrap break-words">{m.text}</p>
+                  <p className="whitespace-pre-wrap break-words selectable">{m.text}</p>
                   <p className={`text-[9px] mt-0.5 ${mine ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                     {new Date(m.created_date).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
                   </p>

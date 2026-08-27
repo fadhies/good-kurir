@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from 'next-themes';
@@ -14,19 +15,19 @@ import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 // Add page imports here
-import Home from '@/pages/Home';
-import NewOrder from '@/pages/NewOrder';
-import OrderTracking from '@/pages/OrderTracking';
-import MyOrders from '@/pages/MyOrders';
-import DriverDashboard from '@/pages/DriverDashboard';
-import DriverWallet from '@/pages/DriverWallet';
-import BecomeDriver from '@/pages/BecomeDriver';
 import AdminRoute from '@/components/AdminRoute';
-import AdminDashboard from '@/pages/AdminDashboard';
-import AdminDrivers from '@/pages/AdminDrivers';
-import AdminUsers from '@/pages/AdminUsers';
-import AdminOrders from '@/pages/AdminOrders';
-import AdminWithdrawals from '@/pages/AdminWithdrawals';
+const Home = lazy(() => import('@/pages/Home'));
+const NewOrder = lazy(() => import('@/pages/NewOrder'));
+const OrderTracking = lazy(() => import('@/pages/OrderTracking'));
+const MyOrders = lazy(() => import('@/pages/MyOrders'));
+const DriverDashboard = lazy(() => import('@/pages/DriverDashboard'));
+const DriverWallet = lazy(() => import('@/pages/DriverWallet'));
+const BecomeDriver = lazy(() => import('@/pages/BecomeDriver'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
+const AdminDrivers = lazy(() => import('@/pages/AdminDrivers'));
+const AdminUsers = lazy(() => import('@/pages/AdminUsers'));
+const AdminOrders = lazy(() => import('@/pages/AdminOrders'));
+const AdminWithdrawals = lazy(() => import('@/pages/AdminWithdrawals'));
 import ChatNotificationListener from '@/components/ChatNotificationListener';
 
 const AuthenticatedApp = () => {
@@ -58,6 +59,11 @@ const AuthenticatedApp = () => {
       transition={{ duration: 0.2, ease: "easeOut" }}
     >
     <ChatNotificationListener />
+    <Suspense fallback={
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    }>
     <Routes location={location}>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -81,6 +87,7 @@ const AuthenticatedApp = () => {
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
     </motion.div>
     </AnimatePresence>
   );

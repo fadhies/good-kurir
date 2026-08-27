@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
-import { ArrowLeft, Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone } from "lucide-react";
+import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +36,6 @@ const TIMELINE = [
 
 export default function OrderTracking() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [order, setOrder] = useState(null);
@@ -314,16 +313,9 @@ export default function OrderTracking() {
 
   return (
     <Layout>
-      <button
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" /> Kembali
-      </button>
-
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold">Pesanan #{String(order.id).slice(-6)}</h1>
+          <h1 className="font-display text-2xl font-extrabold selectable">Pesanan #{String(order.id).slice(-6)}</h1>
           <p className="text-sm text-muted-foreground capitalize">{order.type === "food" ? "Beli Makanan" : order.type === "goods" ? "Antar Barang" : "Antar Orang"}</p>
         </div>
         <OrderStatusBadge status={order.status} />
@@ -378,9 +370,9 @@ export default function OrderTracking() {
             <MapPin className="w-5 h-5 text-accent mt-0.5 shrink-0" />
             <div>
               <p className="text-xs text-muted-foreground">Tujuan</p>
-              <p className="font-semibold text-sm">{order.destination_address}</p>
+              <p className="font-semibold text-sm selectable">{order.destination_address}</p>
               {order.destination_detail && (
-                <p className="text-sm text-muted-foreground mt-1">{order.destination_detail}</p>
+                <p className="text-sm text-muted-foreground mt-1 selectable">{order.destination_detail}</p>
               )}
             </div>
           </div>
