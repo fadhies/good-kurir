@@ -108,31 +108,6 @@ export default function Layout({ children }) {
         {children}
       </main>
 
-      {/* Bottom nav (mobile) */}
-      {!isDetail && (
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/60" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="flex items-center justify-around h-16">
-          {items.map((item) => {
-            const active = location.pathname === item.to;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-xs font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                <Icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-      )}
-
       {/* Side nav (desktop) - rendered as floating rail */}
       <nav className="hidden md:flex fixed left-1/2 -translate-x-[19rem] top-1/2 -translate-y-1/2 flex-col gap-1">
         {items.map((item) => {

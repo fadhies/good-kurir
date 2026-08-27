@@ -11,6 +11,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import TabKeepAlive from '@/components/TabKeepAlive';
+import AppBottomNav from '@/components/AppBottomNav';
 import { exitApp } from '@/lib/exitApp';
 import { popBackHandler } from '@/hooks/useBackHandler';
 import Login from '@/pages/Login';
@@ -149,6 +150,7 @@ const AuthenticatedApp = () => {
     </motion.div>
     </AnimatePresence>
     </div>
+    <AppBottomNav />
     </>
   );
 };
