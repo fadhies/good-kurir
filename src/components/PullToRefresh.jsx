@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Loader2, ArrowDown } from "lucide-react";
+import { getScrollEl } from "@/lib/appScroll";
 
 const THRESHOLD = 70;
 
@@ -12,7 +13,7 @@ export default function PullToRefresh({ onRefresh, children }) {
 
   function onStart(e) {
     if (refreshing) return;
-    if (window.scrollY > 0) return;
+    if ((getScrollEl()?.scrollTop ?? 0) > 0) return;
     active.current = true;
     startY.current = e.touches[0].clientY;
   }
@@ -20,7 +21,7 @@ export default function PullToRefresh({ onRefresh, children }) {
   function onMove(e) {
     if (!active.current || refreshing) return;
     const dy = e.touches[0].clientY - startY.current;
-    if (dy <= 0 || window.scrollY > 0) {
+    if (dy <= 0 || (getScrollEl()?.scrollTop ?? 0) > 0) {
       if (pullRef.current !== 0) {
         pullRef.current = 0;
         setPull(0);

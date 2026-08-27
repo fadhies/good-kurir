@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function OrderChat({ order }) {
@@ -10,6 +10,7 @@ export default function OrderChat({ order }) {
   const [messages, setMessages] = useState(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [pending, setPending] = useState(null); // optimistic message
   const scrollRef = useRef(null);
 
   async function load() {
@@ -23,24 +24,33 @@ export default function OrderChat({ order }) {
 
   useEffect(() => {
     load();
-    const unsub = base44.entities.ChatMessage.subscribe(() => {
-      load();
-    });
+    const unsub = base44.entities.ChatMessage.subscribe(() => { load(); });
     const poll = setInterval(load, 3000);
     return () => { unsub(); clearInterval(poll); };
   }, [order.id]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages]);
+  }, [messages, pending]);
 
   async function send() {
     const t = text.trim();
     if (!t) return;
+    setText("");
+    const senderRole = order.created_by_id === user?.id ? "user" : (order.driver_id === user?.id ? "driver" : "admin");
+    const optimistic = {
+      id: `opt_${Date.now()}`,
+      sender_id: user.id,
+      sender_name: user.full_name || user.email,
+      sender_role: senderRole,
+      text: t,
+      created_date: new Date().toISOString(),
+      _pending: true,
+    };
+    setPending(optimistic);
     setSending(true);
     try {
       const participants = [order.created_by_id, order.driver_id].filter(Boolean);
-      const senderRole = order.created_by_id === user?.id ? "user" : (order.driver_id === user?.id ? "driver" : "admin");
       await base44.entities.ChatMessage.create({
         order_id: order.id,
         sender_id: user.id,
@@ -49,9 +59,11 @@ export default function OrderChat({ order }) {
         text: t,
         participants,
       });
-      setText("");
-      load();
+      await load();
+      setPending(null);
     } catch (e) {
+      setPending(null);
+      setText(t);
       toast({ title: "Gagal mengirim", description: e.message, variant: "destructive" });
     } finally {
       setSending(false);
@@ -62,6 +74,9 @@ export default function OrderChat({ order }) {
   if (!order.driver_id || order.status === "cancelled" || order.status === "pending_match") return null;
 
   const meIsDriver = order.driver_id === user?.id;
+  const confirmed = messages || [];
+  const showPending = pending && !confirmed.some((m) => m.sender_id === pending.sender_id && m.text === pending.text);
+  const display = showPending ? [...confirmed, pending] : confirmed;
 
   return (
     <div className="bg-card rounded-2xl border border-border p-4">
@@ -74,27 +89,33 @@ export default function OrderChat({ order }) {
           <div className="flex justify-center py-8">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
-        ) : messages.length === 0 ? (
+        ) : display.length === 0 ? (
           <p className="text-center text-xs text-muted-foreground py-8">
             Belum ada pesan. Sapa {meIsDriver ? "pemesan" : "driver"} Anda 👋
           </p>
         ) : (
-          messages.map((m) => {
+          display.map((m) => {
             const mine = m.sender_id === user?.id;
             return (
               <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[78%] px-3 py-2 rounded-2xl text-sm ${
                   mine ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-secondary text-secondary-foreground rounded-bl-sm"
-                }`}>
+                } ${m._pending ? "opacity-60" : ""}`}>
                   {!mine && (
                     <p className="text-[10px] font-semibold opacity-70 mb-0.5">
                       {m.sender_role === "driver" ? "Driver" : m.sender_role === "admin" ? "Admin" : "Pemesan"}
                     </p>
                   )}
                   <p className="whitespace-pre-wrap break-words selectable">{m.text}</p>
-                  <p className={`text-[9px] mt-0.5 ${mine ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                    {new Date(m.created_date).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
-                  </p>
+                  {m._pending ? (
+                    <p className="text-[9px] mt-0.5 flex items-center gap-1 text-primary-foreground/70">
+                      <Clock className="w-3 h-3" /> Mengirim...
+                    </p>
+                  ) : (
+                    <p className={`text-[9px] mt-0.5 ${mine ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      {new Date(m.created_date).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  )}
                 </div>
               </div>
             );

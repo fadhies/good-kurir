@@ -1,8 +1,8 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from 'next-themes';
@@ -10,18 +10,16 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import TabKeepAlive from '@/components/TabKeepAlive';
+import { exitApp } from '@/lib/exitApp';
+import { popBackHandler } from '@/hooks/useBackHandler';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 // Add page imports here
 import AdminRoute from '@/components/AdminRoute';
-const Home = lazy(() => import('@/pages/Home'));
-const NewOrder = lazy(() => import('@/pages/NewOrder'));
 const OrderTracking = lazy(() => import('@/pages/OrderTracking'));
-const MyOrders = lazy(() => import('@/pages/MyOrders'));
-const DriverDashboard = lazy(() => import('@/pages/DriverDashboard'));
-const DriverWallet = lazy(() => import('@/pages/DriverWallet'));
 const BecomeDriver = lazy(() => import('@/pages/BecomeDriver'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 const AdminDrivers = lazy(() => import('@/pages/AdminDrivers'));
@@ -30,9 +28,59 @@ const AdminOrders = lazy(() => import('@/pages/AdminOrders'));
 const AdminWithdrawals = lazy(() => import('@/pages/AdminWithdrawals'));
 import ChatNotificationListener from '@/components/ChatNotificationListener';
 
-const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+const TAB_PATHS = new Set(["/", "/pesan", "/pesanan-saya", "/driver", "/driver/dompet"]);
+
+// Directional page transitions: push slides left, pop slides right.
+const pageVariants = {
+  enter: (dir) => ({ x: dir >= 0 ? 40 : -40, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir) => ({ x: dir >= 0 ? -40 : 40, opacity: 0 }),
+};
+
+function BackHandlerManager() {
+  const navigate = useNavigate();
   const location = useLocation();
+  const pathRef = useRef(location.pathname);
+  pathRef.current = location.pathname;
+  useEffect(() => {
+    const onBack = (e) => {
+      // Dismiss the topmost open modal/dropdown first, otherwise navigate back / exit.
+      if (popBackHandler()) {
+        try { e && e.preventDefault && e.preventDefault(); } catch (_) {}
+        return;
+      }
+      const path = pathRef.current;
+      if (path && path !== "/") {
+        navigate(-1);
+      } else {
+        exitApp();
+      }
+    };
+    // Capacitor fires 'backbutton' on document when a listener is registered.
+    document.addEventListener("backbutton", onBack, false);
+    return () => document.removeEventListener("backbutton", onBack, false);
+  }, [navigate]);
+  return null;
+}
+
+const AuthenticatedApp = () => {
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
+  const location = useLocation();
+  const [direction, setDirection] = useState(0);
+  const idxRef = useRef(null);
+
+  // Detect push vs pop from the history stack index for directional transitions.
+  useEffect(() => {
+    const idx = window.history.state?.idx ?? 0;
+    if (idxRef.current == null) {
+      idxRef.current = idx;
+      return;
+    }
+    if (idx !== idxRef.current) {
+      setDirection(idx > idxRef.current ? 1 : -1);
+      idxRef.current = idx;
+    }
+  }, [location.pathname]);
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -48,19 +96,29 @@ const AuthenticatedApp = () => {
     return <UserNotRegisteredError />;
   }
 
+  // Tab routes share a stable key so they stay mounted while switching bottom tabs.
+  const pageKey = TAB_PATHS.has(location.pathname) ? "tab-shell" : location.pathname;
+
   // Render the main app
   return (
-    <AnimatePresence mode="wait">
-    <motion.div
-      key={location.pathname}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-    >
+    <>
     <ChatNotificationListener />
+    <BackHandlerManager />
+    <div className="overflow-hidden">
+    <AnimatePresence mode="wait" custom={direction}>
+    <motion.div
+      key={pageKey}
+      custom={direction}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      variants={pageVariants}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      id="app-scroll"
+      className="h-[100dvh] overflow-y-auto overflow-x-hidden overscroll-y-none scrollbar-hide"
+    >
     <Suspense fallback={
-      <div className="fixed inset-0 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
       </div>
     }>
@@ -70,12 +128,12 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/pesan" element={<NewOrder />} />
-        <Route path="/pesanan-saya" element={<MyOrders />} />
+        <Route path="/" element={<TabKeepAlive active="home" />} />
+        <Route path="/pesan" element={<TabKeepAlive active="pesan" />} />
+        <Route path="/pesanan-saya" element={<TabKeepAlive active="pesanan-saya" />} />
         <Route path="/pesanan/:id" element={<OrderTracking />} />
-        <Route path="/driver" element={<DriverDashboard />} />
-        <Route path="/driver/dompet" element={<DriverWallet />} />
+        <Route path="/driver" element={<TabKeepAlive active="driver" />} />
+        <Route path="/driver/dompet" element={<TabKeepAlive active="driver-dompet" />} />
         <Route path="/jadi-driver" element={<BecomeDriver />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
@@ -90,6 +148,8 @@ const AuthenticatedApp = () => {
     </Suspense>
     </motion.div>
     </AnimatePresence>
+    </div>
+    </>
   );
 };
 

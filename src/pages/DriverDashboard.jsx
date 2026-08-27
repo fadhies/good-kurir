@@ -10,6 +10,7 @@ import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { fireNewOrderAlert } from "@/lib/newOrderAlert";
 import { useRef } from "react";
+import { useBackHandler } from "@/hooks/useBackHandler";
 import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package } from "lucide-react";
 import {
   AlertDialog,
@@ -39,6 +40,10 @@ export default function DriverDashboard() {
   const [accepting, setAccepting] = useState(false);
   const seenAvailableIdsRef = useRef(new Set());
   const firstAvailableLoadRef = useRef(true);
+
+  // Native back button dismisses open modals before navigating back.
+  useBackHandler(() => setLocModal(false), locModal);
+  useBackHandler(() => setAcceptTarget(null), !!acceptTarget);
 
   async function loadProfile() {
     try {
