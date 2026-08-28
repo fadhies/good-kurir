@@ -228,7 +228,7 @@ export default function NewOrder() {
         </div>
         {paymentMethod === "cash" && (
           <p className="text-xs text-muted-foreground mt-2">
-            Driver menerima uang tunai saat pesanan sampai. Fee Rp2.000 dipotong ke admin.
+            Pelanggang membayar ke driver saat pesanan sampai.
           </p>
         )}
         {paymentMethod === "qris" && (
