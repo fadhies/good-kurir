@@ -251,11 +251,11 @@ export default function NewOrder() {
               <ShoppingBag className="w-4 h-4 text-primary" />
             </div>
             <h3 className="font-bold">
-              {type === "person" ? "Lokasi Jemput" : "Toko / Restoran"}
+              {type === "food" ? "Restoran/Toko" : "Lokasi Jemput"}
             </h3>
           </div>
           <LocationPicker
-            label={type === "person" ? "Di mana penumpang?" : "Cari toko atau restoran"}
+            label={type === "food" ? "cari Restoran/Toko" : "cari atau pin lokasi jemput"}
             value={store}
             onChange={setStore}
             accent={currentType.accent}
