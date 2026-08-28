@@ -268,7 +268,7 @@ export default function NewOrder() {
             <input
               value={storeDetail}
               onChange={(e) => setStoreDetail(e.target.value)}
-              placeholder="Mis: Lantai 2, depan kasir, sebelah minimarket"
+              placeholder="Mis: warung es teh Solo depan Indomart, batagor Ikhsan samping K24"
               className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
