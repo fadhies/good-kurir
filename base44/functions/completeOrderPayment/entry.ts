@@ -34,17 +34,13 @@ export default async function(req) {
     let driverEarning = 0;
 
     if (method === 'qris') {
-      if (order.type === 'food' && isDirect) {
-        // User bayar tagihan toko langsung ke toko via QRIS. Ongkir tunai ke driver saat tiba.
-        // Tetap dipotong fee admin dari dompet driver.
+      if (order.type === 'food') {
+        // Food QRIS: baik "Saya Talangi" (user transfer ke akun Dana driver)
+        // maupun "Pelanggan bayar langsung ke toko", uang pelanggan TIDAK lewat
+        // dompet app. Hanya fee admin yang dipotong dari dompet driver.
         driverCredit = 0;
         driverDebit = ADMIN_FEE;
         driverEarning = deliveryFee;
-      } else if (order.type === 'food' && !isDirect) {
-        // Talangi: user bayar tagihan toko + ongkir via QRIS → dompet driver, dipotong fee admin.
-        driverCredit = itemCost + deliveryFee;
-        driverDebit = ADMIN_FEE;
-        driverEarning = itemCost + deliveryFee - ADMIN_FEE;
       } else {
         // goods/person QRIS: ongkir via QRIS → dompet driver, dipotong fee admin.
         driverCredit = deliveryFee;
@@ -116,8 +112,11 @@ export default async function(req) {
       order_id: orderId,
     });
     if (order.driver_id) {
+      const isTalangiDana = method === 'qris' && order.type === 'food' && !isDirect;
       const driverMsg = (method === 'qris' && order.type === 'food' && isDirect)
         ? 'Ongkir diterima tunai dari pelanggan. Fee Rp2.000 dipotong ke admin.'
+        : isTalangiDana
+        ? 'Ongkir diterima via akun Dana Anda. Fee Rp2.000 dipotong ke admin.'
         : (method === 'qris' ? 'Pembayaran QRIS masuk ke dompet Anda.' : 'Ongkir diterima tunai.');
       await createNotification(base44, {
         user_id: order.driver_id,

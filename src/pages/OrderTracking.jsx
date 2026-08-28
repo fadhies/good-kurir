@@ -271,6 +271,8 @@ export default function OrderTracking() {
           description:
             isQris && order.store_qris_photo
               ? "Ongkir dibayar tunai ke driver, fee Rp2.000 dipotong ke admin"
+              : isQris && order.driver_dana_number
+              ? "Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin"
               : isQris
               ? "Tagihan toko + ongkir masuk ke dompet driver, dipotong fee Rp2.000"
               : "Fee Rp2.000 dipotong ke admin",
@@ -595,6 +597,8 @@ export default function OrderTracking() {
               <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
                 {isQris && order.store_qris_photo
                   ? "Pesanan selesai. Ongkir diterima tunai, fee Rp2.000 dipotong ke admin."
+                  : isQris && order.driver_dana_number
+                  ? "Pesanan selesai. Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin."
                   : isQris
                   ? "Pesanan selesai. Tagihan toko + ongkir masuk ke dompet, dipotong fee Rp2.000."
                   : "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}

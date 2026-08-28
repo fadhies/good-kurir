@@ -153,6 +153,9 @@ export default function BecomeDriver() {
               placeholder="08xxxxxxxxxx"
               className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
             />
+            <p className="text-xs text-muted-foreground mt-1.5">
+              Nomor ini harus terhubung ke akun Dana yang aktif untuk menerima pembayaran dari pelanggan.
+            </p>
           </div>
 
           <div>
