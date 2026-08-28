@@ -33,6 +33,16 @@ export default function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const role = user?.role || "user";
+  const [driverProfile, setDriverProfile] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    base44.entities.DriverProfile.filter({ user_id: user.id })
+      .then((list) => active && setDriverProfile(list[0] || null))
+      .catch(() => active && setDriverProfile(null));
+    return () => { active = false; };
+  }, [user?.id]);
 
   return (
     <Layout>
@@ -118,14 +128,35 @@ export default function Home() {
         <div className="mt-8 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-lg">Mau jadi driver Ojol Kita?</h3>
-            <p className="text-sm text-muted-foreground">Daftar dan mulai dapat penghasilan hari ini.</p>
+            <p className="text-sm text-muted-foreground">
+              {driverProfile?.verification_status === "pending"
+                ? "Pendaftaran Anda sedang diverifikasi admin."
+                : driverProfile?.verification_status === "approved"
+                ? "Anda sudah terdaftar sebagai driver."
+                : driverProfile?.verification_status === "rejected"
+                ? "Pendaftaran Anda ditolak. Hubungi admin untuk informasi."
+                : "Daftar dan mulai dapat penghasilan hari ini."}
+            </p>
           </div>
-          <Link
-            to="/jadi-driver"
-            className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap"
-          >
-            Daftar Jadi Driver
-          </Link>
+          {driverProfile ? (
+            <button
+              disabled
+              className="bg-muted text-muted-foreground font-semibold px-5 py-2.5 rounded-xl cursor-not-allowed whitespace-nowrap"
+            >
+              {driverProfile.verification_status === "pending"
+                ? "Menunggu Verifikasi"
+                : driverProfile.verification_status === "approved"
+                ? "Sudah Terdaftar"
+                : "Pendaftaran Ditolak"}
+            </button>
+          ) : (
+            <Link
+              to="/jadi-driver"
+              className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap"
+            >
+              Daftar Jadi Driver
+            </Link>
+          )}
         </div>
       )}
     </Layout>
