@@ -233,7 +233,7 @@ export default function NewOrder() {
         )}
         {paymentMethod === "qris" && (
           <p className="text-xs text-muted-foreground mt-2">
-            Bayar langsung ke toko via QRIS (hanya makanan). Ongkir dibayar ke driver setelah pesanan sampai. Fee Rp2.000 ke admin.
+            Bayar langsung ke toko/resto atau transfer ke driver.
           </p>
         )}
         {!cashAvailable && (
