@@ -109,6 +109,9 @@
     "store_qris_photo": {
       "type": "string"
     },
+    "driver_dana_number": {
+      "type": "string"
+    },
     "user_rating": {
       "type": "number"
     },

@@ -93,12 +93,18 @@ export default function OrderTracking() {
         });
         toast({ title: "Mulai mengantar ke tujuan" });
       } else {
+        if (!user?.phone) {
+          toast({ title: "Nomor HP/Dana belum diatur", description: "Lengkapi nomor HP Anda agar pelanggan bisa transfer ke akun Dana Anda.", variant: "destructive" });
+          setBillConfirm(null);
+          return;
+        }
         await base44.entities.Order.update(id, {
           status: "awaiting_payment",
           item_cost: cost,
           store_bill_note: billNote,
+          driver_dana_number: user.phone,
         });
-        toast({ title: "Tagihan dikirim, menunggu pembayaran user" });
+        toast({ title: "Tagihan dikirim", description: "Pelanggan akan transfer ke akun Dana Anda." });
       }
       loadOrder();
     } catch (e) {
@@ -602,7 +608,7 @@ export default function OrderTracking() {
           isQris && order.type === "food" ? (
             <div className="bg-card rounded-2xl border-2 border-primary/30 p-5 space-y-4">
               <h3 className="font-bold flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-primary" /> Bayar Tagihan Toko
+                <CreditCard className="w-5 h-5 text-primary" /> {order.store_qris_photo ? "Bayar Tagihan Toko" : "Bayar ke Akun Dana Driver"}
               </h3>
               <p className="text-sm text-muted-foreground">
                 Total tagihan: <span className="font-semibold text-foreground">
@@ -616,6 +622,28 @@ export default function OrderTracking() {
                   </p>
                   <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
                     <Image src={order.store_qris_photo} fittingType="fit" className="w-full h-auto" />
+                  </div>
+                </>
+              ) : order.driver_dana_number ? (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    Driver menalangi pembayaran toko. Transfer total tagihan (tagihan toko + ongkir) ke akun Dana driver di bawah, lalu unggah bukti top-up.
+                  </p>
+                  <div className="rounded-xl border border-border bg-secondary/50 p-4">
+                    <p className="text-xs text-muted-foreground">Nomor HP / Akun Dana Driver</p>
+                    <div className="flex items-center justify-between gap-2 mt-1">
+                      <p className="font-bold text-lg tracking-wide selectable">{order.driver_dana_number}</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try { navigator.clipboard?.writeText(order.driver_dana_number); } catch {}
+                          toast({ title: "Nomor Dana disalin" });
+                        }}
+                        className="text-xs font-semibold text-primary px-3 py-1.5 rounded-lg border border-primary/30 hover:bg-primary/5"
+                      >
+                        Salin
+                      </button>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -644,7 +672,7 @@ export default function OrderTracking() {
                 className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-                Saya Sudah Bayar, Kirim Bukti
+                {order.store_qris_photo ? "Saya Sudah Bayar, Kirim Bukti" : "Saya Sudah Transfer, Kirim Bukti"}
               </button>
             </div>
           ) : (

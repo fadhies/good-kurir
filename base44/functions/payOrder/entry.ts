@@ -25,11 +25,14 @@ export default async function(req) {
 
     // Notifikasi ke driver: bukti pembayaran diterima
     if (order.driver_id) {
+      const isTalangi = !order.store_qris_photo && order.driver_dana_number;
       await createNotification(base44, {
         user_id: order.driver_id,
         type: 'payment_received',
-        title: 'Bukti pembayaran diterima',
-        body: 'User sudah membayar. Silakan antar ke tujuan.',
+        title: isTalangi ? 'Transfer Dana diterima' : 'Bukti pembayaran diterima',
+        body: isTalangi
+          ? 'User telah transfer ke akun Dana Anda. Cek mutasi Dana, lalu antar pesanan ke tujuan.'
+          : 'User sudah membayar. Silakan antar ke tujuan.',
         order_id: orderId,
       });
     }
