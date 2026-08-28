@@ -340,7 +340,9 @@ export default function DriverDashboard() {
                   </div>
                   <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
                   <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
-                  {o.notes && <p className="text-xs text-muted-foreground truncate mt-0.5">📝 {o.notes}</p>}
+                  {o.store_detail && <p className="text-xs text-muted-foreground truncate mt-0.5">📍 {o.store_detail}</p>}
+                  {o.destination_detail && <p className="text-xs text-muted-foreground truncate">📝 {o.destination_detail}</p>}
+                  {o.notes && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">🗒️ {o.notes}</p>}
                   <div className="flex items-center justify-between mt-3">
                     <div>
                       <p className="text-sm font-bold text-primary">Ongkir {formatRupiah(o.delivery_fee)}</p>
@@ -404,9 +406,15 @@ export default function DriverDashboard() {
           <AlertDialogHeader>
             <AlertDialogTitle>Terima pesanan ini?</AlertDialogTitle>
             <AlertDialogDescription>
-              {acceptTarget
-                ? `${acceptTarget.store_name} → ${acceptTarget.destination_address}. Ongkir ${formatRupiah(acceptTarget.delivery_fee)}.`
-                : ""}
+              {acceptTarget ? (
+                <div className="space-y-1 text-sm">
+                  <p>{acceptTarget.store_name} → {acceptTarget.destination_address}</p>
+                  <p className="font-semibold text-primary">Ongkir {formatRupiah(acceptTarget.delivery_fee)}</p>
+                  {acceptTarget.store_detail && <p>📍 {acceptTarget.store_detail}</p>}
+                  {acceptTarget.destination_detail && <p>📝 {acceptTarget.destination_detail}</p>}
+                  {acceptTarget.notes && <p className="whitespace-pre-wrap">🗒️ {acceptTarget.notes}</p>}
+                </div>
+              ) : ""}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

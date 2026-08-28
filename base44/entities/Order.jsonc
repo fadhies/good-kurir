@@ -38,6 +38,9 @@
     "store_address": {
       "type": "string"
     },
+    "store_detail": {
+      "type": "string"
+    },
     "store_lat": {
       "type": "number"
     },

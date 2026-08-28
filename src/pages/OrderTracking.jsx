@@ -362,7 +362,10 @@ export default function OrderTracking() {
             <div>
               <p className="text-xs text-muted-foreground">{order.type === "person" ? "Lokasi Jemput" : "Toko/Restoran"}</p>
               <p className="font-semibold text-sm">{order.store_name}</p>
-              <p className="text-sm text-muted-foreground">{order.store_address}</p>
+              <p className="text-sm text-muted-foreground selectable">{order.store_address}</p>
+              {order.store_detail && (
+                <p className="text-sm text-muted-foreground mt-1 selectable">📍 {order.store_detail}</p>
+              )}
             </div>
           </div>
           <div className="h-px bg-border" />
@@ -382,8 +385,8 @@ export default function OrderTracking() {
               <div className="flex items-start gap-3">
                 <FileText className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Catatan</p>
-                  <p className="text-sm">{order.notes}</p>
+                  <p className="text-xs text-muted-foreground">{order.type === "food" ? "Rincian Pesanan" : "Catatan"}</p>
+                  <p className="text-sm whitespace-pre-wrap selectable">{order.notes}</p>
                 </div>
               </div>
             </>

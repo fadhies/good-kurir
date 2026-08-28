@@ -26,6 +26,7 @@ export default function NewOrder() {
   const [destination, setDestination] = useState(null);
   const [notes, setNotes] = useState("");
   const [destDetail, setDestDetail] = useState("");
+  const [storeDetail, setStoreDetail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cashAvailable, setCashAvailable] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -98,6 +99,17 @@ export default function NewOrder() {
     }
     setSubmitting(true);
     try {
+      // Cek apakah ada driver yang bisa melayani mode pengantaran terpilih
+      const check = await base44.functions.invoke("checkModeDriver", { mode, paymentMethod });
+      if (check.data && !check.data.available) {
+        toast({
+          title: "Driver dengan mode yang Anda pilih tidak tersedia",
+          description: check.data.reason,
+          variant: "destructive",
+        });
+        return;
+      }
+
       const order = await base44.entities.Order.create({
         user_id: user.id,
         type,
@@ -105,6 +117,7 @@ export default function NewOrder() {
         payment_method: paymentMethod,
         store_name: store.name || store.address.split(",")[0],
         store_address: store.address,
+        store_detail: storeDetail,
         store_lat: store.lat,
         store_lng: store.lng,
         destination_address: destination.address,
@@ -248,6 +261,17 @@ export default function NewOrder() {
             accent={currentType.accent}
             biasCenter={userLoc}
           />
+          <div className="mt-3">
+            <label className="text-sm font-semibold text-foreground/80 block mb-1.5">
+              Detil alamat {type === "food" ? "resto/toko" : "lokasi"} (opsional)
+            </label>
+            <input
+              value={storeDetail}
+              onChange={(e) => setStoreDetail(e.target.value)}
+              placeholder="Mis: Lantai 2, depan kasir, sebelah minimarket"
+              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
         </div>
 
         {/* Destination */}
