@@ -5,7 +5,14 @@ import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone } from "lucide-react";
+import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation } from "lucide-react";
+
+function mapsUrl(lat, lng, address) {
+  const q = (lat != null && lng != null)
+    ? `${lat},${lng}`
+    : encodeURIComponent(address || "");
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -370,7 +377,14 @@ export default function OrderTracking() {
             <div>
               <p className="text-xs text-muted-foreground">{order.type === "person" ? "Lokasi Jemput" : "Toko/Restoran"}</p>
               <p className="font-semibold text-sm">{order.store_name}</p>
-              <p className="text-sm text-muted-foreground selectable">{order.store_address}</p>
+              <a
+                href={mapsUrl(order.store_lat, order.store_lng, order.store_address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary underline selectable inline-flex items-center gap-1 break-all"
+              >
+                <Navigation className="w-3.5 h-3.5 shrink-0" /> {order.store_address}
+              </a>
               {order.store_detail && (
                 <p className="text-sm text-muted-foreground mt-1 selectable">📍 {order.store_detail}</p>
               )}
@@ -381,7 +395,14 @@ export default function OrderTracking() {
             <MapPin className="w-5 h-5 text-accent mt-0.5 shrink-0" />
             <div>
               <p className="text-xs text-muted-foreground">Tujuan</p>
-              <p className="font-semibold text-sm selectable">{order.destination_address}</p>
+              <a
+                href={mapsUrl(order.destination_lat, order.destination_lng, order.destination_address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-sm text-primary underline selectable inline-flex items-center gap-1 break-all"
+              >
+                <Navigation className="w-3.5 h-3.5 shrink-0" /> {order.destination_address}
+              </a>
               {order.destination_detail && (
                 <p className="text-sm text-muted-foreground mt-1 selectable">{order.destination_detail}</p>
               )}
