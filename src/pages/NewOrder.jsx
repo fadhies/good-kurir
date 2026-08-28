@@ -103,7 +103,7 @@ export default function NewOrder() {
       const check = await base44.functions.invoke("checkModeDriver", { mode, paymentMethod });
       if (check.data && !check.data.available) {
         toast({
-          title: "Driver dengan mode yang Anda pilih tidak tersedia",
+          title: "Driver dengan mode yang Anda pilih belum tersedia",
           description: check.data.reason,
           variant: "destructive",
         });
