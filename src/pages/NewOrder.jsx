@@ -207,7 +207,7 @@ export default function NewOrder() {
         <h3 className="font-bold mb-2 text-sm">Metode Pembayaran</h3>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { v: "qris", l: "QRIS" },
+            { v: "qris", l: "Non Tunai" },
             { v: "cash", l: "Tunai" },
           ].map((o) => {
             const active = paymentMethod === o.v;
