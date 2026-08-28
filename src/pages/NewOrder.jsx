@@ -228,12 +228,12 @@ export default function NewOrder() {
         </div>
         {paymentMethod === "cash" && (
           <p className="text-xs text-muted-foreground mt-2">
-            Pelanggang membayar ke driver saat pesanan sampai.
+            Pelanggan membayar ke driver saat pesanan sampai.
           </p>
         )}
         {paymentMethod === "qris" && (
           <p className="text-xs text-muted-foreground mt-2">
-            Bayar langsung ke toko/resto atau transfer ke driver.
+            Pelanggan bayar langsung ke toko/resto atau transfer ke driver.
           </p>
         )}
         {!cashAvailable && (
