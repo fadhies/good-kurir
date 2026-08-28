@@ -493,7 +493,7 @@ export default function OrderTracking() {
                         </span>
                         <span>
                           <span className="block font-semibold text-sm">Saya Talangi</span>
-                          <span className="block text-xs text-muted-foreground">Saya bayar ke toko dulu, lalu tagih ke pelanggan via QRIS.</span>
+                          <span className="block text-xs text-muted-foreground">Pelanggan akan mengisi saldo Dana saya untuk bayar tagihan resto/toko.</span>
                         </span>
                       </button>
                       <button
