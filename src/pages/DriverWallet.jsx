@@ -45,7 +45,7 @@ export default function DriverWallet() {
         <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />
         <div className="relative">
           <div className="flex items-center gap-2 text-sm mb-2 text-[hsl(var(--muted-foreground))]">
-            <Wallet className="w-4 h-4" /> Saldo Tersedia
+            <Wallet className="w-4 h-4" /> Penghasilan diterima
           </div>
           <p className="font-display text-4xl font-extrabold text-[hsl(var(--muted-foreground))]">{formatRupiah(balance)}</p>
           <button
