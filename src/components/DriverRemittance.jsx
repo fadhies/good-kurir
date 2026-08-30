@@ -161,7 +161,7 @@ export default function DriverRemittance() {
                 }
                 </p>
                 <div className="text-xs text-muted-foreground space-y-0.5 mt-0.5">
-                  <p>{g.count} order hari itu</p>
+                  <p>{g.count} order hari ini</p>
                   <div className="flex justify-between gap-2"><span>Fee admin (Rp1.000 × {g.count})</span><span>{formatRupiah(g.adminFee)}</span></div>
                   <div className="flex justify-between gap-2"><span>Fee layanan</span><span>{formatRupiah(g.serviceFee)}</span></div>
                 </div>
