@@ -258,7 +258,7 @@ export default function DriverDashboard() {
       )}
 
       {/* Status card */}
-      <div className={`rounded-2xl p-5 mb-4 ${profile.is_online ? "bg-[#EAF01C] text-white" : "bg-card border border-border"}`}>
+      <div className={`rounded-2xl p-5 mb-4 ${profile.is_online ? "bg-[#EAF01C] text-brown" : "bg-card border border-border"}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile.is_online ? "bg-white/20" : "bg-secondary"}`}>
