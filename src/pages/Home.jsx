@@ -52,7 +52,7 @@ export default function Home() {
         <div className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-[11px] font-semibold mb-2 text-[hsl(var(--secondary-foreground))]">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-2 text-[hsl(var(--secondary-foreground))] bg-[hsl(var(--card-foreground))]">
               <Sparkles className="w-3 h-3" /> Halo, {user?.full_name?.split(" ")[0] || "Sobat"}!
             </div>
             <h1 className="font-display text-2xl md:text-3xl font-extrabold leading-tight text-[hsl(var(--popover-foreground))]">

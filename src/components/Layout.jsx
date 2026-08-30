@@ -68,7 +68,7 @@ export default function Layout({ children }) {
               <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/30">
                 <Bike className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-lg tracking-tight [font-family:'Alegreya',_serif] font-medium">
+              <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
                 Good<span className="text-primary">Kurir</span>
               </span>
             </Link>
