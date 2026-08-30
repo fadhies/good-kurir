@@ -53,7 +53,7 @@ export default function AdminRemittance() {
       <p className="text-muted-foreground text-sm mb-6">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
 
       {/* Balance card */}
-      <div className="rounded-2xl p-5 mb-6 bg-gradient-to-br from-primary to-amber-600 text-white">
+      <div className="rounded-2xl p-5 mb-6 bg-[#EAF01C] text-stone-900">
         <div className="flex items-center gap-2 text-sm mb-2 text-white/90">
           <Wallet className="w-4 h-4" /> Total Penghasilan Admin
         </div>
