@@ -173,7 +173,7 @@ export default function AdminDashboard() {
       <div className="mt-8">
         <h2 className="font-display text-xl font-extrabold mb-1">Dompet Admin</h2>
         <p className="text-muted-foreground text-sm mb-4">Akumulasi fee Rp2.000 dari setiap pesanan selesai.</p>
-        <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white mb-4">
+        <div className="bg-[#EAF01C] rounded-2xl p-5 text-white mb-4">
           <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
             <Wallet className="w-4 h-4" /> Saldo Dompet Admin
           </div>
