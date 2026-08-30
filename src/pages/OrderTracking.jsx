@@ -343,15 +343,15 @@ export default function OrderTracking() {
           <div key={t.key} className="flex flex-col items-center flex-1 min-w-[60px] relative">
               {i < timeline.length - 1 &&
             <div
-              className={`absolute top-3 left-1/2 w-full h-0.5 ${
-              i < currentIdx ? "bg-primary" : "bg-border"}`
+              className={`absolute top-3 left-1/2 w-full h-0.5 bg-[hsl(var(--chart-4))] ${
+              i < currentIdx ? "" : "bg-border"}`
               } />
 
             }
               <div
-              className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+              className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold bg-[hsl(var(--chart-4))] ${
               i <= currentIdx ?
-              "bg-primary text-primary-foreground" :
+              "text-primary-foreground" :
               "bg-secondary text-muted-foreground"}`
               }>
               
