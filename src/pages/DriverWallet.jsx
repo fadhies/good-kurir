@@ -4,22 +4,21 @@ import Layout from "@/components/Layout";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
-import WithdrawalDialog from "@/components/WithdrawalDialog";
-import WithdrawalList from "@/components/WithdrawalList";
 import DriverRemittance from "@/components/DriverRemittance";
 
 export default function DriverWallet() {
   const { user } = useAuth();
   const [txns, setTxns] = useState(null);
   const [balance, setBalance] = useState(0);
-  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   async function load() {
     try {
-      const list = await base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 50);
+      const [list, completed] = await Promise.all([
+        base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 50),
+        base44.entities.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
+      ]);
       setTxns(list);
-      const bal = list.reduce((acc, t) => acc + (t.type === "credit" ? t.amount : -t.amount), 0);
-      setBalance(bal);
+      setBalance(completed.reduce((acc, o) => acc + (o.delivery_fee || 0) + (o.service_fee || 0), 0));
     } catch (e) {
       setTxns([]);
     }
@@ -28,11 +27,13 @@ export default function DriverWallet() {
   useEffect(() => {
     load();
     let timer;
-    const unsub = base44.entities.WalletTransaction.subscribe(() => {
+    const refresh = () => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => load(), 600);
-    });
-    return () => {unsub();if (timer) clearTimeout(timer);};
+    };
+    const unsubW = base44.entities.WalletTransaction.subscribe(refresh);
+    const unsubO = base44.entities.Order.subscribe(refresh);
+    return () => {unsubW();unsubO();if (timer) clearTimeout(timer);};
   }, []);
 
   return (
@@ -101,8 +102,6 @@ export default function DriverWallet() {
         )}
         </div>
       }
-      <WithdrawalDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={balance} onDone={load} />
-      <WithdrawalList />
     </Layout>);
 
 }
