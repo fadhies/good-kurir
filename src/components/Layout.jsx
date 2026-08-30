@@ -61,7 +61,7 @@ export default function Layout({ children }) {
               
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <span className="font-display font-bold text-lg tracking-tight">{pageTitle}</span>
+              <span className="font-bold tracking-tight [font-family:'Archivo',_sans-serif] text-base">{pageTitle}</span>
             </div> :
 
           <Link to="/" className="flex items-center gap-2">
