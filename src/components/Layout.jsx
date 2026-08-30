@@ -9,17 +9,17 @@ import AccountDeletionDialog from "@/components/AccountDeletionDialog";
 import NotificationBell from "@/components/NotificationBell";
 
 const USER_ITEMS = [
-  { to: "/", label: "Beranda", icon: Home },
-  { to: "/pesan", label: "Pesan", icon: ShoppingBag },
-  { to: "/pesanan-saya", label: "Pesanan", icon: ListOrdered },
-];
+{ to: "/", label: "Beranda", icon: Home },
+{ to: "/pesan", label: "Pesan", icon: ShoppingBag },
+{ to: "/pesanan-saya", label: "Pesanan", icon: ListOrdered }];
+
 const DRIVER_ITEMS = [
-  { to: "/driver", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/driver/dompet", label: "Dompet", icon: Wallet },
-];
+{ to: "/driver", label: "Dashboard", icon: LayoutDashboard },
+{ to: "/driver/dompet", label: "Dompet", icon: Wallet }];
+
 const ADMIN_ITEMS = [
-  { to: "/admin", label: "Admin", icon: ShieldCheck },
-];
+{ to: "/admin", label: "Admin", icon: ShieldCheck }];
+
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -32,11 +32,11 @@ export default function Layout({ children }) {
 
   const tabPaths = items.map((i) => i.to);
   const isDetail = !tabPaths.includes(location.pathname);
-  const pageTitle = /^\/pesanan\//.test(location.pathname)
-    ? "Detail Pesanan"
-    : location.pathname === "/jadi-driver"
-    ? "Daftar Driver"
-    : "Good Kurir";
+  const pageTitle = /^\/pesanan\//.test(location.pathname) ?
+  "Detail Pesanan" :
+  location.pathname === "/jadi-driver" ?
+  "Daftar Driver" :
+  "Good Kurir";
 
   const handleLogout = () => {
     logout();
@@ -52,27 +52,27 @@ export default function Layout({ children }) {
       {/* Top bar */}
       <header className="sticky top-0 z-40 glass-card border-b border-border/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          {isDetail ? (
-            <div className="flex items-center gap-1">
+          {isDetail ?
+          <div className="flex items-center gap-1">
               <button
-                onClick={() => navigate(-1)}
-                className="p-2 rounded-full hover:bg-secondary text-foreground transition-colors"
-                title="Kembali"
-              >
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-full hover:bg-secondary text-foreground transition-colors"
+              title="Kembali">
+              
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <span className="font-display font-bold text-lg tracking-tight">{pageTitle}</span>
-            </div>
-          ) : (
-            <Link to="/" className="flex items-center gap-2">
+            </div> :
+
+          <Link to="/" className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/30">
                 <Bike className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-display font-extrabold text-lg tracking-tight">
+              <span className="text-lg tracking-tight [font-family:'Archivo',_sans-serif] font-normal">
                 Good<span className="text-primary">Kurir</span>
               </span>
             </Link>
-          )}
+          }
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary">
               <UserCircle className="w-4 h-4 text-secondary-foreground" />
@@ -88,15 +88,15 @@ export default function Layout({ children }) {
             <button
               onClick={handleExit}
               className="md:hidden p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-              title="Keluar Aplikasi"
-            >
+              title="Keluar Aplikasi">
+              
               <Power className="w-5 h-5" />
             </button>
             <button
               onClick={handleLogout}
               className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-              title="Keluar"
-            >
+              title="Keluar">
+              
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -119,17 +119,17 @@ export default function Layout({ children }) {
               to={item.to}
               className={cn(
                 "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
-                active
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              )}
-            >
+                active ?
+                "bg-primary text-primary-foreground shadow-md shadow-primary/30" :
+                "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              )}>
+              
               <Icon className="w-5 h-5" />
               {item.label}
-            </Link>
-          );
+            </Link>);
+
         })}
       </nav>
-    </div>
-  );
+    </div>);
+
 }
