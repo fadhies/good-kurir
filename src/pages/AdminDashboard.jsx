@@ -34,7 +34,7 @@ export default function AdminDashboard() {
 
       const pending = drivers.filter((d) => d.verification_status === "pending");
       const active = orders.filter((o) =>
-        ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"].includes(o.status)
+      ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"].includes(o.status)
       );
       const completed = orders.filter((o) => o.status === "completed");
       const revenue = txs.filter((t) => t.type === "debit").reduce((s, t) => s + (t.amount || 0), 0);
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
         activeOrders: active.length,
         completedOrders: completed.length,
         totalOrders: orders.length,
-        feeRevenue: revenue,
+        feeRevenue: revenue
       });
 
       // Saldo & transaksi admin dihitung dari daftar txs (menghindari panggilan tambahan)
@@ -105,8 +105,8 @@ export default function AdminDashboard() {
             Coba Lagi
           </button>
         </div>
-      </AdminLayout>
-    );
+      </AdminLayout>);
+
   }
 
   const cards = [
@@ -174,10 +174,10 @@ export default function AdminDashboard() {
         <h2 className="font-display text-xl font-extrabold mb-1">Dompet Admin</h2>
         <p className="text-muted-foreground text-sm mb-4">Akumulasi fee Rp2.000 dari setiap pesanan selesai.</p>
         <div className="bg-[#EAF01C] rounded-2xl p-5 text-white mb-4">
-          <div className="flex items-center gap-2 text-white/80 text-sm mb-1">
+          <div className="flex items-center gap-2 text-sm mb-1 text-[hsl(var(--primary))]">
             <Wallet className="w-4 h-4" /> Saldo Dompet Admin
           </div>
-          <p className="font-display text-3xl font-extrabold">{formatRupiah(wallet.balance)}</p>
+          <p className="font-display text-3xl font-extrabold text-[hsl(var(--primary))]">{formatRupiah(wallet.balance)}</p>
         </div>
         <h3 className="font-bold mb-2 text-sm">Rincian Transaksi</h3>
         <div className="space-y-2">
