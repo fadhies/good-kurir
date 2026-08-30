@@ -282,19 +282,19 @@ export default function DriverDashboard() {
           </button>
         </div>
         <div className="grid grid-cols-3 gap-3 mt-4">
-          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-white/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold ${profile.is_online ? "text-white" : ""}`}>{totalTrips}</p>
-            <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Trip</p>
+          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-stone-900/15" : "bg-secondary"}`}>
+            <p className={`text-lg font-bold ${profile.is_online ? "text-stone-900" : ""}`}>{totalTrips}</p>
+            <p className={`text-xs ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>Trip</p>
           </div>
-          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-white/15" : "bg-secondary"}`}>
+          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-stone-900/15" : "bg-secondary"}`}>
             <p className={`text-lg font-bold flex items-center justify-center gap-0.5 ${profile.is_online ? "text-white" : ""}`}>
               <Star className="w-3.5 h-3.5 fill-current" /> {(profile.rating || 5).toFixed(1)}
             </p>
-            <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Rating</p>
+            <p className={`text-xs ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>Rating</p>
           </div>
-          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-white/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold ${profile.is_online ? "text-white" : ""}`}>{orders.length}</p>
-            <p className={`text-xs ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>Orderan Aktif</p>
+          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-stone-900/15" : "bg-secondary"}`}>
+            <p className={`text-lg font-bold ${profile.is_online ? "text-stone-900" : ""}`}>{orders.length}</p>
+            <p className={`text-xs ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>Orderan Aktif</p>
           </div>
         </div>
       </div>
