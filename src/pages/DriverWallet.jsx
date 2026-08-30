@@ -48,14 +48,14 @@ export default function DriverWallet() {
             <Wallet className="w-4 h-4" /> Penghasilan diterima
           </div>
           <p className="font-display text-4xl font-extrabold text-[hsl(var(--muted-foreground))]">{formatRupiah(balance)}</p>
-          <button
-            onClick={() => setWithdrawOpen(true)}
-            disabled={balance < 10000}
-            className="mt-3 inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 disabled:opacity-50 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors text-[hsl(var(--muted-foreground))] hidden">
-            
-            <Banknote className="w-4 h-4" /> Tarik Saldo
-          </button>
-          <p className="text-xs mt-2 text-[hsl(var(--muted-foreground))] hidden">Minimal saldo tersisa Rp10.000 saat menarik</p>
+          
+
+
+
+
+
+          
+          
         </div>
       </div>
 
