@@ -44,6 +44,10 @@ export default function AppBottomNav() {
 
   const activeTab = activeTabFor(location.pathname);
 
+  // Admin pages use their own AdminLayout navigation; don't render the user
+  // bottom nav there or it covers the admin sub-menu (Ringkasan/Tarif/Setoran).
+  if (location.pathname.startsWith("/admin")) return null;
+
   function handleTap(item) {
     // Force redirect to the tab root when tapping the current tab — even from
     // a nested detail route — so users always land on the root of that tab.
