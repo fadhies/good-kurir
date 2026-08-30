@@ -121,7 +121,7 @@ export default function MyOrders() {
                 </div>
                 <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
                 <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
-                <p className="text-sm font-semibold text-primary mt-1">{formatRupiah((o.item_cost || 0) + (o.delivery_fee || 0))}</p>
+                <p className="text-sm font-semibold text-primary mt-1">{formatRupiah((o.item_cost || 0) + (o.delivery_fee || 0) + (o.service_fee || 0))}</p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
             </button>
