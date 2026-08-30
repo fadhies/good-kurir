@@ -108,7 +108,7 @@ export default function DriverRemittance() {
       <h2 className="font-bold mb-1 flex items-center gap-2">
         <Banknote className="w-5 h-5 text-primary" /> Setor Fee ke Admin
       </h2>
-      <p className="text-sm text-muted-foreground mb-3">Setiap hari wajib setor fee layanan + Rp1.000/transaksi ke admin via QRIS. Jika belum setor, Anda tidak bisa menerima pesanan baru besok.
+      <p className="text-sm text-muted-foreground mb-3">Setiap hari wajib setor Rp1.000/order + fee layanan ke admin via QRIS. Jika belum setor, Anda tidak bisa menerima pesanan baru besok.
 
       </p>
 
