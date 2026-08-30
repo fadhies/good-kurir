@@ -31,8 +31,10 @@ export default function DriverRemittance() {
       const byDate = {};
       for (const o of completed) {
         const d = makassarDateKey(new Date(o.updated_date));
-        if (!byDate[d]) byDate[d] = { due: 0, count: 0 };
+        if (!byDate[d]) byDate[d] = { due: 0, count: 0, serviceFee: 0, adminFee: 0 };
         byDate[d].due += (o.service_fee || 0) + (o.driver_remit_fee || 0);
+        byDate[d].serviceFee += (o.service_fee || 0);
+        byDate[d].adminFee += (o.driver_remit_fee || 0);
         byDate[d].count += 1;
       }
       const remitByDate = {};
@@ -47,6 +49,8 @@ export default function DriverRemittance() {
           date,
           due: v.due,
           count: v.count,
+          serviceFee: v.serviceFee,
+          adminFee: v.adminFee,
           settled: !!remitByDate[date],
           proof: remitByDate[date]?.proof_photo || null,
           overdue: date < today,
@@ -156,7 +160,11 @@ export default function DriverRemittance() {
                     <span className="ml-2 text-xs text-muted-foreground font-medium">Hari ini</span>
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground">{g.count} transaksi • fee layanan + Rp1.000/trx</p>
+                <div className="text-xs text-muted-foreground space-y-0.5 mt-0.5">
+                  <p>{g.count} order hari itu</p>
+                  <div className="flex justify-between gap-2"><span>Fee admin (Rp1.000 × {g.count})</span><span>{formatRupiah(g.adminFee)}</span></div>
+                  <div className="flex justify-between gap-2"><span>Fee layanan</span><span>{formatRupiah(g.serviceFee)}</span></div>
+                </div>
               </div>
               <p className="font-bold text-primary">{formatRupiah(g.due)}</p>
             </div>
