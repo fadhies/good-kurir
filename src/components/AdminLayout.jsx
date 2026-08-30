@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 import { exitApp } from "@/lib/exitApp";
 
 const NAV = [
-  { to: "/admin", label: "Ringkasan", icon: LayoutDashboard },
-  { to: "/admin/driver", label: "Verifikasi Driver", icon: BikeIcon },
-  { to: "/admin/users", label: "Pengguna", icon: Users },
-  { to: "/admin/orders", label: "Pesanan", icon: ListOrdered },
-  { to: "/admin/penarikan", label: "Penarikan", icon: Wallet },
-];
+{ to: "/admin", label: "Ringkasan", icon: LayoutDashboard },
+{ to: "/admin/driver", label: "Verifikasi Driver", icon: BikeIcon },
+{ to: "/admin/users", label: "Pengguna", icon: Users },
+{ to: "/admin/orders", label: "Pesanan", icon: ListOrdered },
+{ to: "/admin/penarikan", label: "Penarikan", icon: Wallet }];
+
 
 export default function AdminLayout({ children }) {
   const { user, logout } = useAuth();
@@ -47,31 +47,31 @@ export default function AdminLayout({ children }) {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
                   active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                )}
-              >
+                )}>
+                
                 <Icon className="w-4 h-4" />
                 {item.label}
-              </Link>
-            );
+              </Link>);
+
           })}
         </nav>
         <div className="p-3 border-t border-border">
           <button
             onClick={() => navigate("/")}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-          >
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+            
             <Home className="w-4 h-4" /> Kembali ke App
           </button>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-          >
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+            
             <LogOut className="w-4 h-4" /> Keluar Akun
           </button>
           <button
             onClick={handleExit}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-          >
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+            
             <Power className="w-4 h-4" /> Keluar Aplikasi
           </button>
         </div>
@@ -82,7 +82,7 @@ export default function AdminLayout({ children }) {
         <div className="h-14 flex items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-primary" />
-            <span className="font-display font-extrabold">Admin Good Kurir</span>
+            <span className="[font-family:'Alegreya',_serif] font-normal">Admin Good Kurir</span>
           </div>
           <div className="flex items-center gap-1">
             <button onClick={() => navigate("/")} className="p-2 text-muted-foreground" title="Kembali ke App">
@@ -103,25 +103,25 @@ export default function AdminLayout({ children }) {
         <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border">
           <div className="flex h-16">
           {NAV.map((item) => {
-            const active = location.pathname === item.to;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 flex-1 text-[10px] font-medium",
-                  active ? "text-primary" : "text-muted-foreground"
-                )}
-              >
+              const active = location.pathname === item.to;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-0.5 flex-1 text-[10px] font-medium",
+                    active ? "text-primary" : "text-muted-foreground"
+                  )}>
+                  
                 <Icon className="w-5 h-5" />
                 {item.label.split(" ")[0]}
-              </Link>
-            );
-          })}
+              </Link>);
+
+            })}
           </div>
         </nav>
       </div>
-    </div>
-  );
+    </div>);
+
 }
