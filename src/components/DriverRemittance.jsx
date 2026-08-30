@@ -95,7 +95,9 @@ export default function DriverRemittance() {
     return <div className="flex justify-center py-6"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
   }
 
-  const overdueCount = (groups || []).filter((g) => g.overdue && !g.settled).length;
+  const unsettled = (groups || []).filter((g) => !g.settled);
+  const overdueCount = unsettled.filter((g) => g.overdue).length;
+  const totalDue = unsettled.reduce((s, g) => s + g.due, 0);
 
   return (
     <div className="mt-6 bg-card rounded-2xl border border-border p-5">
@@ -105,6 +107,14 @@ export default function DriverRemittance() {
       <p className="text-sm text-muted-foreground mb-3">
         Setiap hari setor akumulasi fee layanan + Rp1.000/transaksi ke admin via QRIS. Jika belum setor, Anda tidak bisa menerima pesanan baru besok.
       </p>
+
+      <div className="flex items-center justify-between rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 mb-3">
+        <div>
+          <p className="text-xs text-muted-foreground">Total akumulasi yang harus disetor</p>
+          <p className="text-xs text-muted-foreground">{unsettled.length} hari belum disetor</p>
+        </div>
+        <p className="font-display text-2xl font-extrabold text-primary">{formatRupiah(totalDue)}</p>
+      </div>
 
       {overdueCount > 0 && (
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3 mb-3 text-sm">
