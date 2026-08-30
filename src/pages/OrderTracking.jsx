@@ -427,16 +427,16 @@ export default function OrderTracking() {
               <span className="text-muted-foreground">Ongkir</span>
               <span className="font-medium">{formatRupiah(order.delivery_fee)}</span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Fee Layanan (10%)</span>
+              <span className="font-medium">{formatRupiah(order.service_fee)}</span>
+            </div>
             {order.item_cost != null &&
             <div className="flex justify-between">
                 <span className="text-muted-foreground">Harga Barang</span>
                 <span className="font-medium">{formatRupiah(order.item_cost)}</span>
               </div>
             }
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Fee Layanan (10%)</span>
-              <span className="font-medium">{formatRupiah(order.service_fee)}</span>
-            </div>
             <div className="h-px bg-border my-1" />
             <div className="flex justify-between font-bold text-base">
               <span>Total</span>
