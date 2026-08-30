@@ -10,6 +10,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { useToast } from "@/components/ui/use-toast";
 import TabKeepAlive from '@/components/TabKeepAlive';
 import AppBottomNav from '@/components/AppBottomNav';
 import { exitApp } from '@/lib/exitApp';
@@ -43,8 +44,10 @@ const pageVariants = {
 function BackHandlerManager() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   const pathRef = useRef(location.pathname);
   pathRef.current = location.pathname;
+  const lastBackRef = useRef(0);
   useEffect(() => {
     const onBack = (e) => {
       // Dismiss the topmost open modal/dropdown first, otherwise navigate back / exit.
@@ -55,14 +58,22 @@ function BackHandlerManager() {
       const path = pathRef.current;
       if (path && path !== "/") {
         navigate(-1);
-      } else {
+        return;
+      }
+      // On the root tab, require a second back press within 2s before exiting.
+      const now = Date.now();
+      if (now - lastBackRef.current < 2000) {
+        lastBackRef.current = 0;
         exitApp();
+      } else {
+        lastBackRef.current = now;
+        toast({ title: "Tekan kembali sekali lagi untuk keluar", duration: 2000 });
       }
     };
     // Capacitor fires 'backbutton' on document when a listener is registered.
     document.addEventListener("backbutton", onBack, false);
     return () => document.removeEventListener("backbutton", onBack, false);
-  }, [navigate]);
+  }, [navigate, toast]);
   return null;
 }
 
