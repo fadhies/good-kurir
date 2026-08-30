@@ -82,6 +82,12 @@
     "delivery_fee": {
       "type": "number"
     },
+    "service_fee": {
+      "type": "number"
+    },
+    "driver_remit_fee": {
+      "type": "number"
+    },
     "app_fee": {
       "type": "number"
     },

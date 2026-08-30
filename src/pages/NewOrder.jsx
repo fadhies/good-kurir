@@ -4,7 +4,8 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
-import { haversineKm, calcDeliveryFee, formatRupiah } from "@/lib/geo";
+import { haversineKm, formatRupiah } from "@/lib/geo";
+import { getTariffs, computeDeliveryFee, computeServiceFee, DEFAULT_TARIFFS } from "@/lib/tariffs";
 import { Bike, Package, User, Loader2, ShoppingBag, MapPin, FileText, Route } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -31,6 +32,11 @@ export default function NewOrder() {
   const [cashAvailable, setCashAvailable] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [userLoc, setUserLoc] = useState(null);
+  const [tariffs, setTariffs] = useState(DEFAULT_TARIFFS);
+
+  useEffect(() => {
+    getTariffs().then(setTariffs).catch(() => {});
+  }, []);
 
   useEffect(() => {
     base44.functions
@@ -54,7 +60,9 @@ export default function NewOrder() {
     return null;
   }, [store, destination]);
 
-  const deliveryFee = distance != null ? calcDeliveryFee(distance, mode, type) : 0;
+  const deliveryFee = distance != null ? computeDeliveryFee(tariffs, distance, mode, type) : 0;
+  const serviceFee = computeServiceFee(tariffs, deliveryFee);
+  const driverRemitFee = Number(tariffs.driver_remit_per_txn ?? 0);
 
   // Default lokasi berdasarkan GPS user:
   // - food: tujuan = lokasi user
@@ -127,6 +135,8 @@ export default function NewOrder() {
         notes,
         status: "pending_match",
         delivery_fee: deliveryFee,
+        service_fee: serviceFee,
+        driver_remit_fee: driverRemitFee,
         distance_km: distance ? Math.round(distance * 100) / 100 : 0,
       });
 
@@ -178,8 +188,8 @@ export default function NewOrder() {
           <h3 className="font-bold mb-2 text-sm">Mode Pengantaran</h3>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { v: "hemat", l: "Hemat", desc: "Rp7.000 / 4km", per: "+Rp1.000/km" },
-              { v: "cepat", l: "Cepat", desc: "Rp12.000 / 4km", per: "+Rp2.000/km" },
+              { v: "hemat", l: "Hemat", desc: `Rp${tariffs.food.hemat.base.toLocaleString("id-ID")} / ${tariffs.food.hemat.base_km}km`, per: `+Rp${tariffs.food.hemat.per_km.toLocaleString("id-ID")}/km` },
+              { v: "cepat", l: "Cepat", desc: `Rp${tariffs.food.cepat.base.toLocaleString("id-ID")} / ${tariffs.food.cepat.base_km}km`, per: `+Rp${tariffs.food.cepat.per_km.toLocaleString("id-ID")}/km` },
             ].map((o) => (
               <button
                 key={o.v}
@@ -198,7 +208,9 @@ export default function NewOrder() {
       ) : (
         <div className="mb-6 bg-secondary/50 rounded-2xl border border-border p-4">
           <h3 className="font-bold mb-1 text-sm">Tarif Antar</h3>
-          <p className="text-sm text-muted-foreground">Rp12.000 untuk 4 km pertama, +Rp2.000/km setelahnya.</p>
+          <p className="text-sm text-muted-foreground">
+            Rp{(tariffs[type]?.base ?? 0).toLocaleString("id-ID")} untuk {tariffs[type]?.base_km ?? 0} km pertama, +Rp{(tariffs[type]?.per_km ?? 0).toLocaleString("id-ID")}/km setelahnya.
+          </p>
         </div>
       )}
 
@@ -238,7 +250,7 @@ export default function NewOrder() {
         )}
         {!cashAvailable && (
           <p className="text-xs text-destructive mt-2">
-            Pembayaran tunai tidak tersedia (tidak ada driver dengan saldo dompet cukup).
+            Pembayaran tunai tidak tersedia (tidak ada driver online saat ini).
           </p>
         )}
       </div>
@@ -349,6 +361,14 @@ export default function NewOrder() {
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Ongkir</span>
               <span className="font-semibold">{formatRupiah(deliveryFee)}</span>
+            </div>
+            <div className="flex justify-between text-sm py-1">
+              <span className="text-muted-foreground">Fee Layanan ({tariffs.service_fee_percent}%)</span>
+              <span className="font-semibold">{formatRupiah(serviceFee)}</span>
+            </div>
+            <div className="flex justify-between text-sm py-1 pt-2 mt-1 border-t border-border">
+              <span className="font-semibold">Total Ongkir + Fee</span>
+              <span className="font-bold text-primary">{formatRupiah(deliveryFee + serviceFee)}</span>
             </div>
             {type === "food" && (
               <p className="text-xs text-muted-foreground mt-2">

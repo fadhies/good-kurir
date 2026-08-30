@@ -6,6 +6,7 @@ import { formatRupiah } from "@/lib/geo";
 import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
 import WithdrawalDialog from "@/components/WithdrawalDialog";
 import WithdrawalList from "@/components/WithdrawalList";
+import DriverRemittance from "@/components/DriverRemittance";
 
 export default function DriverWallet() {
   const { user } = useAuth();
@@ -57,6 +58,8 @@ export default function DriverWallet() {
           <p className="text-xs mt-2 text-[hsl(var(--muted-foreground))]">Minimal saldo tersisa Rp10.000 saat menarik</p>
         </div>
       </div>
+
+      {user?.role !== "admin" && <DriverRemittance />}
 
       {/* Transactions */}
       <h2 className="font-bold mt-6 mb-3">Riwayat Transaksi</h2>

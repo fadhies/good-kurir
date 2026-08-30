@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Wallet, Home, Power } from "lucide-react";
+import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Wallet, Home, Power, Tag, Banknote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exitApp } from "@/lib/exitApp";
 
@@ -10,6 +10,8 @@ const NAV = [
 { to: "/admin/driver", label: "Verifikasi Driver", icon: BikeIcon },
 { to: "/admin/users", label: "Pengguna", icon: Users },
 { to: "/admin/orders", label: "Pesanan", icon: ListOrdered },
+{ to: "/admin/tarif", label: "Tarif", icon: Tag },
+{ to: "/admin/setoran", label: "Setoran", icon: Banknote },
 { to: "/admin/penarikan", label: "Penarikan", icon: Wallet }];
 
 

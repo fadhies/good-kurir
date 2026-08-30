@@ -275,14 +275,7 @@ export default function OrderTracking() {
       if (res.data?.success) {
         toast({
           title: "Pesanan selesai",
-          description:
-          isQris && order.store_qris_photo ?
-          "Ongkir dibayar tunai ke driver, fee Rp2.000 dipotong ke admin" :
-          isQris && order.driver_dana_number ?
-          "Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin" :
-          isQris ?
-          "Tagihan toko + ongkir masuk ke dompet driver, dipotong fee Rp2.000" :
-          "Fee Rp2.000 dipotong ke admin"
+          description: "Pendapatan masuk ke dompet driver. Setor fee layanan + Rp1.000 ke admin via QRIS di menu Dompet."
         });
         loadOrder();
       } else {
@@ -616,13 +609,7 @@ export default function OrderTracking() {
           }
             {order.status === "completed" &&
           <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
-                {isQris && order.store_qris_photo ?
-            "Pesanan selesai. Ongkir diterima tunai, fee Rp2.000 dipotong ke admin." :
-            isQris && order.driver_dana_number ?
-            "Pesanan selesai. Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin." :
-            isQris ?
-            "Pesanan selesai. Tagihan toko + ongkir masuk ke dompet, dipotong fee Rp2.000." :
-            "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}
+                Pesanan selesai. Pendapatan penuh masuk ke dompet Anda. Jangan lupa setor fee layanan + Rp1.000 ke admin.
               </p>
           }
           </div>
