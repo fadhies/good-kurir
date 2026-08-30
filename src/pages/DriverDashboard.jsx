@@ -107,7 +107,7 @@ export default function DriverDashboard() {
         const o = newOnes[0];
         toast({
           title: `🔔 Pesanan baru: ${o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}`,
-          description: `Dari ${o.store_name || "lokasi"} • Ongkir ${formatRupiah(o.delivery_fee)}`,
+          description: `Dari ${o.store_name || "lokasi"} • Ongkir ${formatRupiah((o.delivery_fee || 0) + (o.service_fee || 0))}`,
         });
       }
     } catch (e) {
@@ -345,7 +345,7 @@ export default function DriverDashboard() {
                   {o.notes && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">🗒️ {o.notes}</p>}
                   <div className="flex items-center justify-between mt-3">
                     <div>
-                      <p className="text-sm font-bold text-primary">Ongkir {formatRupiah(o.delivery_fee)}</p>
+                      <p className="text-sm font-bold text-primary">Ongkir {formatRupiah((o.delivery_fee || 0) + (o.service_fee || 0))}</p>
                       <p className="text-xs text-muted-foreground capitalize">
                         {o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"} • {o.mode === "cepat" ? "Cepat" : "Hemat"} • {o.payment_method === "cash" ? "Tunai" : o.payment_method}
                       </p>
@@ -391,7 +391,7 @@ export default function DriverDashboard() {
                   </div>
                   <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
                   <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
-                  <p className="text-sm font-semibold text-primary mt-1">Ongkir {formatRupiah(o.delivery_fee)}</p>
+                  <p className="text-sm font-semibold text-primary mt-1">Ongkir {formatRupiah((o.delivery_fee || 0) + (o.service_fee || 0))}</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
               </button>
@@ -409,7 +409,7 @@ export default function DriverDashboard() {
               {acceptTarget ? (
                 <div className="space-y-1 text-sm">
                   <p>{acceptTarget.store_name} → {acceptTarget.destination_address}</p>
-                  <p className="font-semibold text-primary">Ongkir {formatRupiah(acceptTarget.delivery_fee)}</p>
+                  <p className="font-semibold text-primary">Ongkir {formatRupiah((acceptTarget.delivery_fee || 0) + (acceptTarget.service_fee || 0))}</p>
                   {acceptTarget.store_detail && <p>📍 {acceptTarget.store_detail}</p>}
                   {acceptTarget.destination_detail && <p>📝 {acceptTarget.destination_detail}</p>}
                   {acceptTarget.notes && <p className="whitespace-pre-wrap">🗒️ {acceptTarget.notes}</p>}
