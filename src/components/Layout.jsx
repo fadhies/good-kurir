@@ -36,7 +36,7 @@ export default function Layout({ children }) {
     ? "Detail Pesanan"
     : location.pathname === "/jadi-driver"
     ? "Daftar Driver"
-    : "Ojol Kita";
+    : "Good Kurir";
 
   const handleLogout = () => {
     logout();
@@ -69,7 +69,7 @@ export default function Layout({ children }) {
                 <Bike className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="font-display font-extrabold text-lg tracking-tight">
-                Ojol<span className="text-primary">Kita</span>
+                Good<span className="text-primary">Kurir</span>
               </span>
             </Link>
           )}

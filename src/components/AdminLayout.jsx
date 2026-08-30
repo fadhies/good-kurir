@@ -32,7 +32,7 @@ export default function AdminLayout({ children }) {
             <ShieldCheck className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <p className="font-display font-extrabold text-sm leading-tight">KurirTa</p>
+            <p className="font-display font-extrabold text-sm leading-tight">Good Kurir</p>
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function AdminLayout({ children }) {
         <div className="h-14 flex items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-primary" />
-            <span className="font-display font-extrabold">Admin Ojol Kita</span>
+            <span className="font-display font-extrabold">Admin Good Kurir</span>
           </div>
           <div className="flex items-center gap-1">
             <button onClick={() => navigate("/")} className="p-2 text-muted-foreground" title="Kembali ke App">

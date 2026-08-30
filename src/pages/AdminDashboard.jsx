@@ -121,7 +121,7 @@ export default function AdminDashboard() {
   return (
     <AdminLayout>
       <h1 className="font-display text-2xl font-extrabold mb-1">Ringkasan</h1>
-      <p className="text-muted-foreground text-sm mb-6">Pantau aktivitas platform Ojol Kita.</p>
+      <p className="text-muted-foreground text-sm mb-6">Pantau aktivitas platform Good Kurir.</p>
 
       {stats.pending > 0 &&
       <Link
