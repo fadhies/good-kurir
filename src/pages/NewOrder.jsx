@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 const TYPES = {
   food: { label: "Beli Makanan", icon: Bike, accent: "24 90% 55%" },
   goods: { label: "Antar Barang", icon: Package, accent: "158 64% 40%" },
-  person: { label: "Antar Orang", icon: User, accent: "217 91% 50%" },
+  person: { label: "Antar Orang", icon: User, accent: "217 91% 50%" }
 };
 
 export default function NewOrder() {
@@ -39,10 +39,10 @@ export default function NewOrder() {
   }, []);
 
   useEffect(() => {
-    base44.functions
-      .invoke("checkCashAvailable", {})
-      .then((res) => setCashAvailable(!!res.data?.available))
-      .catch(() => setCashAvailable(false));
+    base44.functions.
+    invoke("checkCashAvailable", {}).
+    then((res) => setCashAvailable(!!res.data?.available)).
+    catch(() => setCashAvailable(false));
   }, []);
 
   useEffect(() => {
@@ -87,13 +87,13 @@ export default function NewOrder() {
         if (!active) return;
         const loc = { lat: latitude, lng: longitude, address };
         setUserLoc({ lat: latitude, lng: longitude });
-        if (type === "food") setDestination(loc);
-        else setStore(loc);
+        if (type === "food") setDestination(loc);else
+        setStore(loc);
       },
       () => {},
       { enableHighAccuracy: true, timeout: 10000 }
     );
-    return () => { active = false; };
+    return () => {active = false;};
   }, [type]);
 
   async function handleSubmit() {
@@ -113,7 +113,7 @@ export default function NewOrder() {
         toast({
           title: "Driver dengan mode yang Anda pilih belum tersedia",
           description: check.data.reason,
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
@@ -137,7 +137,7 @@ export default function NewOrder() {
         delivery_fee: deliveryFee,
         service_fee: serviceFee,
         driver_remit_fee: driverRemitFee,
-        distance_km: distance ? Math.round(distance * 100) / 100 : 0,
+        distance_km: distance ? Math.round(distance * 100) / 100 : 0
       });
 
       toast({ title: "Pesanan dibuat", description: "Menunggu driver menerima pesanan Anda..." });
@@ -168,91 +168,91 @@ export default function NewOrder() {
               key={key}
               onClick={() => setType(key)}
               className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 transition-all ${
-                active
-                  ? "border-primary bg-primary/5 shadow-sm"
-                  : "border-border bg-card hover:border-primary/30"
-              }`}
-            >
+              active ?
+              "border-primary bg-primary/5 shadow-sm" :
+              "border-border bg-card hover:border-primary/30"}`
+              }>
+              
               <Icon className={`w-6 h-6 ${active ? "text-primary" : "text-muted-foreground"}`} />
               <span className={`text-xs font-semibold ${active ? "text-primary" : "text-muted-foreground"}`}>
                 {t.label}
               </span>
-            </button>
-          );
+            </button>);
+
         })}
       </div>
 
       {/* Mode selector / Tarif info */}
-      {type === "food" ? (
-        <div className="mb-6">
+      {type === "food" ?
+      <div className="mb-6">
           <h3 className="font-bold mb-2 text-sm">Mode Pengantaran</h3>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { v: "hemat", l: "Hemat", desc: `Rp${tariffs.food.hemat.base.toLocaleString("id-ID")} / ${tariffs.food.hemat.base_km}km`, per: `+Rp${tariffs.food.hemat.per_km.toLocaleString("id-ID")}/km` },
-              { v: "cepat", l: "Cepat", desc: `Rp${tariffs.food.cepat.base.toLocaleString("id-ID")} / ${tariffs.food.cepat.base_km}km`, per: `+Rp${tariffs.food.cepat.per_km.toLocaleString("id-ID")}/km` },
-            ].map((o) => (
-              <button
-                key={o.v}
-                onClick={() => setMode(o.v)}
-                className={`p-3 rounded-2xl border-2 text-left transition-all ${
-                  mode === o.v ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"
-                }`}
-              >
+          { v: "hemat", l: "Hemat", desc: `Rp${tariffs.food.hemat.base.toLocaleString("id-ID")} / ${tariffs.food.hemat.base_km}km`, per: `+Rp${tariffs.food.hemat.per_km.toLocaleString("id-ID")}/km` },
+          { v: "cepat", l: "Cepat", desc: `Rp${tariffs.food.cepat.base.toLocaleString("id-ID")} / ${tariffs.food.cepat.base_km}km`, per: `+Rp${tariffs.food.cepat.per_km.toLocaleString("id-ID")}/km` }].
+          map((o) =>
+          <button
+            key={o.v}
+            onClick={() => setMode(o.v)}
+            className={`p-3 rounded-2xl border-2 text-left transition-all ${
+            mode === o.v ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"}`
+            }>
+            
                 <span className={`text-sm font-bold ${mode === o.v ? "text-primary" : ""}`}>{o.l}</span>
                 <p className="text-xs text-muted-foreground mt-0.5">{o.desc}</p>
                 <p className="text-[10px] text-muted-foreground">{o.per} setelahnya</p>
               </button>
-            ))}
+          )}
           </div>
-        </div>
-      ) : (
-        <div className="mb-6 bg-secondary/50 rounded-2xl border border-border p-4">
+        </div> :
+
+      <div className="mb-6 bg-secondary/50 rounded-2xl border border-border p-4">
           <h3 className="font-bold mb-1 text-sm">Tarif Antar</h3>
           <p className="text-sm text-muted-foreground">
             Rp{(tariffs[type]?.base ?? 0).toLocaleString("id-ID")} untuk {tariffs[type]?.base_km ?? 0} km pertama, +Rp{(tariffs[type]?.per_km ?? 0).toLocaleString("id-ID")}/km setelahnya.
           </p>
         </div>
-      )}
+      }
 
       {/* Payment method */}
       <div className="mb-6">
         <h3 className="font-bold mb-2 text-sm">Metode Pembayaran</h3>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { v: "qris", l: "Non Tunai" },
-            { v: "cash", l: "Tunai" },
-          ].map((o) => {
+          { v: "qris", l: "Non Tunai" },
+          { v: "cash", l: "Tunai" }].
+          map((o) => {
             const active = paymentMethod === o.v;
-            const disabled = (o.v === "cash" && !cashAvailable) || (o.v === "qris" && type !== "food");
+            const disabled = o.v === "cash" && !cashAvailable || o.v === "qris" && type !== "food";
             return (
               <button
                 key={o.v}
                 disabled={disabled}
                 onClick={() => setPaymentMethod(o.v)}
                 className={`p-2.5 rounded-xl border-2 text-center transition-all ${
-                  active ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"
-                } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
-              >
+                active ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/30"} ${
+                disabled ? "opacity-40 cursor-not-allowed" : ""}`}>
+                
                 <span className={`block text-xs font-bold ${active ? "text-primary" : ""}`}>{o.l}</span>
-              </button>
-            );
+              </button>);
+
           })}
         </div>
-        {paymentMethod === "cash" && (
-          <p className="text-xs text-muted-foreground mt-2">
+        {paymentMethod === "cash" &&
+        <p className="text-xs text-muted-foreground mt-2">
             Pelanggan membayar ke driver setelah pesanan selesai.
           </p>
-        )}
-        {paymentMethod === "qris" && (
-          <p className="text-xs text-muted-foreground mt-2">
+        }
+        {paymentMethod === "qris" &&
+        <p className="text-xs text-muted-foreground mt-2">
             Pelanggan bayar langsung ke toko/resto atau transfer ke driver.
           </p>
-        )}
-        {!cashAvailable && (
-          <p className="text-xs text-destructive mt-2">
+        }
+        {!cashAvailable &&
+        <p className="text-xs text-destructive mt-2">
             Pembayaran tunai tidak tersedia (tidak ada driver online saat ini).
           </p>
-        )}
+        }
       </div>
 
       <div className="space-y-6">
@@ -271,8 +271,8 @@ export default function NewOrder() {
             value={store}
             onChange={setStore}
             accent={currentType.accent}
-            biasCenter={userLoc}
-          />
+            biasCenter={userLoc} />
+          
           <div className="mt-3">
             <label className="text-sm font-semibold text-foreground/80 block mb-1.5">
               Detil alamat {type === "food" ? "resto/toko" : "lokasi"} (opsional)
@@ -281,8 +281,8 @@ export default function NewOrder() {
               value={storeDetail}
               onChange={(e) => setStoreDetail(e.target.value)}
               placeholder="Mis: warung es teh Solo depan Indomart, batagor Ikhsan samping K24"
-              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
+              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring" />
+            
           </div>
         </div>
 
@@ -290,7 +290,7 @@ export default function NewOrder() {
         <div className="bg-card rounded-2xl border border-border p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center">
-              <MapPin className="w-4 h-4 text-accent" />
+              <MapPin className="w-4 h-4 text-[#648f00]" />
             </div>
             <h3 className="font-bold">Tujuan</h3>
           </div>
@@ -299,16 +299,16 @@ export default function NewOrder() {
             value={destination}
             onChange={setDestination}
             accent="158 64% 45%"
-            biasCenter={userLoc}
-          />
+            biasCenter={userLoc} />
+          
           <div className="mt-3">
             <label className="text-sm font-semibold text-foreground/80 block mb-1.5">Detil alamat (catatan untuk driver)</label>
             <input
               value={destDetail}
               onChange={(e) => setDestDetail(e.target.value)}
               placeholder="Mis: Rumah cat hijau, pintu kayu, sebelah warung"
-              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
+              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring" />
+            
           </div>
         </div>
 
@@ -325,19 +325,19 @@ export default function NewOrder() {
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             placeholder={
-              type === "food"
-                ? "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur"
-                : type === "goods"
-                ? "Mis: Paket berupa dokumen, tolong hati-hati"
-                : "Mis: Penumpang 1 orang, bawa tas kecil"
+            type === "food" ?
+            "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
+            type === "goods" ?
+            "Mis: Paket berupa dokumen, tolong hati-hati" :
+            "Mis: Penumpang 1 orang, bawa tas kecil"
             }
-            className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring resize-none"
-          />
+            className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
+          
         </div>
 
         {/* Summary */}
-        {distance != null && (
-          <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl border border-primary/20 p-5">
+        {distance != null &&
+        <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl border border-primary/20 p-5">
             <div className="flex items-center gap-2 mb-3">
               <Route className="w-4 h-4 text-primary" />
               <h3 className="font-bold text-primary">Ringkasan</h3>
@@ -346,12 +346,12 @@ export default function NewOrder() {
               <span className="text-muted-foreground">Jarak toko → tujuan</span>
               <span className="font-semibold">{(Math.round(distance * 10) / 10).toFixed(1)} km</span>
             </div>
-            {type === "food" && (
-              <div className="flex justify-between text-sm py-1">
+            {type === "food" &&
+          <div className="flex justify-between text-sm py-1">
                 <span className="text-muted-foreground">Mode</span>
                 <span className="font-semibold">{mode === "cepat" ? "Cepat" : "Hemat"}</span>
               </div>
-            )}
+          }
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Pembayaran</span>
               <span className="font-semibold">
@@ -370,28 +370,28 @@ export default function NewOrder() {
               <span className="font-semibold">Total Ongkir + Fee</span>
               <span className="font-bold text-primary">{formatRupiah(deliveryFee + serviceFee)}</span>
             </div>
-            {type === "food" && (
-              <p className="text-xs text-muted-foreground mt-2">
+            {type === "food" &&
+          <p className="text-xs text-muted-foreground mt-2">
                 *Harga barang dibayar terpisah setelah driver beli di toko
               </p>
-            )}
+          }
           </div>
-        )}
+        }
 
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-2xl shadow-lg shadow-primary/30 hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
-        >
-          {submitting ? (
-            <>
+          className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-2xl shadow-lg shadow-primary/30 hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+          
+          {submitting ?
+          <>
               <Loader2 className="w-5 h-5 animate-spin" /> Mencari driver...
-            </>
-          ) : (
-            "Cari Driver Sekarang"
-          )}
+            </> :
+
+          "Cari Driver Sekarang"
+          }
         </button>
       </div>
-    </Layout>
-  );
+    </Layout>);
+
 }
