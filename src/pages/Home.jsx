@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <Layout>
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-emerald-600 to-teal-700 p-5 md:p-8 text-white shadow-xl shadow-primary/20">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-pink-600 to-teal-700 p-5 md:p-8 text-white shadow-xl shadow-primary/20">
         <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
         <div className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
