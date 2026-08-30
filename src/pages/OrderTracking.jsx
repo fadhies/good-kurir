@@ -8,9 +8,9 @@ import { formatRupiah } from "@/lib/geo";
 import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation } from "lucide-react";
 
 function mapsUrl(lat, lng, address) {
-  const q = (lat != null && lng != null)
-    ? `${lat},${lng}`
-    : encodeURIComponent(address || "");
+  const q = lat != null && lng != null ?
+  `${lat},${lng}` :
+  encodeURIComponent(address || "");
   return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 import {
@@ -21,8 +21,8 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  AlertDialogTitle } from
+"@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import PhotoUpload from "@/components/PhotoUpload";
@@ -32,14 +32,14 @@ import { reverseGeocodePoi } from "@/lib/googleMaps";
 import { getFunctionError } from "@/lib/functionError";
 
 const TIMELINE = [
-  { key: "pending_match", label: "Mencari Driver" },
-  { key: "driver_assigned", label: "Driver Menuju Toko" },
-  { key: "at_store", label: "Di Toko, memesan" },
-  { key: "awaiting_payment", label: "Menunggu Pembayaran" },
-  { key: "paid", label: "Pembayaran Selesai" },
-  { key: "on_the_way", label: "Dalam Perjalanan" },
-  { key: "completed", label: "Selesai" },
-];
+{ key: "pending_match", label: "Mencari Driver" },
+{ key: "driver_assigned", label: "Driver Menuju Toko" },
+{ key: "at_store", label: "Di Toko, memesan" },
+{ key: "awaiting_payment", label: "Menunggu Pembayaran" },
+{ key: "paid", label: "Pembayaran Selesai" },
+{ key: "on_the_way", label: "Dalam Perjalanan" },
+{ key: "completed", label: "Selesai" }];
+
 
 export default function OrderTracking() {
   const { id } = useParams();
@@ -63,7 +63,7 @@ export default function OrderTracking() {
 
   function markSelfUpdate() {
     selfUpdateRef.current = true;
-    setTimeout(() => { selfUpdateRef.current = false; }, 2000);
+    setTimeout(() => {selfUpdateRef.current = false;}, 2000);
   }
 
   function notifyStatusTransition(o) {
@@ -96,7 +96,7 @@ export default function OrderTracking() {
         await base44.entities.Order.update(id, {
           status: "on_the_way",
           item_cost: cost,
-          store_bill_note: billNote,
+          store_bill_note: billNote
         });
         toast({ title: "Mulai mengantar ke tujuan" });
       } else {
@@ -109,7 +109,7 @@ export default function OrderTracking() {
           status: "awaiting_payment",
           item_cost: cost,
           store_bill_note: billNote,
-          driver_dana_number: user.phone,
+          driver_dana_number: user.phone
         });
         toast({ title: "Tagihan dikirim", description: "Pelanggan akan transfer ke akun Dana Anda." });
       }
@@ -139,7 +139,7 @@ export default function OrderTracking() {
         status: "awaiting_payment",
         item_cost: cost,
         store_bill_note: billNote,
-        store_qris_photo: storeQrisPhoto,
+        store_qris_photo: storeQrisPhoto
       });
       toast({ title: "Tagihan dikirim", description: "User akan bayar langsung ke toko via QRIS." });
       setBillChoice(null);
@@ -183,14 +183,14 @@ export default function OrderTracking() {
       if (event.id === id) loadOrder();
     });
     const poll = setInterval(loadOrder, 3000);
-    return () => { unsub(); clearInterval(poll); };
+    return () => {unsub();clearInterval(poll);};
   }, [id]);
 
   // Ambil QRIS pemilik (setting admin) untuk pembayaran
   useEffect(() => {
-    base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1)
-      .then((rows) => setOwnerQris(rows[0]?.value || null))
-      .catch(() => {});
+    base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1).
+    then((rows) => setOwnerQris(rows[0]?.value || null)).
+    catch(() => {});
   }, []);
 
   // Enrich store_name: bila masih berupa pecahan alamat, ambil nama POI dari koordinat toko
@@ -201,12 +201,12 @@ export default function OrderTracking() {
     let active = true;
     reverseGeocodePoi(order.store_lat, order.store_lng).then(({ name }) => {
       if (!active || !name || name === order.store_name) return;
-      base44.entities.Order
-        .update(order.id, { store_name: name })
-        .then(() => setOrder((prev) => (prev ? { ...prev, store_name: name } : prev)))
-        .catch(() => {});
+      base44.entities.Order.
+      update(order.id, { store_name: name }).
+      then(() => setOrder((prev) => prev ? { ...prev, store_name: name } : prev)).
+      catch(() => {});
     });
-    return () => { active = false; };
+    return () => {active = false;};
   }, [order?.id, order?.store_name, order?.store_address, order?.store_lat, order?.store_lng]);
 
   const role = user?.role || "user";
@@ -239,7 +239,7 @@ export default function OrderTracking() {
       await base44.entities.Order.update(id, {
         status: "awaiting_payment",
         item_cost: cost,
-        store_bill_note: billNote,
+        store_bill_note: billNote
       });
       toast({ title: "Bill dikirim, menunggu pembayaran user" });
       loadOrder();
@@ -276,13 +276,13 @@ export default function OrderTracking() {
         toast({
           title: "Pesanan selesai",
           description:
-            isQris && order.store_qris_photo
-              ? "Ongkir dibayar tunai ke driver, fee Rp2.000 dipotong ke admin"
-              : isQris && order.driver_dana_number
-              ? "Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin"
-              : isQris
-              ? "Tagihan toko + ongkir masuk ke dompet driver, dipotong fee Rp2.000"
-              : "Fee Rp2.000 dipotong ke admin",
+          isQris && order.store_qris_photo ?
+          "Ongkir dibayar tunai ke driver, fee Rp2.000 dipotong ke admin" :
+          isQris && order.driver_dana_number ?
+          "Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin" :
+          isQris ?
+          "Tagihan toko + ongkir masuk ke dompet driver, dipotong fee Rp2.000" :
+          "Fee Rp2.000 dipotong ke admin"
         });
         loadOrder();
       } else {
@@ -301,28 +301,28 @@ export default function OrderTracking() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
-      </Layout>
-    );
+      </Layout>);
+
   }
 
   if (!order) {
     return (
       <Layout>
         <p className="text-center py-20 text-muted-foreground">Pesanan tidak ditemukan.</p>
-      </Layout>
-    );
+      </Layout>);
+
   }
 
   const isCash = order.payment_method === "cash";
   const isQris = order.payment_method === "qris";
   const labeledTimeline = TIMELINE.map((t) =>
-    t.key === "at_store"
-      ? { ...t, label: order.type === "person" ? "Di Lokasi Jemput" : order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" }
-      : t
+  t.key === "at_store" ?
+  { ...t, label: order.type === "person" ? "Di Lokasi Jemput" : order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" } :
+  t
   );
-  const timeline = (isQris && order.type === "food")
-    ? labeledTimeline
-    : labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid");
+  const timeline = isQris && order.type === "food" ?
+  labeledTimeline :
+  labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid");
   const currentIdx = timeline.findIndex((t) => t.key === order.status);
   const total = (order.item_cost || 0) + (order.delivery_fee || 0);
 
@@ -339,33 +339,33 @@ export default function OrderTracking() {
       {/* Timeline */}
       <div className="bg-card rounded-2xl border border-border p-5 mb-4">
         <div className="flex items-start overflow-x-auto scrollbar-hide">
-          {timeline.map((t, i) => (
-            <div key={t.key} className="flex flex-col items-center flex-1 min-w-[60px] relative">
-              {i < timeline.length - 1 && (
-                <div
-                  className={`absolute top-3 left-1/2 w-full h-0.5 ${
-                    i < currentIdx ? "bg-primary" : "bg-border"
-                  }`}
-                />
-              )}
+          {timeline.map((t, i) =>
+          <div key={t.key} className="flex flex-col items-center flex-1 min-w-[60px] relative">
+              {i < timeline.length - 1 &&
+            <div
+              className={`absolute top-3 left-1/2 w-full h-0.5 ${
+              i < currentIdx ? "bg-primary" : "bg-border"}`
+              } />
+
+            }
               <div
-                className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                  i <= currentIdx
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground"
-                }`}
-              >
+              className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+              i <= currentIdx ?
+              "bg-primary text-primary-foreground" :
+              "bg-secondary text-muted-foreground"}`
+              }>
+              
                 {i < currentIdx ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
               </div>
               <span
-                className={`text-[10px] mt-1.5 text-center leading-tight ${
-                  i <= currentIdx ? "text-primary font-semibold" : "text-muted-foreground"
-                }`}
-              >
+              className={`text-[10px] mt-1.5 text-center leading-tight text-[hsl(var(--popover-foreground))] ${
+              i <= currentIdx ? "font-semibold" : "text-muted-foreground"}`
+              }>
+              
                 {t.label}
               </span>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -381,13 +381,13 @@ export default function OrderTracking() {
                 href={mapsUrl(order.store_lat, order.store_lng, order.store_address)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary underline selectable inline-flex items-center gap-1 break-all"
-              >
+                className="text-sm underline selectable inline-flex items-center gap-1 break-all text-[hsl(var(--popover-foreground))]">
+                
                 <Navigation className="w-3.5 h-3.5 shrink-0" /> {order.store_address}
               </a>
-              {order.store_detail && (
-                <p className="text-sm text-muted-foreground mt-1 selectable">📍 {order.store_detail}</p>
-              )}
+              {order.store_detail &&
+              <p className="text-sm text-muted-foreground mt-1 selectable">📍 {order.store_detail}</p>
+              }
             </div>
           </div>
           <div className="h-px bg-border" />
@@ -399,17 +399,17 @@ export default function OrderTracking() {
                 href={mapsUrl(order.destination_lat, order.destination_lng, order.destination_address)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-sm text-primary underline selectable inline-flex items-center gap-1 break-all"
-              >
+                className="font-semibold text-sm underline selectable inline-flex items-center gap-1 break-all text-[hsl(var(--popover-foreground))]">
+                
                 <Navigation className="w-3.5 h-3.5 shrink-0" /> {order.destination_address}
               </a>
-              {order.destination_detail && (
-                <p className="text-sm text-muted-foreground mt-1 selectable">{order.destination_detail}</p>
-              )}
+              {order.destination_detail &&
+              <p className="text-sm text-muted-foreground mt-1 selectable">{order.destination_detail}</p>
+              }
             </div>
           </div>
-          {order.notes && (
-            <>
+          {order.notes &&
+          <>
               <div className="h-px bg-border" />
               <div className="flex items-start gap-3">
                 <FileText className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
@@ -419,7 +419,7 @@ export default function OrderTracking() {
                 </div>
               </div>
             </>
-          )}
+          }
         </div>
 
         {/* Cost */}
@@ -434,12 +434,12 @@ export default function OrderTracking() {
               <span className="text-muted-foreground">Ongkir</span>
               <span className="font-medium">{formatRupiah(order.delivery_fee)}</span>
             </div>
-            {order.item_cost != null && (
-              <div className="flex justify-between">
+            {order.item_cost != null &&
+            <div className="flex justify-between">
                 <span className="text-muted-foreground">Harga Barang</span>
                 <span className="font-medium">{formatRupiah(order.item_cost)}</span>
               </div>
-            )}
+            }
             <div className="h-px bg-border my-1" />
             <div className="flex justify-between font-bold text-base">
               <span>Total</span>
@@ -452,63 +452,63 @@ export default function OrderTracking() {
         <OrderChat order={order} />
 
         {/* DRIVER ACTIONS */}
-        {isDriver && (
-          <div className="bg-card rounded-2xl border-2 border-primary/30 p-5">
+        {isDriver &&
+        <div className="bg-card rounded-2xl border-2 border-primary/30 p-5">
             <h3 className="font-bold mb-3 flex items-center gap-2">
               <Bike className="w-5 h-5 text-primary" /> Aksi Driver
             </h3>
 
-            {order.status === "driver_assigned" && (
-              <button
-                onClick={() => updateStatus("at_store")}
-                disabled={acting}
-                className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-              >
+            {order.status === "driver_assigned" &&
+          <button
+            onClick={() => updateStatus("at_store")}
+            disabled={acting}
+            className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60">
+            
                 {order.type === "person" ? "Saya Sudah di Lokasi Jemput" : order.type === "goods" ? "Saya Sudah di Lokasi Ambil" : "Saya Sudah Sampai di Toko"}
               </button>
-            )}
+          }
 
             {order.status === "at_store" && (
-              order.type === "food" ? (
-                <div className="space-y-3">
+          order.type === "food" ?
+          <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">Input total bill dari toko/restoran:</p>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
                     <input
-                      type="number"
-                      value={itemCost}
-                      onChange={(e) => setItemCost(e.target.value)}
-                      placeholder="25000"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
-                    />
+                type="number"
+                value={itemCost}
+                onChange={(e) => setItemCost(e.target.value)}
+                placeholder="25000"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring" />
+              
                   </div>
                   <input
-                    value={billNote}
-                    onChange={(e) => setBillNote(e.target.value)}
-                    placeholder="Catatan bill (opsional)"
-                    className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring"
-                  />
-                  {isCash ? (
-                    <button
-                      onClick={() => setBillConfirm("cash")}
-                      disabled={acting}
-                      className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                    >
+              value={billNote}
+              onChange={(e) => setBillNote(e.target.value)}
+              placeholder="Catatan bill (opsional)"
+              className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring" />
+            
+                  {isCash ?
+            <button
+              onClick={() => setBillConfirm("cash")}
+              disabled={acting}
+              className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60">
+              
                       Konfirmasi & Mulai Antar
-                    </button>
-                  ) : (
-                    <div className="space-y-3">
+                    </button> :
+
+            <div className="space-y-3">
                       <p className="text-sm text-muted-foreground">Pilih metode pembayaran tagihan toko:</p>
                       <button
-                        type="button"
-                        onClick={() => { setBillChoice("talangi"); setStoreQrisPhoto(null); }}
-                        disabled={acting}
-                        className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors disabled:opacity-60 ${
-                          billChoice === "talangi"
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:bg-secondary/50"
-                        }`}
-                      >
+                type="button"
+                onClick={() => {setBillChoice("talangi");setStoreQrisPhoto(null);}}
+                disabled={acting}
+                className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors disabled:opacity-60 ${
+                billChoice === "talangi" ?
+                "border-primary bg-primary/5" :
+                "border-border hover:bg-secondary/50"}`
+                }>
+                
                         <span className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${billChoice === "talangi" ? "border-primary" : "border-muted-foreground/40"}`}>
                           {billChoice === "talangi" && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
                         </span>
@@ -518,15 +518,15 @@ export default function OrderTracking() {
                         </span>
                       </button>
                       <button
-                        type="button"
-                        onClick={() => setBillChoice("direct")}
-                        disabled={acting}
-                        className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors disabled:opacity-60 ${
-                          billChoice === "direct"
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:bg-secondary/50"
-                        }`}
-                      >
+                type="button"
+                onClick={() => setBillChoice("direct")}
+                disabled={acting}
+                className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors disabled:opacity-60 ${
+                billChoice === "direct" ?
+                "border-primary bg-primary/5" :
+                "border-border hover:bg-secondary/50"}`
+                }>
+                
                         <span className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${billChoice === "direct" ? "border-primary" : "border-muted-foreground/40"}`}>
                           {billChoice === "direct" && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
                         </span>
@@ -535,122 +535,122 @@ export default function OrderTracking() {
                           <span className="block text-xs text-muted-foreground">Pelanggan scan QRIS toko & bayar langsung; ongkir tunai ke saya.</span>
                         </span>
                       </button>
-                      {billChoice === "talangi" && (
-                        <button
-                          onClick={() => setBillConfirm("qris")}
-                          disabled={acting || !Number(itemCost)}
-                          className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                        >
+                      {billChoice === "talangi" &&
+              <button
+                onClick={() => setBillConfirm("qris")}
+                disabled={acting || !Number(itemCost)}
+                className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60">
+                
                           Kirim Tagihan
                         </button>
-                      )}
-                      {billChoice === "direct" && (
-                        <div className="space-y-3 pt-1">
+              }
+                      {billChoice === "direct" &&
+              <div className="space-y-3 pt-1">
                           <p className="text-xs text-muted-foreground">
                             Foto QRIS toko/resto untuk dikirim ke pelanggan. Pastikan nama merchant terlihat jelas.
                           </p>
                           <PhotoUpload
-                            label="Foto QRIS Toko/Resto"
-                            value={storeQrisPhoto}
-                            onChange={setStoreQrisPhoto}
-                            hint="Pastikan QRIS menampilkan nama merchant toko."
-                          />
+                  label="Foto QRIS Toko/Resto"
+                  value={storeQrisPhoto}
+                  onChange={setStoreQrisPhoto}
+                  hint="Pastikan QRIS menampilkan nama merchant toko." />
+                
                           <button
-                            onClick={confirmDirectBill}
-                            disabled={acting || !storeQrisPhoto}
-                            className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                          >
+                  onClick={confirmDirectBill}
+                  disabled={acting || !storeQrisPhoto}
+                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60">
+                  
                             Kirim Tagihan ke User
                           </button>
                         </div>
-                      )}
+              }
                     </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-3">
+            }
+                </div> :
+
+          <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">
                     {order.type === "person" ? "Konfirmasi penumpang sudah naik." : "Konfirmasi paket sudah diambil."}
                   </p>
                   <button
-                    onClick={() => updateStatus("on_the_way")}
-                    disabled={acting}
-                    className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                  >
+              onClick={() => updateStatus("on_the_way")}
+              disabled={acting}
+              className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60">
+              
                     Mulai Antar ke Tujuan
                   </button>
-                </div>
-              )
-            )}
+                </div>)
 
-            {order.status === "paid" && (
-              <div className="space-y-3">
-                {order.payment_proof_photo && (
-                  <div>
+          }
+
+            {order.status === "paid" &&
+          <div className="space-y-3">
+                {order.payment_proof_photo &&
+            <div>
                     <p className="text-sm font-semibold mb-1.5">Bukti pembayaran user:</p>
                     <div className="w-full max-w-xs rounded-xl overflow-hidden border border-border bg-secondary">
                       <Image src={order.payment_proof_photo} fittingType="fit" className="w-full h-auto" />
                     </div>
                   </div>
-                )}
+            }
                 <button
-                  onClick={() => updateStatus("on_the_way")}
-                  disabled={acting}
-                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60"
-                >
+              onClick={() => updateStatus("on_the_way")}
+              disabled={acting}
+              className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60">
+              
                   Mulai Antar ke Tujuan
                 </button>
               </div>
-            )}
+          }
 
-            {order.status === "on_the_way" && (
-              <p className="text-sm text-muted-foreground text-center py-2">
+            {order.status === "on_the_way" &&
+          <p className="text-sm text-muted-foreground text-center py-2">
                 Menunggu pemesan mengonfirmasi pesanan sudah diterima...
               </p>
-            )}
+          }
 
-            {order.status === "awaiting_payment" && (
-              <p className="text-sm text-muted-foreground text-center py-2">
+            {order.status === "awaiting_payment" &&
+          <p className="text-sm text-muted-foreground text-center py-2">
                 {isQris ? "Menunggu user scan QRIS & kirim bukti bayar..." : "Menunggu pengguna membayar..."}
               </p>
-            )}
-            {order.status === "completed" && (
-              <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
-                {isQris && order.store_qris_photo
-                  ? "Pesanan selesai. Ongkir diterima tunai, fee Rp2.000 dipotong ke admin."
-                  : isQris && order.driver_dana_number
-                  ? "Pesanan selesai. Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin."
-                  : isQris
-                  ? "Pesanan selesai. Tagihan toko + ongkir masuk ke dompet, dipotong fee Rp2.000."
-                  : "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}
+          }
+            {order.status === "completed" &&
+          <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
+                {isQris && order.store_qris_photo ?
+            "Pesanan selesai. Ongkir diterima tunai, fee Rp2.000 dipotong ke admin." :
+            isQris && order.driver_dana_number ?
+            "Pesanan selesai. Ongkir diterima via akun Dana, fee Rp2.000 dipotong ke admin." :
+            isQris ?
+            "Pesanan selesai. Tagihan toko + ongkir masuk ke dompet, dipotong fee Rp2.000." :
+            "Pesanan selesai. Fee Rp2.000 dipotong ke admin."}
               </p>
-            )}
+          }
           </div>
-        )}
+        }
 
         {/* USER PAY ACTION */}
         {isOwner && order.status === "awaiting_payment" && (
-          isQris && order.type === "food" ? (
-            <div className="bg-card rounded-2xl border-2 border-primary/30 p-5 space-y-4">
+        isQris && order.type === "food" ?
+        <div className="bg-card rounded-2xl border-2 border-primary/30 p-5 space-y-4">
               <h3 className="font-bold flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-primary" /> {order.store_qris_photo ? "Bayar Tagihan Toko" : "Bayar ke Akun Dana Driver"}
               </h3>
               <p className="text-sm text-muted-foreground">
                 Total tagihan: <span className="font-semibold text-foreground">
-                  {formatRupiah(order.store_qris_photo ? order.item_cost : (order.item_cost + order.delivery_fee))}
+                  {formatRupiah(order.store_qris_photo ? order.item_cost : order.item_cost + order.delivery_fee)}
                 </span>
               </p>
-              {order.store_qris_photo ? (
-                <>
+              {order.store_qris_photo ?
+          <>
                   <p className="text-xs text-muted-foreground">
                     Scan QRIS toko di bawah, bayar tagihan toko langsung ke toko. Ongkir {formatRupiah(order.delivery_fee)} dibayar tunai ke driver saat pesanan tiba.
                   </p>
                   <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
                     <Image src={order.store_qris_photo} fittingType="fit" className="w-full h-auto" />
                   </div>
-                </>
-              ) : order.driver_dana_number ? (
-                <>
+                </> :
+          order.driver_dana_number ?
+          <>
                   <p className="text-xs text-muted-foreground">
                     Driver menalangi pembayaran toko. Transfer total tagihan (tagihan toko + ongkir) ke akun Dana driver di bawah, lalu unggah bukti top-up.
                   </p>
@@ -659,49 +659,49 @@ export default function OrderTracking() {
                     <div className="flex items-center justify-between gap-2 mt-1">
                       <p className="font-bold text-lg tracking-wide selectable">{order.driver_dana_number}</p>
                       <button
-                        type="button"
-                        onClick={() => {
-                          try { navigator.clipboard?.writeText(order.driver_dana_number); } catch {}
-                          toast({ title: "Nomor Dana disalin" });
-                        }}
-                        className="text-xs font-semibold text-primary px-3 py-1.5 rounded-lg border border-primary/30 hover:bg-primary/5"
-                      >
+                  type="button"
+                  onClick={() => {
+                    try {navigator.clipboard?.writeText(order.driver_dana_number);} catch {}
+                    toast({ title: "Nomor Dana disalin" });
+                  }}
+                  className="text-xs font-semibold text-primary px-3 py-1.5 rounded-lg border border-primary/30 hover:bg-primary/5">
+                  
                         Salin
                       </button>
                     </div>
                   </div>
-                </>
-              ) : (
-                <>
+                </> :
+
+          <>
                   <p className="text-xs text-muted-foreground">
                     Scan QRIS di bawah, bayar tagihan toko + ongkir. Dana masuk ke dompet driver (tagihan toko + ongkir − biaya admin).
                   </p>
-                  {ownerQris ? (
-                    <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
+                  {ownerQris ?
+            <div className="w-full max-w-xs mx-auto rounded-xl overflow-hidden border border-border bg-secondary">
                       <Image src={ownerQris} fittingType="fit" className="w-full h-auto" />
-                    </div>
-                  ) : (
-                    <p className="text-sm text-amber-600 text-center">QRIS pemilik belum diatur admin.</p>
-                  )}
+                    </div> :
+
+            <p className="text-sm text-amber-600 text-center">QRIS pemilik belum diatur admin.</p>
+            }
                 </>
-              )}
+          }
               <PhotoUpload
-                label="Bukti pembayaran"
-                value={proofPhoto}
-                onChange={setProofPhoto}
-                hint="Unggah bukti transfer/screenshot pembayaran."
-              />
+            label="Bukti pembayaran"
+            value={proofPhoto}
+            onChange={setProofPhoto}
+            hint="Unggah bukti transfer/screenshot pembayaran." />
+          
               <button
-                onClick={pay}
-                disabled={acting || !proofPhoto}
-                className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
-              >
+            onClick={pay}
+            disabled={acting || !proofPhoto}
+            className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2">
+            
                 {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
                 {order.store_qris_photo ? "Saya Sudah Bayar, Kirim Bukti" : "Saya Sudah Transfer, Kirim Bukti"}
               </button>
-            </div>
-          ) : (
-            <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
+            </div> :
+
+        <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
               <h3 className="font-bold mb-1 flex items-center gap-2">
                 <CreditCard className="w-5 h-5" /> Waktunya Membayar
               </h3>
@@ -709,42 +709,42 @@ export default function OrderTracking() {
                 Total ongkir {formatRupiah(order.delivery_fee)} dibayar ke driver setelah pesanan sampai.
               </p>
               <button
-                onClick={pay}
-                disabled={acting}
-                className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2"
-              >
+            onClick={pay}
+            disabled={acting}
+            className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2">
+            
                 {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
                 Konfirmasi
               </button>
-            </div>
-          )
-        )}
+            </div>)
 
-        {isOwner && order.status === "pending_match" && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
+        }
+
+        {isOwner && order.status === "pending_match" &&
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
             <Loader2 className="w-6 h-6 animate-spin text-amber-600 mx-auto mb-2" />
             <p className="text-sm text-amber-700 font-medium">Menunggu driver menerima pesanan Anda...</p>
           </div>
-        )}
+        }
 
-        {isOwner && order.status === "on_the_way" && (
-          <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
+        {isOwner && order.status === "on_the_way" &&
+        <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
             <h3 className="font-bold mb-1">Pesanan Sudah Sampai?</h3>
             <p className="text-white/80 text-sm mb-4">Konfirmasi bahwa pesanan sudah Anda terima untuk menyelesaikan order.</p>
             <button
-              onClick={settleOrder}
-              disabled={acting}
-              className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2"
-            >
+            onClick={settleOrder}
+            disabled={acting}
+            className="w-full bg-white text-primary font-bold py-3.5 rounded-xl hover:bg-white/90 disabled:opacity-60 flex items-center justify-center gap-2">
+            
               {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
               Selesaikan Pesanan
             </button>
           </div>
-        )}
+        }
 
-        {isOwner && order.status === "completed" && order.driver_id && (
-          <DriverRating order={order} onRated={loadOrder} />
-        )}
+        {isOwner && order.status === "completed" && order.driver_id &&
+        <DriverRating order={order} onRated={loadOrder} />
+        }
       </div>
 
       {/* Konfirmasi tagihan di restoran */}
@@ -753,9 +753,9 @@ export default function OrderTracking() {
           <AlertDialogHeader>
             <AlertDialogTitle>Konfirmasi Tagihan</AlertDialogTitle>
             <AlertDialogDescription>
-              {Number(itemCost) > 0
-                ? `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan scan QRIS pemilik & kirim bukti bayar."}`
-                : "Masukkan nominal bill dulu sebelum konfirmasi."}
+              {Number(itemCost) > 0 ?
+              `Kirim tagihan sebesar Rp ${Number(itemCost).toLocaleString("id-ID")}${billNote ? ` (${billNote})` : ""}?${billConfirm === "cash" ? " Driver langsung mengantar ke tujuan." : " Pengguna akan scan QRIS pemilik & kirim bukti bayar."}` :
+              "Masukkan nominal bill dulu sebelum konfirmasi."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -766,6 +766,6 @@ export default function OrderTracking() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Layout>
-  );
+    </Layout>);
+
 }
