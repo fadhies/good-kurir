@@ -1,8 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { walletBalancesByUser } from '../../shared/wallet.ts';
+import { getBlockedDriverIds } from '../../shared/remittance.ts';
 
-const SERVICE_FEE = 2000;
-
+// Pembayaran tunai kini tidak lagi butuh saldo dompet (tidak ada potongan dompet
+// per transaksi). Yang dicek: ada driver online & verified yang tidak sedang
+// diblokir karena belum setor harian.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -10,19 +11,16 @@ export default async function(req) {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const drivers = await base44.asServiceRole.entities.DriverProfile.filter({
-      is_online: true
+      verification_status: 'approved',
+      is_online: true,
     });
 
-    if (!drivers.length) {
-      return Response.json({ available: false });
-    }
+    if (!drivers.length) return Response.json({ available: false });
 
-    const balances = await walletBalancesByUser(
-      base44,
-      drivers.map((d) => d.user_id)
+    const blocked = await getBlockedDriverIds(base44, drivers.map((d) => d.user_id));
+    const available = drivers.some((d) =>
+      !blocked.has(d.user_id) && d.current_lat != null && d.current_lng != null
     );
-
-    const available = drivers.some((d) => (balances[d.user_id] || 0) >= SERVICE_FEE);
     return Response.json({ available });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
