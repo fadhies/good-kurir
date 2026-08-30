@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <Layout>
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#D3D919] p-5 md:p-8 text-white shadow-xl shadow-blue-500/30">
+      <div className="relative overflow-hidden rounded-2xl bg-[#D3D919] p-5 md:p-8 text-white shadow-xl shadow-green/30">
         <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
         <div className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
