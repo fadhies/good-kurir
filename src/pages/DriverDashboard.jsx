@@ -258,15 +258,15 @@ export default function DriverDashboard() {
       )}
 
       {/* Status card */}
-      <div className={`rounded-2xl p-5 mb-4 ${profile.is_online ? "bg-[#EAF01C] text-brown" : "bg-card border border-border"}`}>
+      <div className={`rounded-2xl p-5 mb-4 ${profile.is_online ? "bg-[#EAF01C] text-stone-900" : "bg-card border border-border"}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile.is_online ? "bg-white/20" : "bg-secondary"}`}>
-              <Bike className={`w-6 h-6 ${profile.is_online ? "text-white" : "text-muted-foreground"}`} />
+              <Bike className={`w-6 h-6 ${profile.is_online ? "text-stone-900" : "text-muted-foreground"}`} />
             </div>
             <div>
-              <p className={`font-bold ${profile.is_online ? "text-white" : ""}`}>{profile.is_online ? "Online" : "Offline"}</p>
-              <p className={`text-sm ${profile.is_online ? "text-white/80" : "text-muted-foreground"}`}>
+              <p className={`font-bold ${profile.is_online ? "text-stone-900" : ""}`}>{profile.is_online ? "Online" : "Offline"}</p>
+              <p className={`text-sm ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>
                 {profile.vehicle_type === "motorcycle" ? "Motor" : "Mobil"} • {profile.license_plate}
               </p>
             </div>
