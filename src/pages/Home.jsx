@@ -6,28 +6,28 @@ import { base44 } from "@/api/base44Client";
 import { Bike, Package, User, ArrowRight, Sparkles, ShieldCheck, Clock, MapPin } from "lucide-react";
 
 const SERVICES = [
-  {
-    key: "food",
-    title: "Beli Makanan",
-    desc: "Pesan dari restoran favorit, driver belikan & antar",
-    icon: Bike,
-    color: "from-orange-400 to-rose-500",
-  },
-  {
-    key: "goods",
-    title: "Antar Barang",
-    desc: "Kirim paket atau barang ke mana saja",
-    icon: Package,
-    color: "from-emerald-400 to-teal-500",
-  },
-  {
-    key: "person",
-    title: "Antar Orang",
-    desc: "Naik ojek sampai tujuan dengan aman",
-    icon: User,
-    color: "from-sky-400 to-indigo-500",
-  },
-];
+{
+  key: "food",
+  title: "Beli Makanan",
+  desc: "Pesan dari restoran favorit, driver belikan & antar",
+  icon: Bike,
+  color: "from-orange-400 to-rose-500"
+},
+{
+  key: "goods",
+  title: "Antar Barang",
+  desc: "Kirim paket atau barang ke mana saja",
+  icon: Package,
+  color: "from-emerald-400 to-teal-500"
+},
+{
+  key: "person",
+  title: "Antar Orang",
+  desc: "Naik ojek sampai tujuan dengan aman",
+  icon: User,
+  color: "from-sky-400 to-indigo-500"
+}];
+
 
 export default function Home() {
   const { user } = useAuth();
@@ -38,10 +38,10 @@ export default function Home() {
   useEffect(() => {
     if (!user?.id) return;
     let active = true;
-    base44.entities.DriverProfile.filter({ user_id: user.id })
-      .then((list) => active && setDriverProfile(list[0] || null))
-      .catch(() => active && setDriverProfile(null));
-    return () => { active = false; };
+    base44.entities.DriverProfile.filter({ user_id: user.id }).
+    then((list) => active && setDriverProfile(list[0] || null)).
+    catch(() => active && setDriverProfile(null));
+    return () => {active = false;};
   }, [user?.id]);
 
   return (
@@ -62,20 +62,20 @@ export default function Home() {
               Makanan, barang, atau naik ojek — driver terdekat siap bantu.
             </p>
           </div>
-          {role !== "driver" && (
-            <button
-              onClick={() => navigate("/pesan")}
-              className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all self-start sm:self-auto whitespace-nowrap text-sm"
-            >
+          {role !== "driver" &&
+          <button
+            onClick={() => navigate("/pesan")}
+            className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all self-start sm:self-auto whitespace-nowrap text-sm">
+            
               Pesan Sekarang <ArrowRight className="w-4 h-4" />
             </button>
-          )}
+          }
         </div>
       </div>
 
       {/* Services */}
       <div className="mt-5">
-        <h2 className="font-display text-lg font-bold mb-3">Pilih Layanan</h2>
+        <h2 className="text-lg mb-3 [font-family:'Aether',_sans-serif] font-normal">Pilih Layanan</h2>
         <div className="grid sm:grid-cols-3 gap-3">
           {SERVICES.map((s) => {
             const Icon = s.icon;
@@ -83,8 +83,8 @@ export default function Home() {
               <button
                 key={s.key}
                 onClick={() => navigate(`/pesan?type=${s.key}`)}
-                className="group text-left bg-card rounded-xl p-3 border border-border hover:border-primary/40 hover:shadow-lg transition-all flex items-center gap-3 sm:flex-col sm:items-start"
-              >
+                className="group text-left bg-card rounded-xl p-3 border border-border hover:border-primary/40 hover:shadow-lg transition-all flex items-center gap-3 sm:flex-col sm:items-start">
+                
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md sm:mb-2 shrink-0`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
@@ -95,8 +95,8 @@ export default function Home() {
                     Pesan <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
-              </button>
-            );
+              </button>);
+
           })}
         </div>
       </div>
@@ -104,10 +104,10 @@ export default function Home() {
       {/* Features */}
       <div className="mt-10 grid sm:grid-cols-3 gap-4">
         {[
-          { icon: MapPin, title: "Driver Terdekat", desc: "Otomatis cari ojek paling dekat dengan toko" },
-          { icon: ShieldCheck, title: "Pembayaran Aman", desc: "Bayar di aplikasi, driver terima penghasilan" },
-          { icon: Clock, title: "Cepat & Real-time", desc: "Pantau status pesanan setiap saat" },
-        ].map((f) => {
+        { icon: MapPin, title: "Driver Terdekat", desc: "Otomatis cari ojek paling dekat dengan toko" },
+        { icon: ShieldCheck, title: "Pembayaran Aman", desc: "Bayar di aplikasi, driver terima penghasilan" },
+        { icon: Clock, title: "Cepat & Real-time", desc: "Pantau status pesanan setiap saat" }].
+        map((f) => {
           const Icon = f.icon;
           return (
             <div key={f.title} className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/50">
@@ -118,47 +118,47 @@ export default function Home() {
                 <h4 className="font-semibold text-sm">{f.title}</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
               </div>
-            </div>
-          );
+            </div>);
+
         })}
       </div>
 
       {/* Driver CTA */}
-      {role === "user" && (
-        <div className="mt-8 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {role === "user" &&
+      <div className="mt-8 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-lg">Mau jadi driver Good Kurir?</h3>
             <p className="text-sm text-muted-foreground">
-              {driverProfile?.verification_status === "pending"
-                ? "Pendaftaran Anda sedang diverifikasi admin."
-                : driverProfile?.verification_status === "approved"
-                ? "Anda sudah terdaftar sebagai driver."
-                : driverProfile?.verification_status === "rejected"
-                ? "Pendaftaran Anda ditolak. Hubungi admin untuk informasi."
-                : "Daftar dan mulai dapat penghasilan hari ini."}
+              {driverProfile?.verification_status === "pending" ?
+            "Pendaftaran Anda sedang diverifikasi admin." :
+            driverProfile?.verification_status === "approved" ?
+            "Anda sudah terdaftar sebagai driver." :
+            driverProfile?.verification_status === "rejected" ?
+            "Pendaftaran Anda ditolak. Hubungi admin untuk informasi." :
+            "Daftar dan mulai dapat penghasilan hari ini."}
             </p>
           </div>
-          {driverProfile ? (
-            <button
-              disabled
-              className="bg-muted text-muted-foreground font-semibold px-5 py-2.5 rounded-xl cursor-not-allowed whitespace-nowrap"
-            >
-              {driverProfile.verification_status === "pending"
-                ? "Menunggu Verifikasi"
-                : driverProfile.verification_status === "approved"
-                ? "Sudah Terdaftar"
-                : "Pendaftaran Ditolak"}
-            </button>
-          ) : (
-            <Link
-              to="/jadi-driver"
-              className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap"
-            >
+          {driverProfile ?
+        <button
+          disabled
+          className="bg-muted text-muted-foreground font-semibold px-5 py-2.5 rounded-xl cursor-not-allowed whitespace-nowrap">
+          
+              {driverProfile.verification_status === "pending" ?
+          "Menunggu Verifikasi" :
+          driverProfile.verification_status === "approved" ?
+          "Sudah Terdaftar" :
+          "Pendaftaran Ditolak"}
+            </button> :
+
+        <Link
+          to="/jadi-driver"
+          className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap">
+          
               Daftar Jadi Driver
             </Link>
-          )}
+        }
         </div>
-      )}
-    </Layout>
-  );
+      }
+    </Layout>);
+
 }
