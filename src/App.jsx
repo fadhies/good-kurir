@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from 'next-themes';
@@ -80,21 +80,22 @@ function BackHandlerManager() {
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
   const location = useLocation();
-  const [direction, setDirection] = useState(0);
   const idxRef = useRef(null);
+  const dirRef = useRef(0);
 
-  // Detect push vs pop from the history stack index for directional transitions.
-  useEffect(() => {
-    const idx = window.history.state?.idx ?? 0;
-    if (idxRef.current == null) {
-      idxRef.current = idx;
-      return;
-    }
-    if (idx !== idxRef.current) {
-      setDirection(idx > idxRef.current ? 1 : -1);
-      idxRef.current = idx;
-    }
-  }, [location.pathname]);
+  // Detect push vs pop synchronously from the history stack index, so
+  // AnimatePresence receives the correct direction on the first render of
+  // the new route. Updating direction in an effect instead leaves a stale
+  // `custom` on the exiting page, whose mid-transition change can leave the
+  // entering page stuck invisible (tabs appear blank after going back).
+  const idx = window.history.state?.idx ?? 0;
+  if (idxRef.current == null) {
+    idxRef.current = idx;
+  } else if (idx !== idxRef.current) {
+    dirRef.current = idx > idxRef.current ? 1 : -1;
+    idxRef.current = idx;
+  }
+  const direction = dirRef.current;
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
