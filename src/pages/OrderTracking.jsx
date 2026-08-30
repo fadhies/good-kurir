@@ -392,7 +392,7 @@ export default function OrderTracking() {
           </div>
           <div className="h-px bg-border" />
           <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-accent mt-0.5 shrink-0" />
+            <MapPin className="w-5 h-5 mt-0.5 shrink-0 text-[hsl(var(--primary))]" />
             <div>
               <p className="text-xs text-muted-foreground">Tujuan</p>
               <a
