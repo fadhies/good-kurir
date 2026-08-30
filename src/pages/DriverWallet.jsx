@@ -40,7 +40,7 @@ export default function DriverWallet() {
       <p className="text-muted-foreground text-sm mb-6">Penghasilan Anda dari setiap pesanan.</p>
 
       {/* Balance card */}
-      <div className="rounded-3xl bg-[#EAF01C] p-6 text-white shadow-xl shadow-green/30 relative overflow-hidden">
+      <div className="rounded-3xl bg-[#EAF01C] p-6 text-brown shadow-xl shadow-green/30 relative overflow-hidden">
         <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />
         <div className="relative">
           <div className="flex items-center gap-2 text-sm mb-2 text-[hsl(var(--muted-foreground))]">
