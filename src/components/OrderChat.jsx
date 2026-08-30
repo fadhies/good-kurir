@@ -84,7 +84,7 @@ export default function OrderChat({ order }) {
         <Send className="w-4 h-4 text-primary" /> Chat {meIsDriver ? "dengan Pemesan" : "dengan Driver"}
       </h3>
 
-      <div ref={scrollRef} className="h-56 overflow-y-auto space-y-2 mb-3 pr-1 scrollbar-hide">
+      <div ref={scrollRef} className="h-25 overflow-y-auto space-y-2 mb-3 pr-1 scrollbar-hide">
         {messages === null ? (
           <div className="flex justify-center py-8">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
