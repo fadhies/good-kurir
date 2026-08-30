@@ -317,7 +317,7 @@ export default function OrderTracking() {
   labeledTimeline :
   labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid");
   const currentIdx = timeline.findIndex((t) => t.key === order.status);
-  const total = (order.item_cost || 0) + (order.delivery_fee || 0);
+  const total = (order.item_cost || 0) + (order.delivery_fee || 0) + (order.service_fee || 0);
 
   return (
     <Layout>
@@ -433,6 +433,10 @@ export default function OrderTracking() {
                 <span className="font-medium">{formatRupiah(order.item_cost)}</span>
               </div>
             }
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Fee Layanan (10%)</span>
+              <span className="font-medium">{formatRupiah(order.service_fee)}</span>
+            </div>
             <div className="h-px bg-border my-1" />
             <div className="flex justify-between font-bold text-base">
               <span>Total</span>
