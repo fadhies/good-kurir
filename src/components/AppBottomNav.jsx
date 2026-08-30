@@ -8,26 +8,27 @@ import { cn } from "@/lib/utils";
 const USER_ITEMS = [
   { to: "/", label: "Beranda", icon: Home },
   { to: "/pesan", label: "Pesan", icon: ShoppingBag },
-  { to: "/pesanan-saya", label: "Pesanan", icon: ListOrdered },
+  { to: "/pesanan-saya", label: "Pesanan", icon: ListOrdered }
 ];
+
 const DRIVER_ITEMS = [
   { to: "/driver", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/driver/dompet", label: "Dompet", icon: Wallet },
+  { to: "/driver/dompet", label: "Dompet", icon: Wallet }
 ];
-const ADMIN_ITEMS = [{ to: "/admin", label: "Admin", icon: ShieldCheck }];
 
-const TAB_PATHS = new Set(["/", "/pesan", "/pesanan-saya", "/driver", "/driver/dompet"]);
+const ADMIN_ITEMS = [
+  { to: "/admin", label: "Admin", icon: ShieldCheck }
+];
 
-// A deep route still "belongs" to a tab; clicking that tab routes back to the
-// tab's root path instead of being a no-op.
+// Map nested detail routes to their parent tab for active highlighting.
 function activeTabFor(pathname) {
   if (pathname.startsWith("/pesanan/")) return "/pesanan-saya";
-  return TAB_PATHS.has(pathname) ? pathname : null;
+  if (pathname.startsWith("/driver/dompet")) return "/driver/dompet";
+  if (pathname.startsWith("/driver")) return "/driver";
+  if (pathname.startsWith("/admin")) return "/admin";
+  return pathname;
 }
 
-// Rendered at the App level (outside the animated page wrapper) so it stays
-// viewport-fixed and flush to the phone's nav bar, and doesn't drift during
-// the directional slide transitions.
 export default function AppBottomNav() {
   const { user } = useAuth();
   const location = useLocation();
@@ -35,30 +36,44 @@ export default function AppBottomNav() {
   const isDriver = useIsDriver();
   const role = user?.role || "user";
 
-  const activeTab = activeTabFor(location.pathname);
-  if (!activeTab) return null;
-
   const items = [
     ...USER_ITEMS,
     ...(isDriver ? DRIVER_ITEMS : []),
-    ...(role === "admin" ? ADMIN_ITEMS : []),
+    ...(role === "admin" ? ADMIN_ITEMS : [])
   ];
+
+  const activeTab = activeTabFor(location.pathname);
+
+  function handleTap(item) {
+    // Force redirect to the tab root when tapping the current tab — even from
+    // a nested detail route — so users always land on the root of that tab.
+    if (activeTab === item.to && location.pathname !== item.to) {
+      navigate(item.to, { replace: true });
+    } else if (location.pathname === item.to) {
+      navigate(item.to);
+    } else {
+      navigate(item.to);
+    }
+  }
 
   return (
     <nav
       className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/60"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="flex items-center justify-around h-16">
+      <div
+        className="max-w-6xl mx-auto grid"
+        style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+      >
         {items.map((item) => {
           const active = activeTab === item.to;
           const Icon = item.icon;
           return (
             <button
               key={item.to}
-              type="button"
-              onClick={() => navigate(item.to, { replace: activeTab === item.to && location.pathname !== item.to })}
+              onClick={() => handleTap(item)}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-xs font-medium transition-colors",
+                "flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors",
                 active ? "text-primary" : "text-muted-foreground"
               )}
             >

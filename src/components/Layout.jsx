@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { exitApp } from "@/lib/exitApp";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";
 import NotificationBell from "@/components/NotificationBell";
+import { Image } from "@/components/ui/image";
 
 const USER_ITEMS = [
 { to: "/", label: "Beranda", icon: Home },
@@ -65,8 +66,12 @@ export default function Layout({ children }) {
             </div> :
 
           <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md shadow-primary/30 bg-[#ed07e6]">
-                <Bike className="w-5 h-5 text-primary-foreground" />
+              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
+                <Image
+                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
+                  alt="Good Kurir"
+                  className="w-full h-full"
+                />
               </div>
               <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
                 Good<span className="text-primary">Kurir</span>
