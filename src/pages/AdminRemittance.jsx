@@ -2,21 +2,24 @@ import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Banknote } from "lucide-react";
+import { Loader2, Banknote, Wallet, Receipt } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 export default function AdminRemittance() {
   const [list, setList] = useState(null);
   const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   async function load() {
     try {
-      const [r, u] = await Promise.all([
+      const [r, u, o] = await Promise.all([
         base44.entities.DriverRemittance.filter({}, "-created_date", 200),
         base44.entities.User.list(),
+        base44.entities.Order.filter({ status: "completed" }, "-updated_date", 500),
       ]);
       setList(r);
       setUsers(u);
+      setOrders(o);
     } catch {
       setList([]);
     }
@@ -32,17 +35,92 @@ export default function AdminRemittance() {
     return m;
   }, [users]);
 
+  const totals = useMemo(() => {
+    let adminFee = 0;
+    let serviceFee = 0;
+    for (const o of orders) {
+      adminFee += o.driver_remit_fee || 0;
+      serviceFee += o.service_fee || 0;
+    }
+    return { adminFee, serviceFee, total: adminFee + serviceFee };
+  }, [orders]);
+
   return (
     <AdminLayout>
       <h1 className="font-display text-2xl font-extrabold mb-1 flex items-center gap-2">
-        <Banknote className="w-6 h-6 text-primary" /> Setoran Driver
+        <Banknote className="w-6 h-6 text-primary" /> Penghasilan Admin
       </h1>
-      <p className="text-muted-foreground text-sm mb-6">Bukti setoran fee harian dari driver.</p>
+      <p className="text-muted-foreground text-sm mb-6">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
 
+      {/* Balance card */}
+      <div className="rounded-2xl p-5 mb-6 bg-gradient-to-br from-primary to-amber-600 text-white">
+        <div className="flex items-center gap-2 text-sm mb-2 text-white/90">
+          <Wallet className="w-4 h-4" /> Total Penghasilan Admin
+        </div>
+        <p className="font-display text-4xl font-extrabold mb-3">{formatRupiah(totals.total)}</p>
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="rounded-xl bg-white/15 px-3 py-2">
+            <p className="text-white/80 text-xs">Fee Admin (Rp1.000 × {orders.length})</p>
+            <p className="font-bold">{formatRupiah(totals.adminFee)}</p>
+          </div>
+          <div className="rounded-xl bg-white/15 px-3 py-2">
+            <p className="text-white/80 text-xs">Fee Layanan</p>
+            <p className="font-bold">{formatRupiah(totals.serviceFee)}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Transaction detail */}
+      <div className="mb-6">
+        <h2 className="font-bold mb-3 flex items-center gap-2">
+          <Receipt className="w-5 h-5 text-primary" /> Rincian Transaksi
+        </h2>
+        {orders.length === 0 ? (
+          <div className="text-center py-10 bg-card rounded-2xl border border-dashed border-border">
+            <p className="text-sm text-muted-foreground">Belum ada order selesai.</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {orders.map((o) => {
+              const driver = userMap[o.driver_id];
+              return (
+                <div key={o.id} className="bg-card rounded-xl border border-border p-3 text-sm">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <p className="font-semibold selectable">#{String(o.id).slice(-6)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(o.updated_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}
+                    </p>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-2 truncate">
+                    Driver: {driver?.full_name || driver?.email || "—"}
+                  </p>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Fee Admin</span>
+                    <span className="font-medium text-foreground">{formatRupiah(o.driver_remit_fee || 0)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Fee Layanan</span>
+                    <span className="font-medium text-foreground">{formatRupiah(o.service_fee || 0)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs font-bold text-primary pt-1.5 border-t border-border mt-1.5">
+                    <span>Total</span>
+                    <span>{formatRupiah((o.driver_remit_fee || 0) + (o.service_fee || 0))}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Bukti setoran dari driver */}
+      <h2 className="font-bold mb-3 flex items-center gap-2">
+        <Banknote className="w-5 h-5 text-primary" /> Bukti Setoran Driver
+      </h2>
       {list === null ? (
-        <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+        <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
       ) : list.length === 0 ? (
-        <div className="text-center py-16 bg-card rounded-2xl border border-dashed border-border">
+        <div className="text-center py-12 bg-card rounded-2xl border border-dashed border-border">
           <p className="text-sm text-muted-foreground">Belum ada setoran masuk.</p>
         </div>
       ) : (
