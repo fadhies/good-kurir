@@ -100,7 +100,7 @@ export default function AdminLayout({ children }) {
       </div>
 
       <div className="flex-1 min-w-0 pt-[calc(3.5rem+env(safe-area-inset-top))] md:pt-0">
-        <main className="p-4 md:p-8 max-w-6xl mx-auto">{children}</main>
+        <main className="p-4 pb-24 md:p-8 max-w-6xl mx-auto">{children}</main>
         <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border">
           <div className="flex h-16">
           {NAV.map((item) => {
