@@ -80,36 +80,35 @@ export default function AdminRemittance() {
             <p className="text-sm text-muted-foreground">Belum ada order selesai.</p>
           </div> :
 
-        <div className="space-y-2">
-            {orders.map((o) => {
-            const driver = userMap[o.driver_id];
-            return (
-              <div key={o.id} className="bg-card rounded-xl border border-border p-3 text-sm">
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <p className="font-semibold selectable">#{String(o.id).slice(-6)}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(o.updated_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}
-                    </p>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-2 truncate">
-                    Driver: {driver?.full_name || driver?.email || "—"}
-                  </p>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Fee Admin</span>
-                    <span className="font-medium text-foreground">{formatRupiah(o.driver_remit_fee || 0)}</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Fee Layanan</span>
-                    <span className="font-medium text-foreground">{formatRupiah(o.service_fee || 0)}</span>
-                  </div>
-                  <div className="flex justify-between text-xs font-bold text-primary pt-1.5 border-t border-border mt-1.5">
-                    <span>Total</span>
-                    <span>{formatRupiah((o.driver_remit_fee || 0) + (o.service_fee || 0))}</span>
-                  </div>
-                </div>);
-
-          })}
-          </div>
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <table className="w-full text-xs whitespace-nowrap">
+            <thead className="bg-secondary/50 text-muted-foreground">
+              <tr>
+                <th className="text-left font-semibold px-3 py-2">Order</th>
+                <th className="text-left font-semibold px-3 py-2">Tgl</th>
+                <th className="text-left font-semibold px-3 py-2">Driver</th>
+                <th className="text-right font-semibold px-3 py-2">Fee Admin</th>
+                <th className="text-right font-semibold px-3 py-2">Fee Layanan</th>
+                <th className="text-right font-semibold px-3 py-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((o) => {
+              const driver = userMap[o.driver_id];
+              return (
+                <tr key={o.id} className="border-t border-border">
+                  <td className="px-3 py-2 font-semibold selectable">#{String(o.id).slice(-6)}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{new Date(o.updated_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}</td>
+                  <td className="px-3 py-2 max-w-[120px] truncate">{driver?.full_name || driver?.email || "—"}</td>
+                  <td className="px-3 py-2 text-right">{formatRupiah(o.driver_remit_fee || 0)}</td>
+                  <td className="px-3 py-2 text-right">{formatRupiah(o.service_fee || 0)}</td>
+                  <td className="px-3 py-2 text-right font-bold text-primary">{formatRupiah((o.driver_remit_fee || 0) + (o.service_fee || 0))}</td>
+                </tr>
+              );
+              })}
+            </tbody>
+          </table>
+        </div>
         }
       </div>
 
@@ -124,34 +123,42 @@ export default function AdminRemittance() {
           <p className="text-sm text-muted-foreground">Belum ada setoran masuk.</p>
         </div> :
 
-      <div className="space-y-3">
-          {list.map((r) => {
-          const u = userMap[r.user_id];
-          return (
-            <div key={r.id} className="bg-card rounded-2xl border border-border p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{u?.full_name || u?.email || "Driver"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Tgl setoran: {r.date} • {r.transaction_count || 0} transaksi
-                    </p>
-                  </div>
-                  <p className="font-bold text-primary">{formatRupiah(r.amount)}</p>
-                </div>
-                {r.proof_photo &&
-              <div className="w-32 h-32 mt-3 rounded-lg overflow-hidden border border-border">
-                    <a href={r.proof_photo} target="_blank" rel="noreferrer">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        <table className="w-full text-xs whitespace-nowrap">
+          <thead className="bg-secondary/50 text-muted-foreground">
+            <tr>
+              <th className="text-left font-semibold px-3 py-2">Driver</th>
+              <th className="text-left font-semibold px-3 py-2">Tgl Setoran</th>
+              <th className="text-right font-semibold px-3 py-2">Transaksi</th>
+              <th className="text-right font-semibold px-3 py-2">Jumlah</th>
+              <th className="text-center font-semibold px-3 py-2">Bukti</th>
+              <th className="text-left font-semibold px-3 py-2">Dikirim</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((r) => {
+            const u = userMap[r.user_id];
+            return (
+              <tr key={r.id} className="border-t border-border align-top">
+                <td className="px-3 py-2 font-semibold max-w-[120px] truncate">{u?.full_name || u?.email || "Driver"}</td>
+                <td className="px-3 py-2 text-muted-foreground">{r.date}</td>
+                <td className="px-3 py-2 text-right">{r.transaction_count || 0}</td>
+                <td className="px-3 py-2 text-right font-bold text-primary">{formatRupiah(r.amount)}</td>
+                <td className="px-3 py-2 text-center">
+                  {r.proof_photo ?
+                  <a href={r.proof_photo} target="_blank" rel="noreferrer" className="inline-block w-12 h-12 rounded-lg overflow-hidden border border-border">
                       <Image src={r.proof_photo} fittingType="fit" className="w-full h-full" />
-                    </a>
-                  </div>
-              }
-                <p className="text-xs text-muted-foreground mt-2">
-                  Dikirim: {new Date(r.created_date).toLocaleString("id-ID")}
-                </p>
-              </div>);
-
-        })}
-        </div>
+                    </a> :
+                  <span className="text-muted-foreground">—</span>
+                  }
+                </td>
+                <td className="px-3 py-2 text-muted-foreground">{new Date(r.created_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
+              </tr>
+            );
+            })}
+          </tbody>
+        </table>
+      </div>
       }
     </AdminLayout>);
 
