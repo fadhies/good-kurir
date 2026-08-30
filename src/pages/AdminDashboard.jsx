@@ -171,15 +171,15 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mt-8">
-        <h2 className="font-display text-xl font-extrabold mb-1 hidden">Dompet Admin</h2>
-        <p className="text-muted-foreground text-sm mb-4 hidden">Akumulasi fee Rp2.000 dari setiap pesanan selesai.</p>
-        <div className="bg-[#EAF01C] rounded-2xl p-5 text-white mb-4 hidden">
-          <div className="flex items-center gap-2 text-sm mb-1 text-[hsl(var(--primary))]">
-            <Wallet className="w-4 h-4" /> Saldo Dompet Admin
-          </div>
-          <p className="font-display text-3xl font-extrabold text-[hsl(var(--primary))]">{formatRupiah(wallet.balance)}</p>
-        </div>
-        <h3 className="font-bold mb-2 text-sm hidden">Rincian Transaksi</h3>
+        
+        
+        
+
+
+
+
+        
+        
         <div className="space-y-2">
           {wallet.txs.length === 0 ?
           <p className="text-sm text-muted-foreground text-center py-6">Belum ada transaksi</p> :
