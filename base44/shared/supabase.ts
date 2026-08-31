@@ -10,9 +10,8 @@ function cfg() {
   return { url, key };
 }
 
-// Mixed-case table names must be double-quoted in the PostgREST URL path.
 function tpath(table) {
-  return encodeURIComponent('"' + table + '"');
+  return encodeURIComponent(table);
 }
 
 function headers(key, extra = {}) {
