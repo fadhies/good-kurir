@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { Bell, Bike, CheckCircle2, MessageCircle, ShoppingBag, Package, User } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
@@ -29,7 +29,7 @@ export default function NotificationBell() {
   const load = useCallback(async () => {
     if (!user?.id) return;
     try {
-      const rows = await base44.entities.Notification.filter(
+      const rows = await S.Notification.filter(
         { user_id: user.id },
         "-created_date",
         20
@@ -43,7 +43,7 @@ export default function NotificationBell() {
     const poll = setInterval(load, 5000);
     let unsub = () => {};
     try {
-      unsub = base44.entities.Notification.subscribe(() => load());
+      unsub = S.Notification.subscribe(() => load());
     } catch {}
     return () => {
       clearInterval(poll);
@@ -56,7 +56,7 @@ export default function NotificationBell() {
   async function markAllRead() {
     if (!unread) return;
     try {
-      await base44.entities.Notification.updateMany(
+      await S.Notification.updateMany(
         { user_id: user.id, is_read: false },
         { $set: { is_read: true } }
       );

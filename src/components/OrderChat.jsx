@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { Loader2, Send, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -15,7 +15,7 @@ export default function OrderChat({ order }) {
 
   async function load() {
     try {
-      const list = await base44.entities.ChatMessage.filter({ order_id: order.id }, "created_date", 200);
+      const list = await S.ChatMessage.filter({ order_id: order.id }, "created_date", 200);
       setMessages(list);
     } catch {
       setMessages([]);
@@ -24,7 +24,7 @@ export default function OrderChat({ order }) {
 
   useEffect(() => {
     load();
-    const unsub = base44.entities.ChatMessage.subscribe(() => { load(); });
+    const unsub = S.ChatMessage.subscribe(() => { load(); });
     const poll = setInterval(load, 3000);
     return () => { unsub(); clearInterval(poll); };
   }, [order.id]);
@@ -51,7 +51,7 @@ export default function OrderChat({ order }) {
     setSending(true);
     try {
       const participants = [order.created_by_id, order.driver_id].filter(Boolean);
-      await base44.entities.ChatMessage.create({
+      await S.ChatMessage.create({
         order_id: order.id,
         sender_id: user.id,
         sender_name: user.full_name || user.email,

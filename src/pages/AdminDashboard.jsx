@@ -31,7 +31,7 @@ export default function AdminDashboard() {
       await sleep(250);
       const orders = await S.Order.list("-created_date", 100);
       await sleep(250);
-      const txs = await base44.entities.WalletTransaction.list("-created_date", 100);
+      const txs = await S.WalletTransaction.list("-created_date", 100);
 
       const pending = drivers.filter((d) => d.verification_status === "pending");
       const active = orders.filter((o) =>

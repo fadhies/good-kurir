@@ -3,29 +3,107 @@ import {
   getById as sbGet,
   insertOne,
   updateById as sbUpdate,
+  updateWhere as sbUpdateWhere,
   deleteById as sbDelete,
   selectQuery,
 } from '../../shared/supabase.ts';
 
 // Frontend-facing CRUD for Supabase tables. Enforces per-table access control
 // server-side because the service_role key bypasses Supabase RLS.
-// Currently wired for the `orders` table (Order entity migration).
-
-const TABLE = 'orders';
 
 function isAdmin(user) { return user?.role === 'admin'; }
 
-// Order read ACL: owner OR assigned driver OR pending_match OR admin.
-function canReadOrder(user, row) {
-  if (!row) return false;
-  if (isAdmin(user)) return true;
-  return row.created_by_id === user.id || row.driver_id === user.id || row.status === 'pending_match';
+function isParticipant(row, userId) {
+  return Array.isArray(row?.participants) && row.participants.includes(userId);
 }
-// Order write ACL: owner OR assigned driver OR admin.
-function canWriteOrder(user, row) {
+
+// Read ACL per table.
+function canRead(table, user, row) {
   if (!row) return false;
   if (isAdmin(user)) return true;
-  return row.created_by_id === user.id || row.driver_id === user.id;
+  switch (table) {
+    case 'orders':
+      return row.created_by_id === user.id || row.driver_id === user.id || row.status === 'pending_match';
+    case 'notifications':
+    case 'wallet_transactions':
+      return row.user_id === user.id;
+    case 'chat_messages':
+      return isParticipant(row, user.id);
+    default:
+      return false;
+  }
+}
+
+// Write (update) ACL per table.
+function canWrite(table, user, row) {
+  if (!row) return false;
+  if (isAdmin(user)) return true;
+  switch (table) {
+    case 'orders':
+      return row.created_by_id === user.id || row.driver_id === user.id;
+    case 'notifications':
+      return row.user_id === user.id;
+    case 'chat_messages':
+      return row.created_by_id === user.id;
+    case 'wallet_transactions':
+      return false; // admin only
+    default:
+      return false;
+  }
+}
+
+// Create ACL per table (checked against the payload before insert).
+function canCreate(table, user, data) {
+  if (isAdmin(user)) return true;
+  switch (table) {
+    case 'orders':
+    case 'chat_messages':
+      return true; // created_by_id is forced to user.id
+    case 'notifications':
+      return data?.user_id === user.id;
+    case 'wallet_transactions':
+      return false; // admin only (backend creates directly via supabase.ts)
+    default:
+      return false;
+  }
+}
+
+function canDelete(table, user, row) {
+  if (isAdmin(user)) return true;
+  switch (table) {
+    case 'notifications':
+      return row?.user_id === user.id;
+    default:
+      return false; // admin only
+  }
+}
+
+// Build the access-scoped PostgREST `or`/filter for a non-admin filter call.
+function scopeFilter(table, user, filter) {
+  const f = { ...(filter || {}) };
+  // chat_messages.participants is a jsonb array; translate a plain string
+  // filter (used by the chat listener) into a containment query for everyone.
+  if (table === 'chat_messages') {
+    if (f.participants && typeof f.participants === 'string') {
+      f.participants = { $cs: [f.participants] };
+    } else if (!f.participants && !isAdmin(user)) {
+      f.participants = { $cs: [user.id] };
+    }
+  }
+  if (isAdmin(user)) return f;
+  switch (table) {
+    case 'notifications':
+    case 'wallet_transactions':
+      f.user_id = user.id; // force own records
+      return f;
+    default:
+      return f;
+  }
+}
+
+function orderOrScope(table, user) {
+  if (table !== 'orders' || isAdmin(user)) return undefined;
+  return `or=(created_by_id.eq.${user.id},driver_id.eq.${user.id},status.eq.pending_match)`;
 }
 
 export default async function(req) {
@@ -35,35 +113,36 @@ export default async function(req) {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { op } = body;
+    const { op, table = 'orders' } = body;
 
     if (op === 'list') {
       if (!isAdmin(user)) return Response.json({ error: 'Forbidden' }, { status: 403 });
-      const rows = await selectQuery(TABLE, { order: body.sort, limit: body.limit });
+      const rows = await selectQuery(table, { order: body.sort, limit: body.limit });
       return Response.json({ ok: true, data: rows });
     }
 
     if (op === 'filter') {
-      const filter = body.query || {};
-      const or = isAdmin(user)
-        ? undefined
-        : `or=(created_by_id.eq.${user.id},driver_id.eq.${user.id},status.eq.pending_match)`;
-      const rows = await selectQuery(TABLE, { filter, order: body.sort, limit: body.limit, or });
+      const filter = scopeFilter(table, user, body.query || {});
+      const or = orderOrScope(table, user);
+      const rows = await selectQuery(table, { filter, order: body.sort, limit: body.limit, or });
       return Response.json({ ok: true, data: rows });
     }
 
     if (op === 'get') {
-      const row = await sbGet(TABLE, body.id);
+      const row = await sbGet(table, body.id);
       if (!row) return Response.json({ ok: true, data: null });
-      if (!canReadOrder(user, row)) return Response.json({ ok: true, data: null });
+      if (!canRead(table, user, row)) return Response.json({ ok: true, data: null });
       return Response.json({ ok: true, data: row });
     }
 
     if (op === 'create') {
       const data = body.data || {};
+      if (!canCreate(table, user, data)) {
+        return Response.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
-      const row = await insertOne(TABLE, {
+      const row = await insertOne(table, {
         ...data,
         id,
         created_date: now,
@@ -74,19 +153,42 @@ export default async function(req) {
     }
 
     if (op === 'update') {
-      const existing = await sbGet(TABLE, body.id);
+      const existing = await sbGet(table, body.id);
       if (!existing) return Response.json({ error: 'Not found' }, { status: 404 });
-      if (!canWriteOrder(user, existing)) return Response.json({ error: 'Forbidden' }, { status: 403 });
+      if (!canWrite(table, user, existing)) {
+        return Response.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const patch = { ...(body.patch || {}), updated_date: new Date().toISOString() };
       delete patch.id;
       delete patch.created_by_id;
-      const row = await sbUpdate(TABLE, body.id, patch);
+      const row = await sbUpdate(table, body.id, patch);
       return Response.json({ ok: true, data: row });
     }
 
+    if (op === 'updateMany') {
+      // Only used for marking own notifications as read (and admin bulk on
+      // wallet_transactions). Convert Mongo-style $set to a plain patch.
+      const raw = body.patch || {};
+      const patch = raw.$set ? raw.$set : raw;
+      patch.updated_date = new Date().toISOString();
+      delete patch.id;
+      delete patch.created_by_id;
+      const filter = { ...(body.query || {}) };
+      if (!isAdmin(user)) {
+        if (table === 'notifications') filter.user_id = user.id;
+        else return Response.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      const rows = await sbUpdateWhere(table, filter, patch);
+      return Response.json({ ok: true, data: rows });
+    }
+
     if (op === 'delete') {
-      if (!isAdmin(user)) return Response.json({ error: 'Forbidden' }, { status: 403 });
-      await sbDelete(TABLE, body.id);
+      const existing = await sbGet(table, body.id);
+      if (!existing) return Response.json({ error: 'Not found' }, { status: 404 });
+      if (!canDelete(table, user, existing)) {
+        return Response.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      await sbDelete(table, body.id);
       return Response.json({ ok: true, data: { id: body.id } });
     }
 

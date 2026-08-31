@@ -158,7 +158,10 @@ export async function selectQuery(table, { filter = {}, order, limit, or } = {})
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(filter)) {
     if (v === undefined || v === null) continue;
-    if (v && typeof v === "object" && Array.isArray(v.$in)) {
+    if (v && typeof v === "object" && Array.isArray(v.$cs)) {
+      // jsonb array containment: column @> [...]
+      params.set(k, "cs." + JSON.stringify(v.$cs));
+    } else if (v && typeof v === "object" && Array.isArray(v.$in)) {
       params.set(k, "in.(" + v.$in.map(String).join(",") + ")");
     } else {
       params.set(k, "eq." + String(v));
@@ -174,5 +177,24 @@ export async function selectQuery(table, { filter = {}, order, limit, or } = {})
   const qs = params.toString();
   const res = await fetch(`${url}/rest/v1/${tpath(table)}${qs ? "?" + qs : ""}`, { headers: headers(key) });
   if (!res.ok) throw new Error(`Supabase selectQuery ${table} ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+// Patch all rows matching an eq filter { col: value }. Used for bulk updates
+// like "mark all my unread notifications as read".
+export async function updateWhere(table, filter = {}, patch = {}) {
+  const { url, key } = cfg();
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(filter)) {
+    if (v === undefined || v === null) continue;
+    params.append(k, `eq.${v}`);
+  }
+  const qs = params.toString();
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}${qs ? "?" + qs : ""}`, {
+    method: "PATCH",
+    headers: headers(key, { Prefer: "return=representation" }),
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) throw new Error(`Supabase updateWhere ${table} ${res.status}: ${await res.text()}`);
   return res.json();
 }

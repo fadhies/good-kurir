@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
 import DriverRemittance from "@/components/DriverRemittance";
@@ -14,8 +14,8 @@ export default function DriverWallet() {
   async function load() {
     try {
       const [list, completed] = await Promise.all([
-        base44.entities.WalletTransaction.filter({ user_id: user.id }, "-created_date", 50),
-        base44.entities.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
+        S.WalletTransaction.filter({ user_id: user.id }, "-created_date", 50),
+        S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
       ]);
       setTxns(list);
       setBalance(completed.reduce((acc, o) => acc + (o.delivery_fee || 0) + (o.service_fee || 0), 0));
@@ -31,8 +31,8 @@ export default function DriverWallet() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => load(), 600);
     };
-    const unsubW = base44.entities.WalletTransaction.subscribe(refresh);
-    const unsubO = base44.entities.Order.subscribe(refresh);
+    const unsubW = S.WalletTransaction.subscribe(refresh);
+    const unsubO = S.Order.subscribe(refresh);
     return () => {unsubW();unsubO();if (timer) clearTimeout(timer);};
   }, []);
 

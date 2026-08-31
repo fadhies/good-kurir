@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { insertOne, selectQuery } from '../../shared/supabase.ts';
 
 const MIN_REMAINING = 10000;
 
@@ -16,8 +17,8 @@ export default async function(req) {
       return Response.json({ error: 'Bank & nomor rekening wajib diisi' }, { status: 400 });
     }
 
-    // Hitung saldo dompet saat ini
-    const txs = await base44.asServiceRole.entities.WalletTransaction.filter({ user_id: user.id });
+    // Hitung saldo dompet saat ini (dari Supabase)
+    const txs = await selectQuery('wallet_transactions', { filter: { user_id: user.id }, limit: 1000 });
     const balance = txs.reduce((s, t) => s + (t.type === 'credit' ? t.amount : -t.amount), 0);
     if (balance - amt < MIN_REMAINING) {
       return Response.json({ error: `Saldo minimum tersisa Rp${MIN_REMAINING.toLocaleString('id-ID')}` }, { status: 400 });
@@ -34,7 +35,13 @@ export default async function(req) {
     });
 
     // Potong dompet (dicadangkan)
-    await base44.asServiceRole.entities.WalletTransaction.create({
+    const wtId = crypto.randomUUID();
+    const wtNow = new Date().toISOString();
+    await insertOne('wallet_transactions', {
+      id: wtId,
+      created_date: wtNow,
+      updated_date: wtNow,
+      created_by_id: user.id,
       user_id: user.id,
       type: 'debit',
       amount: amt,

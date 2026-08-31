@@ -1,8 +1,8 @@
 import { base44 } from "@/api/base44Client";
 
-// Client wrapper that mirrors the base44.entities.<X> API but routes Order CRUD
-// to Supabase via the `supabaseCrud` backend function (which enforces ACL).
-// Other entities stay on base44.entities until migrated.
+// Client wrapper that mirrors the base44.entities.<X> API but routes CRUD for
+// migrated entities to Supabase via the `supabaseCrud` backend function
+// (which enforces per-table ACL server-side).
 
 function unwrap(r) {
   if (r && r.data && r.data.ok) return r.data.data;
@@ -45,23 +45,34 @@ function makeSubscribe(entity) {
   };
 }
 
-const Order = {
-  async list(sort, limit) {
-    return unwrap(await invoke({ table: "orders", op: "list", sort, limit }));
-  },
-  async filter(query, sort, limit) {
-    return unwrap(await invoke({ table: "orders", op: "filter", query, sort, limit }));
-  },
-  async get(id) {
-    return unwrap(await invoke({ table: "orders", op: "get", id }));
-  },
-  async create(data) {
-    return unwrap(await invoke({ table: "orders", op: "create", data }));
-  },
-  async update(id, patch) {
-    return unwrap(await invoke({ table: "orders", op: "update", id, patch }));
-  },
-};
-Order.subscribe = makeSubscribe(Order);
+function makeEntity(table) {
+  const entity = {
+    async list(sort, limit) {
+      return unwrap(await invoke({ table, op: "list", sort, limit }));
+    },
+    async filter(query, sort, limit) {
+      return unwrap(await invoke({ table, op: "filter", query, sort, limit }));
+    },
+    async get(id) {
+      return unwrap(await invoke({ table, op: "get", id }));
+    },
+    async create(data) {
+      return unwrap(await invoke({ table, op: "create", data }));
+    },
+    async update(id, patch) {
+      return unwrap(await invoke({ table, op: "update", id, patch }));
+    },
+    async updateMany(query, patch) {
+      return unwrap(await invoke({ table, op: "updateMany", query, patch }));
+    },
+  };
+  entity.subscribe = makeSubscribe(entity);
+  return entity;
+}
 
-export default { Order };
+const Order = makeEntity("orders");
+const Notification = makeEntity("notifications");
+const ChatMessage = makeEntity("chat_messages");
+const WalletTransaction = makeEntity("wallet_transactions");
+
+export default { Order, Notification, ChatMessage, WalletTransaction };

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
@@ -26,7 +26,7 @@ export default function ChatNotificationListener() {
 
     async function check() {
       try {
-        const rows = await base44.entities.ChatMessage.filter(
+        const rows = await S.ChatMessage.filter(
           { participants: user.id },
           "-created_date",
           5
@@ -74,7 +74,7 @@ export default function ChatNotificationListener() {
           });
           if (navigator.vibrate) navigator.vibrate(100);
           // Simpan ke pusat notifikasi (lonceng)
-          base44.entities.Notification.create({
+          S.Notification.create({
             user_id: user.id,
             type: "new_message",
             title: `💬 Pesan dari ${senderLabel}`,
@@ -90,7 +90,7 @@ export default function ChatNotificationListener() {
     }
 
     // Set baseline so we don't notify on old messages at mount
-    base44.entities.ChatMessage
+    S.ChatMessage
       .filter({ participants: user.id }, "-created_date", 1)
       .then((rows) => {
         if (active && rows.length) lastSeenDate.current = rows[0].created_date;

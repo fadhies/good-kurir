@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { insertOne } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -36,7 +37,13 @@ export default async function(req) {
       rejection_reason: rejection_reason || null,
       processed_by_id: user.id,
     });
-    await base44.asServiceRole.entities.WalletTransaction.create({
+    const wtId = crypto.randomUUID();
+    const wtNow = new Date().toISOString();
+    await insertOne('wallet_transactions', {
+      id: wtId,
+      created_date: wtNow,
+      updated_date: wtNow,
+      created_by_id: user.id,
       user_id: wr.user_id,
       type: 'credit',
       amount: wr.amount,
