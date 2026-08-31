@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Save, Tag } from "lucide-react";
-import PhotoUpload from "@/components/PhotoUpload";
-import { Image } from "@/components/ui/image";
+import { Loader2, Save, Tag, Smartphone } from "lucide-react";
 
 const FIELDS = [
   { key: "food.hemat", label: "Makanan — Hemat" },
@@ -28,14 +26,14 @@ export default function AdminTariffs() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [cfg, setCfg] = useState(null);
-  const [adminQris, setAdminQris] = useState(null);
+  const [adminDana, setAdminDana] = useState("");
 
   async function load() {
     setLoading(true);
     try {
-      const [tRows, qRows] = await Promise.all([
+      const [tRows, dRows] = await Promise.all([
         base44.entities.AppSetting.filter({ key: "tariffs" }, "-created_date", 1),
-        base44.entities.AppSetting.filter({ key: "admin_qris" }, "-created_date", 1),
+        base44.entities.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
       ]);
       const base = {
         food: { hemat: { base: 7000, base_km: 4, per_km: 1000 }, cepat: { base: 12000, base_km: 4, per_km: 2000 } },
@@ -46,7 +44,7 @@ export default function AdminTariffs() {
       };
       const parsed = tRows[0]?.value ? JSON.parse(tRows[0].value) : {};
       setCfg({ ...base, ...parsed });
-      setAdminQris(qRows[0]?.value || null);
+      setAdminDana(dRows[0]?.value || "");
     } catch (e) {
       setCfg(null);
     } finally {
@@ -68,7 +66,7 @@ export default function AdminTariffs() {
     setSaving(true);
     try {
       await upsertSetting("tariffs", JSON.stringify(cfg));
-      await upsertSetting("admin_qris", adminQris || "");
+      await upsertSetting("admin_dana_number", adminDana || "");
       toast({ title: "Pengaturan tarif tersimpan" });
     } catch (e) {
       toast({ title: "Gagal menyimpan", description: e.message, variant: "destructive" });
@@ -160,18 +158,18 @@ export default function AdminTariffs() {
         </div>
 
         <div className="bg-card rounded-2xl border border-border p-4">
-          <h3 className="font-bold text-sm mb-2">QRIS Admin (untuk setoran driver)</h3>
-          <PhotoUpload
-            label="Gambar QRIS Admin"
-            value={adminQris}
-            onChange={setAdminQris}
-            hint="Driver akan scan QRIS ini untuk menyetor fee harian."
+          <h3 className="font-bold text-sm mb-2 flex items-center gap-1.5">
+            <Smartphone className="w-4 h-4 text-primary" /> Nomor DANA Admin (untuk setoran driver)
+          </h3>
+          <input
+            type="tel"
+            inputMode="tel"
+            value={adminDana}
+            onChange={(e) => setAdminDana(e.target.value)}
+            placeholder="08xxxxxxxxxx"
+            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
           />
-          {adminQris && (
-            <div className="w-32 h-32 mt-2 rounded-lg overflow-hidden border border-border">
-              <Image src={adminQris} fittingType="fit" className="w-full h-full" />
-            </div>
-          )}
+          <p className="text-xs text-muted-foreground mt-1.5">Driver akan transfer setoran fee harian ke nomor DANA ini.</p>
         </div>
 
         <button

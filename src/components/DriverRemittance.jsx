@@ -5,15 +5,14 @@ import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
 import { useToast } from "@/components/ui/use-toast";
-import { Image } from "@/components/ui/image";
 import PhotoUpload from "@/components/PhotoUpload";
-import { Loader2, Banknote, QrCode, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Loader2, Banknote, Smartphone, AlertTriangle, CheckCircle2, Copy } from "lucide-react";
 
 export default function DriverRemittance() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [adminQris, setAdminQris] = useState(null);
+  const [adminDana, setAdminDana] = useState("");
   const [groups, setGroups] = useState(null);
   const [proofs, setProofs] = useState({});
   const [submitting, setSubmitting] = useState(null);
@@ -24,10 +23,10 @@ export default function DriverRemittance() {
       const [completed, remits, qrisRows, wts] = await Promise.all([
       S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
       S.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
-      base44.entities.AppSetting.filter({ key: "admin_qris" }, "-created_date", 1),
+      base44.entities.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
       S.WalletTransaction.filter({ user_id: user.id, type: "credit" }, "-created_date", 500)]
       );
-      setAdminQris(qrisRows[0]?.value || null);
+      setAdminDana(qrisRows[0]?.value || "");
 
       // Tanggal selesai pakai created_date wallet_transaction credit — dibuat
       // sekali saat order selesai (completeOrderPayment) dan tidak pernah diubah,
@@ -136,15 +135,31 @@ export default function DriverRemittance() {
         </div>
       }
 
-      {adminQris ?
-      <div className="flex flex-col items-center mb-4">
-          <div className="w-40 h-40 rounded-xl overflow-hidden border border-border bg-secondary">
-            <Image src={adminQris} fittingType="fit" className="w-full h-full" />
+      {adminDana ?
+      <div className="rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 mb-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <Smartphone className="w-5 h-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Transfer setoran ke DANA Admin</p>
+              <p className="font-bold text-base text-primary selectable tracking-wide">{adminDana}</p>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">QRIS Admin — scan untuk setor</p>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard?.writeText(adminDana);
+              toast({ title: "Nomor DANA disalin" });
+            }}
+            className="p-2 rounded-lg bg-primary/15 text-primary hover:bg-primary/25 transition-colors shrink-0"
+            title="Salin nomor"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
         </div> :
 
-      <p className="text-xs text-amber-600 mb-3">QRIS admin belum diatur. Hubungi admin.</p>
+      <p className="text-xs text-amber-600 mb-3">Nomor DANA admin belum diatur. Hubungi admin.</p>
       }
 
       {(!groups || groups.length === 0) &&
@@ -187,7 +202,7 @@ export default function DriverRemittance() {
 
           <div className="mt-2">
                 <PhotoUpload
-              label="Bukti transfer QRIS"
+              label="Bukti transfer DANA"
               value={proofs[g.date] || null}
               onChange={(v) => setProofs((p) => ({ ...p, [g.date]: v }))} />
             
@@ -196,7 +211,7 @@ export default function DriverRemittance() {
               disabled={submitting === g.date || !proofs[g.date]}
               className="w-full mt-2 bg-primary text-primary-foreground font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2 text-sm">
               
-                  {submitting === g.date ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
+                  {submitting === g.date ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
                   Setor {formatRupiah(g.due)}
                 </button>
               </div>
