@@ -77,7 +77,10 @@ export default function OrderTracking() {
       toast({ title: "✅ Bukti pembayaran diterima", description: "User sudah bayar, silakan antar ke tujuan." });
       if (navigator.vibrate) navigator.vibrate(100);
     } else if (o.status === "on_the_way" && owner) {
-      toast({ title: "🛵 Driver dalam perjalanan", description: "Pesanan menuju tujuan Anda." });
+      toast({
+        title: "🛵 Driver dalam perjalanan",
+        description: o.type === "person" ? "Driver mengantar Anda ke tujuan." : "Pesanan menuju tujuan Anda."
+      });
     } else if (o.status === "completed" && owner) {
       toast({ title: "🎉 Pesanan selesai", description: "Terima kasih sudah menggunakan layanan kami." });
     }
@@ -315,11 +318,18 @@ export default function OrderTracking() {
 
   const isCash = order.payment_method === "cash";
   const isQris = order.payment_method === "qris";
-  const labeledTimeline = TIMELINE.map((t) =>
-  t.key === "at_store" ?
-  { ...t, label: order.type === "person" ? "Di Lokasi Jemput" : order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" } :
-  t
-  );
+  // Label khusus mode antar orang agar kontekstual (jemput → antar → sampai).
+  const personLabels = {
+    driver_assigned: "Driver Menuju Jemput",
+    at_store: "Di Lokasi Jemput",
+    on_the_way: "Mengantar ke Tujuan",
+    completed: "Sampai di Tujuan"
+  };
+  const labeledTimeline = TIMELINE.map((t) => {
+  if (order.type === "person" && personLabels[t.key]) return { ...t, label: personLabels[t.key] };
+  if (t.key === "at_store") return { ...t, label: order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" };
+  return t;
+  });
   const timeline = isQris && order.type === "food" ?
   labeledTimeline :
   labeledTimeline.filter((t) => t.key !== "awaiting_payment" && t.key !== "paid");
@@ -609,7 +619,7 @@ export default function OrderTracking() {
 
             {order.status === "on_the_way" &&
           <p className="text-sm text-muted-foreground text-center py-2">
-                Menunggu pemesan mengonfirmasi pesanan sudah diterima...
+                {order.type === "person" ? "Menunggu penumpang konfirmasi sudah sampai di tujuan..." : "Menunggu pemesan mengonfirmasi pesanan sudah diterima..."}
               </p>
           }
 
@@ -727,8 +737,8 @@ export default function OrderTracking() {
 
         {isOwner && order.status === "on_the_way" &&
         <div className="bg-emerald-700 rounded-2xl p-5 text-white">
-            <h3 className="font-bold mb-1">Pesanan Sudah Sampai?</h3>
-            <p className="text-white/80 text-sm mb-4">Konfirmasi bahwa pesanan sudah Anda terima untuk menyelesaikan order.</p>
+            <h3 className="font-bold mb-1">{order.type === "person" ? "Sudah Sampai Tujuan?" : "Pesanan Sudah Sampai?"}</h3>
+            <p className="text-white/80 text-sm mb-4">{order.type === "person" ? "Konfirmasi bahwa Anda sudah sampai di tujuan untuk menyelesaikan order." : "Konfirmasi bahwa pesanan sudah Anda terima untuk menyelesaikan order."}</p>
             <button
             onClick={settleOrder}
             disabled={acting}
