@@ -27,14 +27,22 @@ export default function MyOrders() {
         setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, store_name: name } : o)))
       );
     } catch (e) {
-      setOrders([]);
+      // Jangan hapus data yang sudah ada saat error sesaat (mis. saat idle).
+      // Data lama tetap ditampilkan sampai fetch berikutnya berhasil.
     }
   }
 
   useEffect(() => {
     reload();
     const unsub = S.Order.subscribe(() => reload());
-    return unsub;
+    const onWake = () => { if (!document.hidden) reload(); };
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("online", onWake);
+    return () => {
+      unsub();
+      document.removeEventListener("visibilitychange", onWake);
+      window.removeEventListener("online", onWake);
+    };
   }, []);
 
   const asPemesan = (orders || []).filter((o) => o.created_by_id === user?.id);

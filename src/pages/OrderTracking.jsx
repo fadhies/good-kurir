@@ -172,7 +172,10 @@ export default function OrderTracking() {
         notifyStatusTransition(o);
       }
     } catch (e) {
-      toast({ title: "Pesanan tidak ditemukan", variant: "destructive" });
+      // Hanya tampilkan error saat load pertama (sebelum pernah berhasil);
+      // pada polling ulang (mis. saat idle) cukup diam agar toast tidak spam
+      // dan data lama tetap tampil. prevStatusRef terisi hanya setelah load sukses.
+      if (prevStatusRef.current === null) toast({ title: "Pesanan tidak ditemukan", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -184,7 +187,10 @@ export default function OrderTracking() {
       if (event.id === id) loadOrder();
     });
     const poll = setInterval(loadOrder, 3000);
-    return () => {unsub();clearInterval(poll);};
+    const onWake = () => { if (!document.hidden) loadOrder(); };
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("online", onWake);
+    return () => {unsub();clearInterval(poll);document.removeEventListener("visibilitychange", onWake);window.removeEventListener("online", onWake);};
   }, [id]);
 
   // Ambil QRIS pemilik (setting admin) untuk pembayaran

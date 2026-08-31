@@ -55,7 +55,7 @@ export default function DriverDashboard() {
       list.sort((a, b) => new Date(b.updated_date || 0) - new Date(a.updated_date || 0));
       setProfile(list[0] || null);
     } catch (e) {
-      setProfile(null);
+      // pertahankan profil yang sudah ada saat error sesaat
     } finally {
       setChecking(false);
     }
@@ -66,7 +66,7 @@ export default function DriverDashboard() {
       const all = await S.Order.filter({ driver_id: user.id }, "-created_date", 500);
       setTotalTrips(all.length);
     } catch {
-      setTotalTrips(0);
+      // pertahankan nilai lama
     }
   }
 
@@ -83,7 +83,7 @@ export default function DriverDashboard() {
         setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, store_name: name } : o)))
       );
     } catch (e) {
-      setOrders([]);
+      // jangan hapus pesanan aktif saat error sesaat (mis. saat idle)
     }
   }
 
@@ -101,7 +101,7 @@ export default function DriverDashboard() {
       );
       setAvailable(list);
     } catch (e) {
-      setAvailable([]);
+      // jangan hapus daftar available saat error sesaat
     }
   }
 
@@ -139,7 +139,10 @@ export default function DriverDashboard() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600);
     });
-    return () => { unsub(); if (timer) clearTimeout(timer); };
+    const onWake = () => { if (document.hidden) return; if (timer) clearTimeout(timer); timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600); };
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("online", onWake);
+    return () => { unsub(); if (timer) clearTimeout(timer); document.removeEventListener("visibilitychange", onWake); window.removeEventListener("online", onWake); };
   }, [profile]);
 
   async function toggleOnline() {
