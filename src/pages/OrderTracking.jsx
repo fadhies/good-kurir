@@ -726,7 +726,7 @@ export default function OrderTracking() {
         }
 
         {isOwner && order.status === "on_the_way" &&
-        <div className="bg-gradient-to-br from-primary to-emerald-700 rounded-2xl p-5 text-white">
+        <div className="bg-emerald-700 rounded-2xl p-5 text-white">
             <h3 className="font-bold mb-1">Pesanan Sudah Sampai?</h3>
             <p className="text-white/80 text-sm mb-4">Konfirmasi bahwa pesanan sudah Anda terima untuk menyelesaikan order.</p>
             <button
