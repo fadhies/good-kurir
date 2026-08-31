@@ -198,3 +198,42 @@ export async function updateWhere(table, filter = {}, patch = {}) {
   if (!res.ok) throw new Error(`Supabase updateWhere ${table} ${res.status}: ${await res.text()}`);
   return res.json();
 }
+
+// Create a Storage bucket if it doesn't already exist (409 = already exists).
+export async function ensureBucket(bucket, isPublic = true) {
+  const { url, key } = cfg();
+  const res = await fetch(`${url}/storage/v1/bucket`, {
+    method: "POST",
+    headers: headers(key, { "Content-Type": "application/json" }),
+    body: JSON.stringify({ id: bucket, name: bucket, public: isPublic }),
+  });
+  if (!res.ok && res.status !== 409) {
+    const t = await res.text();
+    throw new Error(`Supabase ensureBucket ${res.status}: ${t}`);
+  }
+  return true;
+}
+
+// Upload a base64-encoded object to a Storage bucket; returns the public URL.
+export async function uploadObject(bucket, path, base64Data, contentType) {
+  const { url, key } = cfg();
+  const binary = atob(base64Data);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const enc = path.split("/").map(encodeURIComponent).join("/");
+  const res = await fetch(`${url}/storage/v1/object/${bucket}/${enc}`, {
+    method: "POST",
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": contentType,
+      "x-upsert": "true",
+    },
+    body: bytes,
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`Supabase upload ${bucket}/${path} ${res.status}: ${t}`);
+  }
+  return `${url}/storage/v1/object/public/${bucket}/${enc}`;
+}

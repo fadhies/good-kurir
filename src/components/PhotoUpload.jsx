@@ -4,7 +4,20 @@ import { Image } from "@/components/ui/image";
 import { Upload, Loader2, X } from "lucide-react";
 import { compressImage } from "@/lib/compressImage";
 
-export default function PhotoUpload({ label, value, onChange, hint }) {
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      const comma = result.indexOf(",");
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function PhotoUpload({ label, value, onChange, hint, folder }) {
   const [uploading, setUploading] = useState(false);
 
   async function handleFile(e) {
@@ -13,8 +26,18 @@ export default function PhotoUpload({ label, value, onChange, hint }) {
     setUploading(true);
     try {
       const compressed = await compressImage(file);
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: compressed });
-      onChange(file_url);
+      const base64 = await fileToBase64(compressed);
+      const res = await base44.functions.invoke("uploadPhoto", {
+        base64,
+        filename: compressed.name,
+        contentType: compressed.type || "image/jpeg",
+        folder,
+      });
+      if (res.data?.url) {
+        onChange(res.data.url);
+      } else {
+        throw new Error(res.data?.error || "Gagal unggah");
+      }
     } catch {
       // ignore
     } finally {
