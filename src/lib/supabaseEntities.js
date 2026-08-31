@@ -74,5 +74,7 @@ const Order = makeEntity("orders");
 const Notification = makeEntity("notifications");
 const ChatMessage = makeEntity("chat_messages");
 const WalletTransaction = makeEntity("wallet_transactions");
+const WithdrawalRequest = makeEntity("withdrawal_requests");
+const DriverRemittance = makeEntity("driver_remittances");
 
-export default { Order, Notification, ChatMessage, WalletTransaction };
+export default { Order, Notification, ChatMessage, WalletTransaction, WithdrawalRequest, DriverRemittance };

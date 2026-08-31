@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2 } from "lucide-react";
 
@@ -16,7 +16,7 @@ export default function WithdrawalList() {
 
   async function load() {
     try {
-      const r = await base44.entities.WithdrawalRequest.filter({ user_id: user.id }, "-created_date", 20);
+      const r = await S.WithdrawalRequest.filter({ user_id: user.id }, "-created_date", 20);
       setList(r);
     } catch {
       setList([]);
@@ -25,7 +25,7 @@ export default function WithdrawalList() {
 
   useEffect(() => {
     load();
-    const unsub = base44.entities.WithdrawalRequest.subscribe(() => load());
+    const unsub = S.WithdrawalRequest.subscribe(() => load());
     return unsub;
   }, []);
 

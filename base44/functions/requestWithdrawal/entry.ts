@@ -24,8 +24,14 @@ export default async function(req) {
       return Response.json({ error: `Saldo minimum tersisa Rp${MIN_REMAINING.toLocaleString('id-ID')}` }, { status: 400 });
     }
 
-    // Buat permintaan penarikan
-    const wr = await base44.asServiceRole.entities.WithdrawalRequest.create({
+    // Buat permintaan penarikan (Supabase)
+    const wrId = crypto.randomUUID();
+    const wrNow = new Date().toISOString();
+    const wr = await insertOne('withdrawal_requests', {
+      id: wrId,
+      created_date: wrNow,
+      updated_date: wrNow,
+      created_by_id: user.id,
       user_id: user.id,
       amount: amt,
       bank_name,

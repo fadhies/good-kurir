@@ -23,7 +23,7 @@ export default function DriverRemittance() {
     try {
       const [completed, remits, qrisRows] = await Promise.all([
       S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
-      base44.entities.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
+      S.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
       base44.entities.AppSetting.filter({ key: "admin_qris" }, "-created_date", 1)]
       );
       setAdminQris(qrisRows[0]?.value || null);
@@ -78,7 +78,7 @@ export default function DriverRemittance() {
     const g = groups.find((x) => x.date === date);
     setSubmitting(date);
     try {
-      await base44.entities.DriverRemittance.create({
+      await S.DriverRemittance.create({
         user_id: user.id,
         date,
         amount: g.due,

@@ -135,6 +135,25 @@ create table if not exists notifications (
 );
 create index if not exists notifications_user_idx on notifications (user_id);
 
+-- Withdrawal requests
+create table if not exists withdrawal_requests (
+  id text primary key,
+  created_date timestamptz,
+  updated_date timestamptz,
+  created_by_id text,
+  user_id text,
+  amount numeric,
+  bank_name text,
+  account_number text,
+  account_holder_name text,
+  status text,
+  transfer_proof_photo text,
+  processed_by_id text,
+  rejection_reason text
+);
+create index if not exists withdrawal_requests_user_idx on withdrawal_requests (user_id);
+create index if not exists withdrawal_requests_status_idx on withdrawal_requests (status);
+
 -- Lock down: only service_role (used by Base44 backend functions) can access.
 alter table orders enable row level security;
 alter table driver_profiles enable row level security;
@@ -142,4 +161,5 @@ alter table driver_remittances enable row level security;
 alter table chat_messages enable row level security;
 alter table wallet_transactions enable row level security;
 alter table notifications enable row level security;
+alter table withdrawal_requests enable row level security;
 -- No policies are defined; anon/authenticated roles get nothing.

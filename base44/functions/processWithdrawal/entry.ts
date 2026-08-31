@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { insertOne } from '../../shared/supabase.ts';
+import { insertOne, getById as sbGet, updateById as sbUpdate } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -15,7 +15,7 @@ export default async function(req) {
       return Response.json({ error: 'action tidak valid' }, { status: 400 });
     }
 
-    const wr = await base44.entities.WithdrawalRequest.get(request_id);
+    const wr = await sbGet('withdrawal_requests', request_id);
     if (!wr) return Response.json({ error: 'Permintaan tidak ditemukan' }, { status: 404 });
     if (wr.status !== 'pending') return Response.json({ error: 'Permintaan sudah diproses' }, { status: 400 });
 
@@ -23,19 +23,21 @@ export default async function(req) {
       if (!transfer_proof_photo) {
         return Response.json({ error: 'Bukti transfer wajib diunggah' }, { status: 400 });
       }
-      await base44.asServiceRole.entities.WithdrawalRequest.update(request_id, {
+      await sbUpdate('withdrawal_requests', request_id, {
         status: 'completed',
         transfer_proof_photo,
         processed_by_id: user.id,
+        updated_date: new Date().toISOString(),
       });
       return Response.json({ success: true, status: 'completed' });
     }
 
     // Tolak: kembalikan saldo ke driver
-    await base44.asServiceRole.entities.WithdrawalRequest.update(request_id, {
+    await sbUpdate('withdrawal_requests', request_id, {
       status: 'rejected',
       rejection_reason: rejection_reason || null,
       processed_by_id: user.id,
+      updated_date: new Date().toISOString(),
     });
     const wtId = crypto.randomUUID();
     const wtNow = new Date().toISOString();

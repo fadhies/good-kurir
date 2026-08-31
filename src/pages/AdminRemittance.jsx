@@ -14,7 +14,7 @@ export default function AdminRemittance() {
   async function load() {
     try {
       const [r, u, o] = await Promise.all([
-      base44.entities.DriverRemittance.filter({}, "-created_date", 200),
+      S.DriverRemittance.filter({}, "-created_date", 200),
       base44.entities.User.list(),
       S.Order.filter({ status: "completed" }, "-updated_date", 500)]
       );

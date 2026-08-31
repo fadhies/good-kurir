@@ -10,7 +10,7 @@ export async function getUnsettledDates(base44, userId) {
     order: '-updated_date',
     limit: 500
   });
-  const remittances = await base44.asServiceRole.entities.DriverRemittance.filter({ user_id: userId });
+  const remittances = await selectQuery('driver_remittances', { filter: { user_id: userId }, limit: 1000 });
   const settled = new Set(remittances.filter((r) => r.status !== 'rejected').map((r) => r.date));
   const dates = new Set();
   for (const o of completed) {
@@ -26,7 +26,7 @@ export async function getBlockedDriverIds(base44, userIds) {
   const today = makassarToday();
   const idSet = new Set(userIds);
   const completed = await selectQuery('orders', { filter: { status: 'completed' }, order: '-updated_date', limit: 500 });
-  const remittances = await base44.asServiceRole.entities.DriverRemittance.filter({}, '-created_date', 500);
+  const remittances = await selectQuery('driver_remittances', { order: '-created_date', limit: 500 });
 
   const settledByUser = {};
   for (const r of remittances) {

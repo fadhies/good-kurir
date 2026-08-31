@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -35,7 +36,7 @@ export default function AdminWithdrawals() {
   async function load() {
     try {
       const [reqs, us] = await Promise.all([
-        base44.entities.WithdrawalRequest.list("-created_date", 100),
+        S.WithdrawalRequest.list("-created_date", 100),
         base44.entities.User.list(),
       ]);
       setList(reqs);
@@ -47,7 +48,7 @@ export default function AdminWithdrawals() {
 
   useEffect(() => {
     load();
-    const unsub = base44.entities.WithdrawalRequest.subscribe(() => load());
+    const unsub = S.WithdrawalRequest.subscribe(() => load());
     return unsub;
   }, []);
 

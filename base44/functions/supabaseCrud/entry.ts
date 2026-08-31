@@ -26,6 +26,8 @@ function canRead(table, user, row) {
       return row.created_by_id === user.id || row.driver_id === user.id || row.status === 'pending_match';
     case 'notifications':
     case 'wallet_transactions':
+    case 'driver_remittances':
+    case 'withdrawal_requests':
       return row.user_id === user.id;
     case 'chat_messages':
       return isParticipant(row, user.id);
@@ -46,6 +48,8 @@ function canWrite(table, user, row) {
     case 'chat_messages':
       return row.created_by_id === user.id;
     case 'wallet_transactions':
+    case 'driver_remittances':
+    case 'withdrawal_requests':
       return false; // admin only
     default:
       return false;
@@ -60,6 +64,9 @@ function canCreate(table, user, data) {
     case 'chat_messages':
       return true; // created_by_id is forced to user.id
     case 'notifications':
+      return data?.user_id === user.id;
+    case 'driver_remittances':
+    case 'withdrawal_requests':
       return data?.user_id === user.id;
     case 'wallet_transactions':
       return false; // admin only (backend creates directly via supabase.ts)
@@ -94,6 +101,8 @@ function scopeFilter(table, user, filter) {
   switch (table) {
     case 'notifications':
     case 'wallet_transactions':
+    case 'driver_remittances':
+    case 'withdrawal_requests':
       f.user_id = user.id; // force own records
       return f;
     default:
