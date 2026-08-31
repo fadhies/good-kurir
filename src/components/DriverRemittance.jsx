@@ -21,17 +21,25 @@ export default function DriverRemittance() {
   async function load() {
     setLoading(true);
     try {
-      const [completed, remits, qrisRows] = await Promise.all([
+      const [completed, remits, qrisRows, wts] = await Promise.all([
       S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
       S.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
-      base44.entities.AppSetting.filter({ key: "admin_qris" }, "-created_date", 1)]
+      base44.entities.AppSetting.filter({ key: "admin_qris" }, "-created_date", 1),
+      S.WalletTransaction.filter({ user_id: user.id, type: "credit" }, "-created_date", 500)]
       );
       setAdminQris(qrisRows[0]?.value || null);
+
+      // Tanggal selesai pakai created_date wallet_transaction credit — dibuat
+      // sekali saat order selesai (completeOrderPayment) dan tidak pernah diubah,
+      // jadi tidak ikut ter-bump saat user memberi rating. Fallback updated_date
+      // untuk order tanpa record dompet.
+      const completedAt = {};
+      for (const w of wts) { if (w.order_id) completedAt[w.order_id] = w.created_date; }
 
       const today = makassarToday();
       const byDate = {};
       for (const o of completed) {
-        const d = makassarDateKey(new Date(o.updated_date));
+        const d = makassarDateKey(new Date(completedAt[o.id] || o.updated_date));
         if (!byDate[d]) byDate[d] = { due: 0, count: 0, serviceFee: 0, adminFee: 0 };
         byDate[d].due += (o.service_fee || 0) + (o.driver_remit_fee || 0);
         byDate[d].serviceFee += o.service_fee || 0;

@@ -10,17 +10,24 @@ export default function AdminRemittance() {
   const [list, setList] = useState(null);
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [completedAt, setCompletedAt] = useState({});
 
   async function load() {
     try {
-      const [r, u, o] = await Promise.all([
+      const [r, u, o, wts] = await Promise.all([
       S.DriverRemittance.filter({}, "-created_date", 200),
       base44.entities.User.list(),
-      S.Order.filter({ status: "completed" }, "-updated_date", 500)]
+      S.Order.filter({ status: "completed" }, "-updated_date", 500),
+      S.WalletTransaction.filter({ type: "credit" }, "-created_date", 1000)]
       );
       setList(r);
       setUsers(u);
       setOrders(o);
+      // Tanggal selesai stabil dari created_date wallet_transaction credit,
+      // tidak ter-bump saat user memberi rating (yang menggeser updated_date).
+      const at = {};
+      for (const w of wts) { if (w.order_id) at[w.order_id] = w.created_date; }
+      setCompletedAt(at);
     } catch {
       setList([]);
     }
@@ -99,7 +106,7 @@ export default function AdminRemittance() {
               return (
                 <tr key={o.id} className="border-t border-border">
                   <td className="px-3 py-2 font-semibold selectable">#{String(o.id).slice(-6)}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{new Date(o.updated_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{new Date(completedAt[o.id] || o.updated_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}</td>
                   <td className="px-3 py-2 max-w-[120px] truncate">{driver?.full_name || driver?.email || "—"}</td>
                   <td className="px-3 py-2 text-right">{formatRupiah(o.driver_remit_fee || 0)}</td>
                   <td className="px-3 py-2 text-right">{formatRupiah(o.service_fee || 0)}</td>
