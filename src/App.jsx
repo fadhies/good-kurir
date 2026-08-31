@@ -1,8 +1,8 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { lazy, Suspense, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useRef } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from 'next-themes';
@@ -10,11 +10,8 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { useToast } from "@/components/ui/use-toast";
 import TabKeepAlive from '@/components/TabKeepAlive';
 import AppBottomNav from '@/components/AppBottomNav';
-import { exitApp } from '@/lib/exitApp';
-import { popBackHandler } from '@/hooks/useBackHandler';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -40,42 +37,6 @@ const pageVariants = {
   center: { x: 0, opacity: 1 },
   exit: (dir) => ({ x: dir >= 0 ? -40 : 40, opacity: 0 }),
 };
-
-function BackHandlerManager() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { toast } = useToast();
-  const pathRef = useRef(location.pathname);
-  pathRef.current = location.pathname;
-  const lastBackRef = useRef(0);
-  useEffect(() => {
-    const onBack = (e) => {
-      // Dismiss the topmost open modal/dropdown first, otherwise navigate back / exit.
-      if (popBackHandler()) {
-        try { e && e.preventDefault && e.preventDefault(); } catch (_) {}
-        return;
-      }
-      const path = pathRef.current;
-      if (path && path !== "/") {
-        navigate(-1);
-        return;
-      }
-      // On the root tab, require a second back press within 2s before exiting.
-      const now = Date.now();
-      if (now - lastBackRef.current < 2000) {
-        lastBackRef.current = 0;
-        exitApp();
-      } else {
-        lastBackRef.current = now;
-        toast({ title: "Tekan kembali sekali lagi untuk keluar", duration: 2000 });
-      }
-    };
-    // Capacitor fires 'backbutton' on document when a listener is registered.
-    document.addEventListener("backbutton", onBack, false);
-    return () => document.removeEventListener("backbutton", onBack, false);
-  }, [navigate, toast]);
-  return null;
-}
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -118,7 +79,6 @@ const AuthenticatedApp = () => {
   return (
     <>
     <ChatNotificationListener />
-    <BackHandlerManager />
     <div className="overflow-hidden">
     <AnimatePresence mode="wait" custom={direction}>
     <motion.div

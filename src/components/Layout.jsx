@@ -8,6 +8,7 @@ import { exitApp } from "@/lib/exitApp";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";
 import NotificationBell from "@/components/NotificationBell";
 import { Image } from "@/components/ui/image";
+import { useToast } from "@/components/ui/use-toast";
 
 const USER_ITEMS = [
 { to: "/", label: "Beranda", icon: Home },
@@ -28,6 +29,7 @@ export default function Layout({ children }) {
   const navigate = useNavigate();
   const role = user?.role || "user";
   const isDriver = useIsDriver();
+  const { toast } = useToast();
 
   const items = [...USER_ITEMS, ...(isDriver ? DRIVER_ITEMS : []), ...(role === "admin" ? ADMIN_ITEMS : [])];
 
@@ -45,7 +47,13 @@ export default function Layout({ children }) {
 
   const handleExit = async () => {
     const ok = await exitApp();
-    if (!ok) alert("Tekan tombol Back pada ponsel untuk keluar dari aplikasi.");
+    if (!ok) {
+      toast({
+        title: "Gunakan tombol Back HP",
+        description: "Di halaman utama, tekan tombol Back HP sekali untuk keluar/minimize aplikasi.",
+        duration: 3000,
+      });
+    }
   };
 
   return (
