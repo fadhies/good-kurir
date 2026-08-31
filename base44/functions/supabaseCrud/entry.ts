@@ -121,7 +121,10 @@ function scopeFilter(table, user, filter) {
 
 function orderOrScope(table, user) {
   if (table !== 'orders' || isAdmin(user)) return undefined;
-  return `or=(created_by_id.eq.${user.id},driver_id.eq.${user.id},status.eq.pending_match)`;
+  // selectQuery already sets this as the `or` param value, so return only the
+  // expression (with parens) — NOT prefixed with "or=" (that would double the
+  // key and produce a malformed PostgREST query that returns nothing).
+  return `(created_by_id.eq.${user.id},driver_id.eq.${user.id},status.eq.pending_match)`;
 }
 
 export default async function(req) {
