@@ -82,8 +82,7 @@ export default function BecomeDriver() {
       if (phone) {
         await base44.auth.updateMe({ phone });
       }
-      await S.DriverProfile.create({
-        user_id: user.id,
+      const payload = {
         vehicle_type: vehicle,
         license_plate: plate,
         is_online: true,
@@ -93,8 +92,18 @@ export default function BecomeDriver() {
         current_address: location.address,
         ktp_photo: ktpPhoto,
         selfie_with_ktp: selfiePhoto,
-        verification_status: "pending",
-      });
+      };
+      const existing = await S.DriverProfile.filter({ user_id: user.id });
+      if (existing.length > 0) {
+        // Sudah ada profil — perbarui, jangan buat duplikat. Reset ke pending
+        // hanya jika sebelumnya ditolak (pengajuan ulang).
+        await S.DriverProfile.update(existing[0].id, {
+          ...payload,
+          verification_status: existing[0].verification_status === "rejected" ? "pending" : existing[0].verification_status,
+        });
+      } else {
+        await S.DriverProfile.create({ user_id: user.id, ...payload, verification_status: "pending" });
+      }
       toast({ title: "Pendaftaran terkirim", description: "Menunggu verifikasi admin sebelum bisa menerima pesanan." });
       navigate("/driver");
     } catch (e) {

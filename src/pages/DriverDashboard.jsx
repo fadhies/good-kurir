@@ -49,6 +49,10 @@ export default function DriverDashboard() {
   async function loadProfile() {
     try {
       const list = await S.DriverProfile.filter({ user_id: user.id });
+      // Bisa ada lebih dari satu profil (data lama); pakai yang paling baru
+      // supaya state online/lokasi yang dipakai dashboard konsisten dengan
+      // yang dipakai backend saat menerima pesanan.
+      list.sort((a, b) => new Date(b.updated_date || 0) - new Date(a.updated_date || 0));
       setProfile(list[0] || null);
     } catch (e) {
       setProfile(null);
