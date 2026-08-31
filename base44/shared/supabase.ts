@@ -207,8 +207,13 @@ export async function ensureBucket(bucket, isPublic = true) {
     headers: headers(key, { "Content-Type": "application/json" }),
     body: JSON.stringify({ id: bucket, name: bucket, public: isPublic }),
   });
-  if (!res.ok && res.status !== 409) {
+  if (!res.ok) {
     const t = await res.text();
+    // Supabase may return 400 (or 409) with a body indicating the bucket
+    // already exists — treat that as success, not an error.
+    if (res.status === 409 || /BucketAlreadyExists|already exists/i.test(t)) {
+      return true;
+    }
     throw new Error(`Supabase ensureBucket ${res.status}: ${t}`);
   }
   return true;
