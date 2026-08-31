@@ -10,6 +10,11 @@ function cfg() {
   return { url, key };
 }
 
+// Mixed-case table names must be double-quoted in the PostgREST URL path.
+function tpath(table) {
+  return encodeURIComponent('"' + table + '"');
+}
+
 function headers(key, extra = {}) {
   return {
     apikey: key,
@@ -27,7 +32,7 @@ export async function upsertMany(table, rows) {
   let done = 0;
   for (let i = 0; i < rows.length; i += batchSize) {
     const slice = rows.slice(i, i + batchSize);
-    const res = await fetch(`${url}/rest/v1/${table}`, {
+    const res = await fetch(`${url}/rest/v1/${tpath(table)}`, {
       method: "POST",
       headers: headers(key, { Prefer: "return=representation,resolution=merge-duplicates" }),
       body: JSON.stringify(slice),
@@ -51,7 +56,7 @@ export async function selectWhere(table, filter = {}, order) {
   }
   if (order) params.append("order", order);
   const qs = params.toString();
-  const res = await fetch(`${url}/rest/v1/${table}${qs ? "?" + qs : ""}`, { headers: headers(key) });
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}${qs ? "?" + qs : ""}`, { headers: headers(key) });
   if (!res.ok) {
     const t = await res.text();
     throw new Error(`Supabase select ${table} ${res.status}: ${t}`);
@@ -66,7 +71,7 @@ export async function selectAll(table, order = "id") {
   let from = 0;
   const limit = 1000;
   while (true) {
-    const res = await fetch(`${url}/rest/v1/${table}?order=${order}`, {
+    const res = await fetch(`${url}/rest/v1/${tpath(table)}?order=${order}`, {
       headers: { ...headers(key), Range: `${from}-${from + limit - 1}` },
     });
     if (!res.ok) {
@@ -92,7 +97,7 @@ export async function deleteWhere(table, filter = {}) {
     params.append(k, `eq.${v}`);
   }
   const qs = params.toString();
-  const res = await fetch(`${url}/rest/v1/${table}${qs ? "?" + qs : ""}`, {
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}${qs ? "?" + qs : ""}`, {
     method: "DELETE",
     headers: headers(key, { Prefer: "return=representation" }),
   });
