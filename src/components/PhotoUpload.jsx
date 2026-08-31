@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
 import { Upload, Loader2, X } from "lucide-react";
 import { compressImage } from "@/lib/compressImage";
+import { useToast } from "@/components/ui/use-toast";
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -19,6 +20,7 @@ function fileToBase64(file) {
 
 export default function PhotoUpload({ label, value, onChange, hint, folder }) {
   const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
 
   async function handleFile(e) {
     const file = e.target.files?.[0];
@@ -38,10 +40,12 @@ export default function PhotoUpload({ label, value, onChange, hint, folder }) {
       } else {
         throw new Error(res.data?.error || "Gagal unggah");
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      toast({ title: "Gagal unggah foto", description: err?.message || "Coba lagi", variant: "destructive" });
     } finally {
       setUploading(false);
+      // reset so the same file can be re-picked after an error
+      e.target.value = "";
     }
   }
 
