@@ -1,0 +1,104 @@
+import { secrets } from "base44:runtime";
+
+// Thin PostgREST client. All calls use the service_role key so they bypass RLS.
+// Frontend never uses this directly; only Base44 backend functions import it.
+
+function cfg() {
+  const url = (secrets.get("SUPABASE_URL") || "").replace(/\/+$/, "");
+  const key = secrets.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) throw new Error("Supabase not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)");
+  return { url, key };
+}
+
+function headers(key, extra = {}) {
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    "Content-Type": "application/json",
+    ...extra,
+  };
+}
+
+// Upsert rows on primary key (id). Batches to keep payloads small.
+export async function upsertMany(table, rows) {
+  if (!rows || rows.length === 0) return { table, count: 0 };
+  const { url, key } = cfg();
+  const batchSize = 500;
+  let done = 0;
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const slice = rows.slice(i, i + batchSize);
+    const res = await fetch(`${url}/rest/v1/${table}`, {
+      method: "POST",
+      headers: headers(key, { Prefer: "return=representation,resolution=merge-duplicates" }),
+      body: JSON.stringify(slice),
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`Supabase upsert ${table} ${res.status}: ${t}`);
+    }
+    done += slice.length;
+  }
+  return { table, count: done };
+}
+
+// Select with optional filter object { col: value } and optional order.
+export async function selectWhere(table, filter = {}, order) {
+  const { url, key } = cfg();
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(filter)) {
+    if (v === undefined || v === null) continue;
+    params.append(k, `eq.${v}`);
+  }
+  if (order) params.append("order", order);
+  const qs = params.toString();
+  const res = await fetch(`${url}/rest/v1/${table}${qs ? "?" + qs : ""}`, { headers: headers(key) });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`Supabase select ${table} ${res.status}: ${t}`);
+  }
+  return res.json();
+}
+
+// Paginated full scan of a table.
+export async function selectAll(table, order = "id") {
+  const { url, key } = cfg();
+  const rows = [];
+  let from = 0;
+  const limit = 1000;
+  while (true) {
+    const res = await fetch(`${url}/rest/v1/${table}?order=${order}`, {
+      headers: { ...headers(key), Range: `${from}-${from + limit - 1}` },
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`Supabase selectAll ${table} ${res.status}: ${t}`);
+    }
+    const batch = await res.json();
+    rows.push(...batch);
+    const range = res.headers.get("content-range");
+    const total = range ? parseInt(range.split("/")[1], 10) : NaN;
+    if (!batch.length || (range && (!isNaN(total) && rows.length >= total))) break;
+    from += limit;
+  }
+  return rows;
+}
+
+// Delete rows matching a filter { col: value }.
+export async function deleteWhere(table, filter = {}) {
+  const { url, key } = cfg();
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(filter)) {
+    if (v === undefined || v === null) continue;
+    params.append(k, `eq.${v}`);
+  }
+  const qs = params.toString();
+  const res = await fetch(`${url}/rest/v1/${table}${qs ? "?" + qs : ""}`, {
+    method: "DELETE",
+    headers: headers(key, { Prefer: "return=representation" }),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`Supabase delete ${table} ${res.status}: ${t}`);
+  }
+  return res.json();
+}
