@@ -6,7 +6,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation } from "lucide-react";
+import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation, X } from "lucide-react";
 
 function mapsUrl(lat, lng, address) {
   const q = lat != null && lng != null ?
@@ -57,6 +57,7 @@ export default function OrderTracking() {
   const [ownerQris, setOwnerQris] = useState(null);
   const [storeQrisPhoto, setStoreQrisPhoto] = useState(null);
   const [billChoice, setBillChoice] = useState(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
   const prevStatusRef = useRef(null);
   const selfUpdateRef = useRef(false);
   const prevItemCostRef = useRef(null);
@@ -272,6 +273,21 @@ export default function OrderTracking() {
       }
     } catch (e) {
       toast({ title: "Gagal", description: getFunctionError(e), variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
+  }
+
+  async function cancelOrder() {
+    setActing(true);
+    try {
+      markSelfUpdate();
+      await S.Order.update(id, { status: "cancelled" });
+      toast({ title: "Pesanan dibatalkan" });
+      setCancelOpen(false);
+      loadOrder();
+    } catch (e) {
+      toast({ title: "Gagal membatalkan", description: e.message, variant: "destructive" });
     } finally {
       setActing(false);
     }
@@ -729,9 +745,16 @@ export default function OrderTracking() {
         }
 
         {isOwner && order.status === "pending_match" &&
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
-            <Loader2 className="w-6 h-6 animate-spin text-amber-600 mx-auto mb-2" />
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center space-y-3">
+            <Loader2 className="w-6 h-6 animate-spin text-amber-600 mx-auto mb-1" />
             <p className="text-sm text-amber-700 font-medium">Menunggu driver menerima pesanan Anda...</p>
+            <button
+          onClick={() => setCancelOpen(true)}
+          disabled={acting}
+          className="w-full bg-destructive text-destructive-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2">
+              <X className="w-4 h-4" />
+              Batalkan Pesanan
+            </button>
           </div>
         }
 
@@ -754,6 +777,28 @@ export default function OrderTracking() {
         <DriverRating order={order} onRated={loadOrder} />
         }
       </div>
+
+      {/* Konfirmasi batalkan pesanan */}
+      <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Batalkan Pesanan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Pesanan yang sedang mencari driver akan dibatalkan. Tindakan ini tidak bisa dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={acting}>Jangan Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={cancelOrder}
+              disabled={acting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {acting ? "Memproses..." : "Ya, Batalkan"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Konfirmasi tagihan di restoran */}
       <AlertDialog open={!!billConfirm} onOpenChange={(o) => !o && setBillConfirm(null)}>

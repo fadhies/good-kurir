@@ -219,7 +219,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
             value={query}
             onChange={onQueryChange}
             onFocus={() => predictions.length && setShowResults(true)}
-            onBlur={() => setTimeout(() => setShowResults(false), 150)}
+            onBlur={() => setShowResults(false)}
             placeholder="Cari toko, restoran, atau alamat..."
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
@@ -230,7 +230,8 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
             {predictions.map((p) => (
               <button
                 key={p.place_id}
-                onMouseDown={() => pickPrediction(p)}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pickPrediction(p)}
                 className="flex items-start gap-2 w-full text-left px-3 py-2.5 hover:bg-accent/10 border-b border-border/50 last:border-0"
               >
                 <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
