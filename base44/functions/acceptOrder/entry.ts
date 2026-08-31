@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { haversineKm } from '../../shared/geo.ts';
 import { createNotification } from '../../shared/notify.ts';
 import { getUnsettledDates } from '../../shared/remittance.ts';
+import { getById, selectQuery, updateById } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -34,7 +35,7 @@ export default async function(req) {
       }, { status: 403 });
     }
 
-    const order = await base44.asServiceRole.entities.Order.get(orderId);
+    const order = await getById('orders', orderId);
     if (!order) return Response.json({ error: 'Pesanan tidak ditemukan' }, { status: 404 });
     if (order.status !== 'pending_match') {
       return Response.json({ error: 'Pesanan sudah diambil driver lain' }, { status: 409 });
@@ -43,9 +44,9 @@ export default async function(req) {
     const mode = order.mode || 'hemat';
     const MAX_HEMAT = 3;
 
-    const activeOrders = await base44.asServiceRole.entities.Order.filter({
-      driver_id: user.id,
-      status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] }
+    const activeOrders = await selectQuery('orders', {
+      filter: { driver_id: user.id, status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] } },
+      limit: 500
     });
     const activeCount = activeOrders.length;
     const activeHematCount = activeOrders.filter((o) => (o.mode || 'hemat') === 'hemat').length;
@@ -55,13 +56,13 @@ export default async function(req) {
 
     const distance = Math.round(haversineKm(order.store_lat, order.store_lng, profile.current_lat, profile.current_lng) * 100) / 100;
 
-    await base44.asServiceRole.entities.Order.update(orderId, {
+    await updateById('orders', orderId, {
       driver_id: user.id,
       status: 'driver_assigned',
       distance_km: distance
     });
 
-    const updated = await base44.asServiceRole.entities.Order.get(orderId);
+    const updated = await getById('orders', orderId);
     if (updated.driver_id !== user.id) {
       return Response.json({ error: 'Pesanan sudah diambil driver lain' }, { status: 409 });
     }

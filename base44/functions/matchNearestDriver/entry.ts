@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { haversineKm } from '../../shared/geo.ts';
 import { walletBalancesByUser } from '../../shared/wallet.ts';
+import { getById, selectQuery, updateById } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -12,7 +13,7 @@ export default async function(req) {
     const { orderId } = body;
     if (!orderId) return Response.json({ error: 'orderId required' }, { status: 400 });
 
-    const order = await base44.entities.Order.get(orderId);
+    const order = await getById('orders', orderId);
     if (!order) return Response.json({ error: 'Order not found' }, { status: 404 });
     if (order.created_by_id !== user.id) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
@@ -35,8 +36,9 @@ export default async function(req) {
     }
 
     // Hitung jumlah orderan aktif per driver
-    const activeOrders = await base44.asServiceRole.entities.Order.filter({
-      status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] }
+    const activeOrders = await selectQuery('orders', {
+      filter: { status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] } },
+      limit: 500
     });
     const activeCountByDriver = {};
     for (const o of activeOrders) {
@@ -80,7 +82,7 @@ export default async function(req) {
 
     const distance = Math.round(minDist * 100) / 100;
 
-    await base44.asServiceRole.entities.Order.update(orderId, {
+    await updateById('orders', orderId, {
       driver_id: nearest.user_id,
       status: 'driver_assigned',
       distance_km: distance

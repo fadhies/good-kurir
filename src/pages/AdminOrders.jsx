@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, ListOrdered, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -26,7 +27,7 @@ export default function AdminOrders() {
     async function load() {
       try {
         const [o, u] = await Promise.all([
-          base44.entities.Order.list("-created_date", 200),
+          S.Order.list("-created_date", 200),
           base44.entities.User.list(),
         ]);
         setOrders(o);

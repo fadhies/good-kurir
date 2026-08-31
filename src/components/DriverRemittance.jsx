@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
 import { useToast } from "@/components/ui/use-toast";
@@ -21,7 +22,7 @@ export default function DriverRemittance() {
     setLoading(true);
     try {
       const [completed, remits, qrisRows] = await Promise.all([
-      base44.entities.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
+      S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
       base44.entities.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
       base44.entities.AppSetting.filter({ key: "admin_qris" }, "-created_date", 1)]
       );

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { createNotification } from '../../shared/notify.ts';
+import { getById } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -11,7 +12,7 @@ export default async function(req) {
     const { orderId } = body;
     if (!orderId) return Response.json({ error: 'orderId required' }, { status: 400 });
 
-    const order = await base44.asServiceRole.entities.Order.get(orderId);
+    const order = await getById('orders', orderId);
     if (!order) return Response.json({ error: 'Order not found' }, { status: 404 });
     // Hanya pembuat order yang sah boleh memicu notifikasi driver
     if (order.created_by_id !== user.id) {

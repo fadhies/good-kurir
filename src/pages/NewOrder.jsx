@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { haversineKm, formatRupiah } from "@/lib/geo";
 import { getTariffs, computeDeliveryFee, computeServiceFee, DEFAULT_TARIFFS } from "@/lib/tariffs";
 import { Bike, Package, User, Loader2, ShoppingBag, MapPin, FileText, Route } from "lucide-react";
@@ -118,7 +119,7 @@ export default function NewOrder() {
         return;
       }
 
-      const order = await base44.entities.Order.create({
+      const order = await S.Order.create({
         user_id: user.id,
         type,
         mode,

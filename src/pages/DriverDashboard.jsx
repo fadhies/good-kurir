@@ -6,6 +6,7 @@ import LocationPicker from "@/components/LocationPicker";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { fireNewOrderAlert } from "@/lib/newOrderAlert";
@@ -58,7 +59,7 @@ export default function DriverDashboard() {
 
   async function loadTotalTrips() {
     try {
-      const all = await base44.entities.Order.filter({ driver_id: user.id }, "-created_date", 500);
+      const all = await S.Order.filter({ driver_id: user.id }, "-created_date", 500);
       setTotalTrips(all.length);
     } catch {
       setTotalTrips(0);
@@ -68,7 +69,7 @@ export default function DriverDashboard() {
   async function loadOrders() {
     if (!profile) return;
     try {
-      const active = await base44.entities.Order.filter(
+      const active = await S.Order.filter(
         { driver_id: user.id, status: { $in: ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"] } },
         "-created_date",
         20
@@ -89,7 +90,7 @@ export default function DriverDashboard() {
       return;
     }
     try {
-      const list = await base44.entities.Order.filter(
+      const list = await S.Order.filter(
         { status: "pending_match" },
         "-created_date",
         30
@@ -145,7 +146,7 @@ export default function DriverDashboard() {
     loadOrders();
     loadAvailable();
     let timer;
-    const unsub = base44.entities.Order.subscribe(() => {
+    const unsub = S.Order.subscribe(() => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600);
     });

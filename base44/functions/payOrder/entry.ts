@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { createNotification } from '../../shared/notify.ts';
+import { getById, updateById } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -11,14 +12,14 @@ export default async function(req) {
     const { orderId, proofPhoto } = body;
     if (!orderId) return Response.json({ error: 'orderId required' }, { status: 400 });
 
-    const order = await base44.entities.Order.get(orderId);
+    const order = await getById('orders', orderId);
     if (!order) return Response.json({ error: 'Order not found' }, { status: 404 });
     if (order.created_by_id !== user.id) return Response.json({ error: 'Forbidden' }, { status: 403 });
     if (order.status !== 'awaiting_payment') {
       return Response.json({ error: 'Bukan dalam fase menunggu pembayaran' }, { status: 400 });
     }
 
-    await base44.asServiceRole.entities.Order.update(orderId, {
+    await updateById('orders', orderId, {
       status: 'paid',
       payment_proof_photo: proofPhoto || null,
     });

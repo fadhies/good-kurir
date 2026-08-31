@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { getBlockedDriverIds } from '../../shared/remittance.ts';
+import { selectQuery } from '../../shared/supabase.ts';
 
 // Pre-flight check: apakah ada minimal satu driver online & verified yang
 // bisa melayani mode pengantaran terpilih dan tidak sedang diblokir setoran.
@@ -22,8 +23,9 @@ export default async function(req) {
       return Response.json({ available: false, reason: 'Belum ada driver online saat ini' });
     }
 
-    const activeOrders = await base44.asServiceRole.entities.Order.filter({
-      status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] }
+    const activeOrders = await selectQuery('orders', {
+      filter: { status: { $in: ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'] } },
+      limit: 500
     });
     const activeCountByDriver = {};
     const activeHematCountByDriver = {};

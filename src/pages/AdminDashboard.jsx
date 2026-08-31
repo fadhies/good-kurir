@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { Users, Bike, Clock, ListOrdered, Loader2, TrendingUp, AlertCircle, CheckCircle2, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
@@ -28,7 +29,7 @@ export default function AdminDashboard() {
       await sleep(250);
       const drivers = await base44.entities.DriverProfile.list();
       await sleep(250);
-      const orders = await base44.entities.Order.list("-created_date", 100);
+      const orders = await S.Order.list("-created_date", 100);
       await sleep(250);
       const txs = await base44.entities.WalletTransaction.list("-created_date", 100);
 

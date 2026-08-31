@@ -106,3 +106,73 @@ export async function deleteWhere(table, filter = {}) {
   }
   return res.json();
 }
+
+// Get a single row by primary key (id).
+export async function getById(table, id) {
+  const { url, key } = cfg();
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}?id=eq.${encodeURIComponent(id)}`, { headers: headers(key) });
+  if (!res.ok) throw new Error(`Supabase getById ${table} ${res.status}: ${await res.text()}`);
+  const rows = await res.json();
+  return Array.isArray(rows) && rows.length ? rows[0] : null;
+}
+
+// Insert one row; returns the inserted row.
+export async function insertOne(table, row) {
+  const { url, key } = cfg();
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}`, {
+    method: "POST",
+    headers: headers(key, { Prefer: "return=representation" }),
+    body: JSON.stringify(row),
+  });
+  if (!res.ok) throw new Error(`Supabase insert ${table} ${res.status}: ${await res.text()}`);
+  const rows = await res.json();
+  return Array.isArray(rows) && rows.length ? rows[0] : row;
+}
+
+// Patch a single row by id; returns the updated row.
+export async function updateById(table, id, patch) {
+  const { url, key } = cfg();
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}?id=eq.${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: headers(key, { Prefer: "return=representation" }),
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) throw new Error(`Supabase update ${table} ${res.status}: ${await res.text()}`);
+  const rows = await res.json();
+  return Array.isArray(rows) && rows.length ? rows[0] : { id, ...patch };
+}
+
+// Delete a single row by id.
+export async function deleteById(table, id) {
+  const { url, key } = cfg();
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}?id=eq.${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: headers(key),
+  });
+  if (!res.ok) throw new Error(`Supabase deleteById ${table} ${res.status}: ${await res.text()}`);
+}
+
+// Flexible select with eq / $in filters, optional `or` group, order, limit.
+export async function selectQuery(table, { filter = {}, order, limit, or } = {}) {
+  const { url, key } = cfg();
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(filter)) {
+    if (v === undefined || v === null) continue;
+    if (v && typeof v === "object" && Array.isArray(v.$in)) {
+      params.set(k, "in.(" + v.$in.map(String).join(",") + ")");
+    } else {
+      params.set(k, "eq." + String(v));
+    }
+  }
+  if (or) params.set("or", or);
+  if (order) {
+    const desc = order.startsWith("-");
+    const col = desc ? order.slice(1) : order;
+    params.set("order", col + (desc ? ".desc" : ".asc"));
+  }
+  if (limit) params.set("limit", String(limit));
+  const qs = params.toString();
+  const res = await fetch(`${url}/rest/v1/${tpath(table)}${qs ? "?" + qs : ""}`, { headers: headers(key) });
+  if (!res.ok) throw new Error(`Supabase selectQuery ${table} ${res.status}: ${await res.text()}`);
+  return res.json();
+}

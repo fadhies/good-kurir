@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation } from "lucide-react";
 
@@ -93,7 +94,7 @@ export default function OrderTracking() {
     try {
       markSelfUpdate();
       if (billConfirm === "cash") {
-        await base44.entities.Order.update(id, {
+        await S.Order.update(id, {
           status: "on_the_way",
           item_cost: cost,
           store_bill_note: billNote
@@ -105,7 +106,7 @@ export default function OrderTracking() {
           setBillConfirm(null);
           return;
         }
-        await base44.entities.Order.update(id, {
+        await S.Order.update(id, {
           status: "awaiting_payment",
           item_cost: cost,
           store_bill_note: billNote,
@@ -135,7 +136,7 @@ export default function OrderTracking() {
     setActing(true);
     try {
       markSelfUpdate();
-      await base44.entities.Order.update(id, {
+      await S.Order.update(id, {
         status: "awaiting_payment",
         item_cost: cost,
         store_bill_note: billNote,
@@ -153,7 +154,7 @@ export default function OrderTracking() {
 
   async function loadOrder() {
     try {
-      const o = await base44.entities.Order.get(id);
+      const o = await S.Order.get(id);
       const prev = prevStatusRef.current;
       prevStatusRef.current = o.status;
       setOrder(o);
@@ -179,7 +180,7 @@ export default function OrderTracking() {
 
   useEffect(() => {
     loadOrder();
-    const unsub = base44.entities.Order.subscribe((event) => {
+    const unsub = S.Order.subscribe((event) => {
       if (event.id === id) loadOrder();
     });
     const poll = setInterval(loadOrder, 3000);
@@ -201,7 +202,7 @@ export default function OrderTracking() {
     let active = true;
     reverseGeocodePoi(order.store_lat, order.store_lng).then(({ name }) => {
       if (!active || !name || name === order.store_name) return;
-      base44.entities.Order.
+      S.Order.
       update(order.id, { store_name: name }).
       then(() => setOrder((prev) => prev ? { ...prev, store_name: name } : prev)).
       catch(() => {});
@@ -217,7 +218,7 @@ export default function OrderTracking() {
     setActing(true);
     try {
       markSelfUpdate();
-      await base44.entities.Order.update(id, { status, ...extra });
+      await S.Order.update(id, { status, ...extra });
       toast({ title: "Status diperbarui" });
       loadOrder();
     } catch (e) {
@@ -236,7 +237,7 @@ export default function OrderTracking() {
     setActing(true);
     try {
       markSelfUpdate();
-      await base44.entities.Order.update(id, {
+      await S.Order.update(id, {
         status: "awaiting_payment",
         item_cost: cost,
         store_bill_note: billNote

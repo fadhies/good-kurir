@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Banknote, Wallet, Receipt } from "lucide-react";
 import { Image } from "@/components/ui/image";
@@ -15,7 +16,7 @@ export default function AdminRemittance() {
       const [r, u, o] = await Promise.all([
       base44.entities.DriverRemittance.filter({}, "-created_date", 200),
       base44.entities.User.list(),
-      base44.entities.Order.filter({ status: "completed" }, "-updated_date", 500)]
+      S.Order.filter({ status: "completed" }, "-updated_date", 500)]
       );
       setList(r);
       setUsers(u);

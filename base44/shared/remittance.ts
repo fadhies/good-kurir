@@ -1,13 +1,15 @@
 import { makassarDateKey, makassarToday } from './date.ts';
+import { selectQuery } from './supabase.ts';
 
 // Kembalikan daftar tanggal (YYYY-MM-DD, lampau, sebelum hari ini) yang punya
 // order completed milik driver tapi belum ada setoran (DriverRemittance non-rejected).
 export async function getUnsettledDates(base44, userId) {
   const today = makassarToday();
-  const completed = await base44.asServiceRole.entities.Order.filter(
-    { driver_id: userId, status: 'completed' },
-    '-updated_date', 500
-  );
+  const completed = await selectQuery('orders', {
+    filter: { driver_id: userId, status: 'completed' },
+    order: '-updated_date',
+    limit: 500
+  });
   const remittances = await base44.asServiceRole.entities.DriverRemittance.filter({ user_id: userId });
   const settled = new Set(remittances.filter((r) => r.status !== 'rejected').map((r) => r.date));
   const dates = new Set();
@@ -23,7 +25,7 @@ export async function getBlockedDriverIds(base44, userIds) {
   if (!userIds || !userIds.length) return new Set();
   const today = makassarToday();
   const idSet = new Set(userIds);
-  const completed = await base44.asServiceRole.entities.Order.filter({ status: 'completed' }, '-updated_date', 500);
+  const completed = await selectQuery('orders', { filter: { status: 'completed' }, order: '-updated_date', limit: 500 });
   const remittances = await base44.asServiceRole.entities.DriverRemittance.filter({}, '-created_date', 500);
 
   const settledByUser = {};

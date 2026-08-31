@@ -6,6 +6,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import PullToRefresh from "@/components/PullToRefresh";
 import { useIsDriver } from "@/hooks/useIsDriver";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { Loader2, ShoppingBag, Bike, ChevronRight } from "lucide-react";
@@ -20,7 +21,7 @@ export default function MyOrders() {
 
   async function reload() {
     try {
-      const list = await base44.entities.Order.filter({}, "-created_date", 50);
+      const list = await S.Order.filter({}, "-created_date", 50);
       setOrders(list);
       enrichOrdersStoreName(list, (id, name) =>
         setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, store_name: name } : o)))
@@ -32,7 +33,7 @@ export default function MyOrders() {
 
   useEffect(() => {
     reload();
-    const unsub = base44.entities.Order.subscribe(() => reload());
+    const unsub = S.Order.subscribe(() => reload());
     return unsub;
   }, []);
 

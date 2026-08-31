@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { getById, selectQuery, updateById } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -12,21 +13,21 @@ export default async function(req) {
 
     const stars = Math.max(1, Math.min(5, Math.round(Number(rating))));
 
-    const order = await base44.entities.Order.get(orderId);
+    const order = await getById('orders', orderId);
     if (!order) return Response.json({ error: 'Order not found' }, { status: 404 });
     if (order.created_by_id !== user.id) return Response.json({ error: 'Forbidden' }, { status: 403 });
     if (order.status !== 'completed') return Response.json({ error: 'Pesanan belum selesai' }, { status: 400 });
     if (!order.driver_id) return Response.json({ error: 'Tidak ada driver' }, { status: 400 });
     if (order.user_rating) return Response.json({ error: 'Sudah memberi rating' }, { status: 400 });
 
-    await base44.asServiceRole.entities.Order.update(orderId, { user_rating: stars });
+    await updateById('orders', orderId, { user_rating: stars });
 
     // Hitung ulang rating & total trip driver dari order yang completed
-    const driverOrders = await base44.asServiceRole.entities.Order.filter(
-      { driver_id: order.driver_id, status: 'completed' },
-      '-created_date',
-      500
-    );
+    const driverOrders = await selectQuery('orders', {
+      filter: { driver_id: order.driver_id, status: 'completed' },
+      order: '-created_date',
+      limit: 500
+    });
     const rated = driverOrders.filter((o) => o.user_rating != null);
     const avg = rated.length ? rated.reduce((s, o) => s + o.user_rating, 0) / rated.length : 5;
     const trips = driverOrders.length;
