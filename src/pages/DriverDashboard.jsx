@@ -96,21 +96,6 @@ export default function DriverDashboard() {
         30
       );
       setAvailable(list);
-
-      // Deteksi pesanan baru untuk notifikasi otomatis
-      const seen = seenAvailableIdsRef.current;
-      const newOnes = firstAvailableLoadRef.current ? [] : list.filter((o) => !seen.has(o.id));
-      list.forEach((o) => seen.add(o.id));
-      if (firstAvailableLoadRef.current) {
-        firstAvailableLoadRef.current = false;
-      } else if (newOnes.length > 0) {
-        fireNewOrderAlert();
-        const o = newOnes[0];
-        toast({
-          title: `🔔 Pesanan baru: ${o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}`,
-          description: `Dari ${o.store_name || "lokasi"} • Ongkir ${formatRupiah((o.delivery_fee || 0) + (o.service_fee || 0))}`,
-        });
-      }
     } catch (e) {
       setAvailable([]);
     }
@@ -208,6 +193,26 @@ export default function DriverDashboard() {
     if (o.mode === "cepat") return orders.length === 0;
     return activeHematCount < 3;
   });
+
+  // Notifikasi otomatis hanya untuk pesanan yang benar-benar tampil di kartu
+  // (eligible berdasarkan mode & kapasitas order aktif), supaya notifikasi
+  // selalu konsisten dengan daftar "Pesanan Tersedia".
+  useEffect(() => {
+    if (!profile || profile.verification_status !== "approved" || !profile.is_online) return;
+    const seen = seenAvailableIdsRef.current;
+    const newOnes = firstAvailableLoadRef.current ? [] : visibleAvailable.filter((o) => !seen.has(o.id));
+    visibleAvailable.forEach((o) => seen.add(o.id));
+    if (firstAvailableLoadRef.current) {
+      firstAvailableLoadRef.current = false;
+    } else if (newOnes.length > 0) {
+      fireNewOrderAlert();
+      const o = newOnes[0];
+      toast({
+        title: `🔔 Pesanan baru: ${o.type === "food" ? "Beli Makanan" : o.type === "goods" ? "Antar Barang" : "Antar Orang"}`,
+        description: `Dari ${o.store_name || "lokasi"} • Ongkir ${formatRupiah((o.delivery_fee || 0) + (o.service_fee || 0))}`,
+      });
+    }
+  }, [visibleAvailable]);
 
   if (checking) {
     return (
