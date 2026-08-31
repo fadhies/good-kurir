@@ -24,6 +24,8 @@ function canRead(table, user, row) {
   switch (table) {
     case 'orders':
       return row.created_by_id === user.id || row.driver_id === user.id || row.status === 'pending_match';
+    case 'driver_profiles':
+      return row.created_by_id === user.id;
     case 'notifications':
     case 'wallet_transactions':
     case 'driver_remittances':
@@ -43,6 +45,8 @@ function canWrite(table, user, row) {
   switch (table) {
     case 'orders':
       return row.created_by_id === user.id || row.driver_id === user.id;
+    case 'driver_profiles':
+      return row.created_by_id === user.id;
     case 'notifications':
       return row.user_id === user.id;
     case 'chat_messages':
@@ -64,6 +68,8 @@ function canCreate(table, user, data) {
     case 'chat_messages':
       return true; // created_by_id is forced to user.id
     case 'notifications':
+      return data?.user_id === user.id;
+    case 'driver_profiles':
       return data?.user_id === user.id;
     case 'driver_remittances':
     case 'withdrawal_requests':
@@ -99,6 +105,9 @@ function scopeFilter(table, user, filter) {
   }
   if (isAdmin(user)) return f;
   switch (table) {
+    case 'driver_profiles':
+      f.created_by_id = user.id; // force own profile
+      return f;
     case 'notifications':
     case 'wallet_transactions':
     case 'driver_remittances':

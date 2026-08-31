@@ -48,7 +48,7 @@ export default function DriverDashboard() {
 
   async function loadProfile() {
     try {
-      const list = await base44.entities.DriverProfile.filter({ user_id: user.id });
+      const list = await S.DriverProfile.filter({ user_id: user.id });
       setProfile(list[0] || null);
     } catch (e) {
       setProfile(null);
@@ -155,7 +155,7 @@ export default function DriverDashboard() {
 
   async function toggleOnline() {
     try {
-      const updated = await base44.entities.DriverProfile.update(profile.id, {
+      const updated = await S.DriverProfile.update(profile.id, {
         is_online: !profile.is_online,
         is_available: !profile.is_online ? true : profile.is_available,
       });
@@ -188,7 +188,7 @@ export default function DriverDashboard() {
   async function saveLocation() {
     if (!tempLoc) return;
     try {
-      const updated = await base44.entities.DriverProfile.update(profile.id, {
+      const updated = await S.DriverProfile.update(profile.id, {
         current_lat: tempLoc.lat,
         current_lng: tempLoc.lng,
         current_address: tempLoc.address,

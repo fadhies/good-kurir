@@ -27,7 +27,7 @@ export default function AdminDashboard() {
       // Panggilan berurutan + jeda kecil agar tidak kena burst rate-limit platform
       const users = await base44.entities.User.list();
       await sleep(250);
-      const drivers = await base44.entities.DriverProfile.list();
+      const drivers = await S.DriverProfile.list();
       await sleep(250);
       const orders = await S.Order.list("-created_date", 100);
       await sleep(250);

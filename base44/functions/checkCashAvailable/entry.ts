@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { getBlockedDriverIds } from '../../shared/remittance.ts';
+import { selectQuery } from '../../shared/supabase.ts';
 
 // Pembayaran tunai kini tidak lagi butuh saldo dompet (tidak ada potongan dompet
 // per transaksi). Yang dicek: ada driver online & verified yang tidak sedang
@@ -10,9 +11,9 @@ export default async function(req) {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const drivers = await base44.asServiceRole.entities.DriverProfile.filter({
-      verification_status: 'approved',
-      is_online: true,
+    const drivers = await selectQuery('driver_profiles', {
+      filter: { verification_status: 'approved', is_online: true },
+      limit: 1000
     });
 
     if (!drivers.length) return Response.json({ available: false });

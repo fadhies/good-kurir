@@ -14,9 +14,9 @@ export default async function(req) {
     const mode = (body.mode || 'hemat') === 'cepat' ? 'cepat' : 'hemat';
     const MAX_HEMAT = 3;
 
-    const drivers = await base44.asServiceRole.entities.DriverProfile.filter({
-      verification_status: 'approved',
-      is_online: true,
+    const drivers = await selectQuery('driver_profiles', {
+      filter: { verification_status: 'approved', is_online: true },
+      limit: 1000
     });
 
     if (!drivers.length) {

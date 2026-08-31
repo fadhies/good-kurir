@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { createNotification } from '../../shared/notify.ts';
-import { getById } from '../../shared/supabase.ts';
+import { getById, selectQuery } from '../../shared/supabase.ts';
 
 export default async function(req) {
   try {
@@ -19,10 +19,9 @@ export default async function(req) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const drivers = await base44.asServiceRole.entities.DriverProfile.filter({
-      verification_status: 'approved',
-      is_online: true,
-      is_available: true,
+    const drivers = await selectQuery('driver_profiles', {
+      filter: { verification_status: 'approved', is_online: true, is_available: true },
+      limit: 1000
     });
 
     const typeLabel =

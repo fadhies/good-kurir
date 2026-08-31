@@ -14,7 +14,7 @@ export default async function(req) {
     const { orderId } = body;
     if (!orderId) return Response.json({ error: 'orderId required' }, { status: 400 });
 
-    const profiles = await base44.asServiceRole.entities.DriverProfile.filter({ user_id: user.id });
+    const profiles = await selectQuery('driver_profiles', { filter: { user_id: user.id }, limit: 10 });
     const profile = profiles[0];
     if (!profile) return Response.json({ error: 'Profil driver tidak ditemukan' }, { status: 404 });
     if (profile.verification_status !== 'approved') {

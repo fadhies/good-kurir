@@ -32,9 +32,9 @@ export default async function(req) {
     const avg = rated.length ? rated.reduce((s, o) => s + o.user_rating, 0) / rated.length : 5;
     const trips = driverOrders.length;
 
-    const profiles = await base44.asServiceRole.entities.DriverProfile.filter({ user_id: order.driver_id });
+    const profiles = await selectQuery('driver_profiles', { filter: { user_id: order.driver_id }, limit: 5 });
     if (profiles[0]) {
-      await base44.asServiceRole.entities.DriverProfile.update(profiles[0].id, {
+      await updateById('driver_profiles', profiles[0].id, {
         rating: Math.round(avg * 10) / 10,
         total_trips: trips,
       });

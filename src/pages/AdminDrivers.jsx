@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { Image } from "@/components/ui/image";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search } from "lucide-react";
@@ -25,7 +26,7 @@ export default function AdminDrivers() {
     setLoading(true);
     try {
       const [d, u] = await Promise.all([
-        base44.entities.DriverProfile.list("-created_date", 200),
+        S.DriverProfile.list("-created_date", 200),
         base44.entities.User.list(),
       ]);
       setDrivers(d);
@@ -61,7 +62,7 @@ export default function AdminDrivers() {
   async function setVerification(driver, status) {
     setActing(driver.id);
     try {
-      await base44.entities.DriverProfile.update(driver.id, { verification_status: status });
+      await S.DriverProfile.update(driver.id, { verification_status: status });
       toast({ title: status === "approved" ? "Driver disetujui" : "Driver ditolak" });
       load();
     } catch (e) {

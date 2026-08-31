@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { Bike, Loader2, CheckCircle2, MapPin, Crosshair, CreditCard, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
@@ -81,7 +82,7 @@ export default function BecomeDriver() {
       if (phone) {
         await base44.auth.updateMe({ phone });
       }
-      await base44.entities.DriverProfile.create({
+      await S.DriverProfile.create({
         user_id: user.id,
         vehicle_type: vehicle,
         license_plate: plate,

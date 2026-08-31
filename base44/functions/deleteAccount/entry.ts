@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { deleteWhere } from '../../shared/supabase.ts';
 
 export default async function deleteAccount(req) {
   try {
@@ -18,7 +19,7 @@ export default async function deleteAccount(req) {
       result.orders = true;
     }
     if (categories.includes('driver')) {
-      await sr.entities.DriverProfile.deleteMany({ user_id: user.id });
+      await deleteWhere('driver_profiles', { user_id: user.id });
       result.driver = true;
     }
     if (categories.includes('wallet')) {

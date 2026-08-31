@@ -27,8 +27,9 @@ export default async function(req) {
     const MAX_HEMAT = 3;
     const SERVICE_FEE = 2000;
 
-    const drivers = await base44.asServiceRole.entities.DriverProfile.filter({
-      is_online: true
+    const drivers = await selectQuery('driver_profiles', {
+      filter: { is_online: true },
+      limit: 1000
     });
 
     if (!drivers.length) {
