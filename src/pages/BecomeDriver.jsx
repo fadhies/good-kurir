@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
-import { Bike, Loader2, CheckCircle2, MapPin, Crosshair, CreditCard, Camera } from "lucide-react";
+import { Bike, Loader2, CheckCircle2, Crosshair, CreditCard, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import { compressImage } from "@/lib/compressImage";

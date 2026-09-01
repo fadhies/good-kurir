@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Home, Power, Tag, Banknote } from "lucide-react";
+import { LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Home, Power, Tag, Banknote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exitApp } from "@/lib/exitApp";
 

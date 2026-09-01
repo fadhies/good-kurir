@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useIsDriver } from "@/hooks/useIsDriver";
-import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft, Power } from "lucide-react";
+import { Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exitApp } from "@/lib/exitApp";
 import AccountDeletionDialog from "@/components/AccountDeletionDialog";

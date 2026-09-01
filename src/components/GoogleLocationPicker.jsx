@@ -88,7 +88,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     return () => {
       active = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
       markerRef.current.setPosition(pos);
       markerRef.current.setVisible(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [value?.lat, value?.lng, ready]);
 
   // Re-center ke lokasi pengguna (biasCenter) begitu GPS tersedia, bila belum ada pin value
@@ -109,7 +109,7 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
     if (biasCenter?.lat != null && biasCenter?.lng != null) {
       mapRef.current.panTo({ lat: biasCenter.lat, lng: biasCenter.lng });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [biasCenter?.lat, biasCenter?.lng, ready, value?.lat]);
 
   useEffect(() => {

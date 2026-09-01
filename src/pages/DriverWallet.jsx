@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
+import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import DriverRemittance from "@/components/DriverRemittance";
 
 export default function DriverWallet() {
