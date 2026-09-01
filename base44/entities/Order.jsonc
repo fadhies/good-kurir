@@ -72,7 +72,8 @@
         "paid",
         "on_the_way",
         "completed",
-        "cancelled"
+        "cancelled",
+        "driver_not_found"
       ],
       "default": "pending_match"
     },

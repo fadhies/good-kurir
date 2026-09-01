@@ -10,6 +10,7 @@ const STATUS_MAP = {
   on_the_way: { label: "Dalam Perjalanan", className: "bg-cyan-100 text-cyan-700" },
   completed: { label: "Selesai", className: "bg-green-100 text-green-700" },
   cancelled: { label: "Dibatalkan", className: "bg-red-100 text-red-700" },
+  driver_not_found: { label: "Driver Tidak Ditemukan", className: "bg-rose-100 text-rose-700" },
 };
 
 export default function OrderStatusBadge({ status }) {

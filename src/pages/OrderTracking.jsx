@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
@@ -44,6 +44,7 @@ const TIMELINE = [
 
 export default function OrderTracking() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [order, setOrder] = useState(null);
@@ -188,17 +189,61 @@ export default function OrderTracking() {
     }
   }
 
+  // Subscribe umum untuk deteksi perubahan status sepanjang siklus order.
   useEffect(() => {
     loadOrder();
     const unsub = S.Order.subscribe((event) => {
       if (event.id === id) loadOrder();
     });
-    const poll = setInterval(loadOrder, 3000);
     const onWake = () => { if (!document.hidden) loadOrder(); };
     document.addEventListener("visibilitychange", onWake);
     window.addEventListener("online", onWake);
-    return () => {unsub();clearInterval(poll);document.removeEventListener("visibilitychange", onWake);window.removeEventListener("online", onWake);};
+    return () => {unsub();document.removeEventListener("visibilitychange", onWake);window.removeEventListener("online", onWake);};
   }, [id]);
+
+  // Polling khusus fase "mencari driver" (pending_match):
+  // - clearInterval otomatis saat driver ditemukan / status berubah / unmount.
+  // - Jeda polling saat tab tidak aktif untuk hemat kuota data.
+  // - Batas waktu tunggu 4 menit; bila lewat, status diubah jadi driver_not_found.
+  useEffect(() => {
+    if (order?.status !== "pending_match" || !order.created_date) return;
+    const MATCH_TIMEOUT_MS = 4 * 60 * 1000;
+    const createdMs = new Date(order.created_date).getTime();
+    const remaining = MATCH_TIMEOUT_MS - (Date.now() - createdMs);
+
+    const markNotFound = async () => {
+      try {
+        markSelfUpdate();
+        await S.Order.update(id, { status: "driver_not_found" });
+        toast({
+          title: "Driver tidak ditemukan",
+          description: "Tidak ada driver yang menerima pesanan dalam 4 menit. Silakan buat ulang pesanan.",
+          variant: "destructive",
+        });
+        loadOrder();
+      } catch {}
+    };
+
+    if (remaining <= 0) { markNotFound(); return; }
+
+    let pollH = null;
+    const startPoll = () => { if (!pollH && !document.hidden) pollH = setInterval(loadOrder, 3000); };
+    const stopPoll = () => { if (pollH) { clearInterval(pollH); pollH = null; } };
+    const onVis = () => {
+      if (document.hidden) stopPoll();
+      else { loadOrder(); startPoll(); }
+    };
+
+    startPoll();
+    const timeoutH = setTimeout(() => { stopPoll(); markNotFound(); }, remaining);
+    document.addEventListener("visibilitychange", onVis);
+
+    return () => {
+      stopPoll();
+      clearTimeout(timeoutH);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, [order?.id, order?.status, order?.created_date]);
 
   // Ambil QRIS pemilik (setting admin) untuk pembayaran
   useEffect(() => {
@@ -766,6 +811,19 @@ export default function OrderTracking() {
           className="w-full bg-destructive text-destructive-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2">
               <X className="w-4 h-4" />
               Batalkan Pesanan
+            </button>
+          </div>
+        }
+
+        {isOwner && order.status === "driver_not_found" &&
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 text-center space-y-3">
+            <p className="text-sm text-rose-700 font-medium">
+              Maaf, tidak ada driver yang menerima pesanan Anda dalam batas waktu (4 menit).
+            </p>
+            <button
+          onClick={() => navigate("/pesan")}
+          className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90">
+              Buat Pesanan Baru
             </button>
           </div>
         }
