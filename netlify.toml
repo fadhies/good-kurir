@@ -1,0 +1,18 @@
+# Secrets scanning configuration.
+#
+# src/lib/googleMaps.js contains a Google Maps *browser* key. The Maps JavaScript
+# API requires the key to be present in client-side code, so Vite necessarily
+# inlines it into the bundle and Netlify's smart detection flags it as a likely
+# leaked secret. The key is public by design and is protected by HTTP referrer
+# restrictions in the Google Cloud Console, not by being kept secret.
+#
+# Rather than disabling smart detection for the whole project, only the single
+# source file and the single build chunk that carry that key are exempted, so
+# every other repo file and build artifact is still scanned. The Maps helper is
+# pinned to a predictable chunk name in vite.config.js (build.rollupOptions)
+# so the path below keeps matching as the bundle changes.
+#
+# Real secrets (for example SUPABASE_SERVICE_ROLE_KEY) are never bundled: they
+# are read server-side by Base44 backend functions via base44:runtime secrets.
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = "src/lib/googleMaps.js,dist/assets/gmaps-*.js"

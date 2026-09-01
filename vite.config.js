@@ -15,5 +15,17 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Keep the Google Maps helper in a chunk with a stable name. It carries a
+        // public Maps browser key that Netlify's secrets scanner flags, and
+        // netlify.toml exempts this one chunk by path (SECRETS_SCAN_OMIT_PATHS).
+        manualChunks(id) {
+          if (id.includes('/src/lib/googleMaps.js')) return 'gmaps';
+        },
+      },
+    },
+  },
 });
