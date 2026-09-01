@@ -20,6 +20,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import AdminRoute from '@/components/AdminRoute';
 const OrderTracking = lazy(() => import('@/pages/OrderTracking'));
 const BecomeDriver = lazy(() => import('@/pages/BecomeDriver'));
+const OAuthConsent = lazy(() => import('@/pages/OAuthConsent'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 const AdminDrivers = lazy(() => import('@/pages/AdminDrivers'));
 const AdminUsers = lazy(() => import('@/pages/AdminUsers'));
@@ -102,6 +103,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/" element={<TabKeepAlive active="home" />} />
         <Route path="/pesan" element={<TabKeepAlive active="pesan" />} />
