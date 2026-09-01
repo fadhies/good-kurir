@@ -4,11 +4,7 @@ import { Search, Loader2, MapPin } from "lucide-react";
 
 const DEFAULT_CENTER = { lat: -6.2, lng: 106.816666 };
 
-function accentToHsl(accent) {
-  return `hsl(${accent})`;
-}
-
-export default function GoogleLocationPicker({ label, value, onChange, accent = "158 64% 30%", biasCenter }) {
+export default function GoogleLocationPicker({ label, value, onChange, biasCenter }) {
   const [query, setQuery] = useState(value?.address || "");
   const [predictions, setPredictions] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -49,17 +45,18 @@ export default function GoogleLocationPicker({ label, value, onChange, accent = 
         placesRef.current = new gmaps.places.PlacesService(mapRef.current);
         sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
 
-        const color = accentToHsl(accent);
         markerRef.current = new gmaps.Marker({
           map: mapRef.current,
           position: center,
           icon: {
-            path: gmaps.SymbolPath.CIRCLE,
-            scale: 9,
-            fillColor: color,
+            path: "M0-39c-10.5 0-19 8.5-19 19 0 13.5 19 39 19 39s19-25.5 19-39c0-10.5-8.5-19-19-19z",
+            scale: 0.7,
+            fillColor: "#ef4444",
             fillOpacity: 1,
             strokeColor: "#ffffff",
-            strokeWeight: 3,
+            strokeWeight: 1.5,
+            anchor: new gmaps.Point(0, 0),
+            labelOrigin: new gmaps.Point(0, -22),
           },
           visible: value?.lat != null,
         });
