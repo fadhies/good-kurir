@@ -135,14 +135,23 @@ export default function DriverDashboard() {
     loadOrders();
     loadAvailable();
     let timer;
+    let pollH = null;
+    const startPoll = () => { if (!pollH && !document.hidden) pollH = setInterval(() => { loadOrders(); loadAvailable(); }, 20000); };
+    const stopPoll = () => { if (pollH) { clearInterval(pollH); pollH = null; } };
     const unsub = S.Order.subscribe(() => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600);
     });
-    const onWake = () => { if (document.hidden) return; if (timer) clearTimeout(timer); timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600); };
+    const onWake = () => {
+      if (document.hidden) { stopPoll(); return; }
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600);
+      startPoll();
+    };
+    startPoll();
     document.addEventListener("visibilitychange", onWake);
     window.addEventListener("online", onWake);
-    return () => { unsub(); if (timer) clearTimeout(timer); document.removeEventListener("visibilitychange", onWake); window.removeEventListener("online", onWake); };
+    return () => { unsub(); stopPoll(); if (timer) clearTimeout(timer); document.removeEventListener("visibilitychange", onWake); window.removeEventListener("online", onWake); };
   }, [profile]);
 
   async function toggleOnline() {
