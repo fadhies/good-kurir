@@ -103,6 +103,7 @@ export default function OrderTracking() {
           item_cost: cost,
           store_bill_note: billNote
         });
+        notifyDriverStatus("on_the_way");
         toast({ title: "Mulai mengantar ke tujuan" });
       } else {
         if (!user?.phone) {
@@ -116,6 +117,7 @@ export default function OrderTracking() {
           store_bill_note: billNote,
           driver_dana_number: user.phone
         });
+        notifyDriverStatus("awaiting_payment");
         toast({ title: "Tagihan dikirim", description: "Pelanggan akan transfer ke akun Dana Anda." });
       }
       loadOrder();
@@ -146,6 +148,7 @@ export default function OrderTracking() {
         store_bill_note: billNote,
         store_qris_photo: storeQrisPhoto
       });
+      notifyDriverStatus("awaiting_payment");
       toast({ title: "Tagihan dikirim", description: "User akan bayar langsung ke toko via QRIS." });
       setBillChoice(null);
       loadOrder();
@@ -224,11 +227,19 @@ export default function OrderTracking() {
   const isDriver = order?.driver_id === user?.id;
   const isOwner = order?.created_by_id === user?.id;
 
+  // Buat record notifikasi (ke lonceng) untuk pihak yang tidak melakukan aksi.
+  // Backend function memakai service_role agar bisa membuat notifikasi ke user
+  // lain (RLS Notification melarang driver membuat notifikasi untuk user lain).
+  function notifyDriverStatus(status) {
+    base44.functions.invoke("notifyOrderStatus", { orderId: id, status }).catch(() => {});
+  }
+
   async function updateStatus(status, extra = {}) {
     setActing(true);
     try {
       markSelfUpdate();
       await S.Order.update(id, { status, ...extra });
+      notifyDriverStatus(status);
       toast({ title: "Status diperbarui" });
       loadOrder();
     } catch (e) {
@@ -252,6 +263,7 @@ export default function OrderTracking() {
         item_cost: cost,
         store_bill_note: billNote
       });
+      notifyDriverStatus("awaiting_payment");
       toast({ title: "Bill dikirim, menunggu pembayaran user" });
       loadOrder();
     } catch (e) {
