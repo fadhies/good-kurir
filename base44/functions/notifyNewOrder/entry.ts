@@ -24,12 +24,39 @@ export default async function(req) {
       limit: 1000
     });
 
+    // Filter driver sesuai aturan kapasitas yang dipakai kartu "Pesanan
+    // Tersedia" di DriverDashboard, supaya notifikasi hanya dikirim ke driver
+    // yang benar-benar bisa menerima pesanan ini:
+    //  - mode cepat: driver harus sedang kosong (0 order aktif)
+    //  - mode hemat: driver boleh membawa < 3 order hemat aktif
+    const ACTIVE_STATUSES = ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'];
+    const activeOrders = drivers.length
+      ? await selectQuery('orders', {
+          filter: { driver_id: { $in: drivers.map((d) => d.user_id) }, status: { $in: ACTIVE_STATUSES } },
+          limit: 1000,
+        })
+      : [];
+    const activeCountByDriver = new Map();
+    const activeHematCountByDriver = new Map();
+    for (const o of activeOrders) {
+      activeCountByDriver.set(o.driver_id, (activeCountByDriver.get(o.driver_id) || 0) + 1);
+      if (o.mode === 'hemat') {
+        activeHematCountByDriver.set(o.driver_id, (activeHematCountByDriver.get(o.driver_id) || 0) + 1);
+      }
+    }
+    const eligibleDrivers = drivers.filter((d) => {
+      const total = activeCountByDriver.get(d.user_id) || 0;
+      const hemat = activeHematCountByDriver.get(d.user_id) || 0;
+      if (order.mode === 'cepat') return total === 0;
+      return hemat < 3;
+    });
+
     const typeLabel =
       order.type === 'food' ? 'Beli Makanan' :
       order.type === 'goods' ? 'Antar Barang' : 'Antar Orang';
 
     await Promise.all(
-      drivers.map((d) =>
+      eligibleDrivers.map((d) =>
         createNotification(base44, {
           user_id: d.user_id,
           type: 'new_order',
@@ -40,7 +67,7 @@ export default async function(req) {
       )
     );
 
-    return Response.json({ success: true, notified: drivers.length });
+    return Response.json({ success: true, notified: eligibleDrivers.length });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
