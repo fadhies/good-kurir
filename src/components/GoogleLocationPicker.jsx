@@ -45,18 +45,19 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         placesRef.current = new gmaps.places.PlacesService(mapRef.current);
         sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
 
+        const pinSvg =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="44" viewBox="0 0 28 44">' +
+          '<rect x="11" y="18" width="6" height="22" rx="1" fill="#F5F5F5" stroke="#333333" stroke-width="1.5"/>' +
+          '<circle cx="14" cy="13" r="11" fill="#FF4500" stroke="#333333" stroke-width="1.5"/>' +
+          "</svg>";
+        const pinUrl = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(pinSvg);
         markerRef.current = new gmaps.Marker({
           map: mapRef.current,
           position: center,
           icon: {
-            path: "M0-39c-10.5 0-19 8.5-19 19 0 13.5 19 39 19 39s19-25.5 19-39c0-10.5-8.5-19-19-19z",
-            scale: 0.7,
-            fillColor: "#ef4444",
-            fillOpacity: 1,
-            strokeColor: "#ffffff",
-            strokeWeight: 1.5,
-            anchor: new gmaps.Point(0, 0),
-            labelOrigin: new gmaps.Point(0, -22),
+            url: pinUrl,
+            scaledSize: new gmaps.Size(28, 44),
+            anchor: new gmaps.Point(14, 40),
           },
           visible: value?.lat != null,
         });
