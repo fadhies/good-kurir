@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
-import { Bell, Bike, CheckCircle2, MessageCircle, ShoppingBag, Package, User } from "lucide-react";
+import { Bell, Bike, CheckCircle2, MessageCircle, ShoppingBag, Package } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";

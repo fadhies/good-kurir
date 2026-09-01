@@ -1,3 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
 # Secrets scanning configuration.
 #
 # src/lib/googleMaps.js contains a Google Maps *browser* key. The Maps JavaScript
@@ -16,3 +20,9 @@
 # are read server-side by Base44 backend functions via base44:runtime secrets.
 [build.environment]
   SECRETS_SCAN_OMIT_PATHS = "src/lib/googleMaps.js,dist/assets/gmaps-*.js"
+
+# SPA routing redirect rule to serve index.html for all client-side routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
-import { formatRupiah } from "@/lib/geo";
 import { Loader2 } from "lucide-react";
 
 const STATUS = {

@@ -6,7 +6,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation, X } from "lucide-react";
+import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Navigation, X } from "lucide-react";
 
 function mapsUrl(lat, lng, address) {
   const q = lat != null && lng != null ?
