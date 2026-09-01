@@ -46,8 +46,8 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
 
         const pinSvg =
-          '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="44" viewBox="0 0 28 44">' +
-          '<rect x="11" y="18" width="6" height="22" rx="1" fill="#F5F5F5" stroke="#333333" stroke-width="1.5"/>' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="48" viewBox="0 0 28 48">' +
+          '<path d="M11 20 L17 20 L14 46 Z" fill="#F5F5F5" stroke="#333333" stroke-width="1.5" stroke-linejoin="round"/>' +
           '<circle cx="14" cy="13" r="11" fill="#FF4500" stroke="#333333" stroke-width="1.5"/>' +
           "</svg>";
         const pinUrl = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(pinSvg);
@@ -56,8 +56,8 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
           position: center,
           icon: {
             url: pinUrl,
-            scaledSize: new gmaps.Size(28, 44),
-            anchor: new gmaps.Point(14, 40),
+            scaledSize: new gmaps.Size(28, 48),
+            anchor: new gmaps.Point(14, 46),
           },
           visible: value?.lat != null,
         });
