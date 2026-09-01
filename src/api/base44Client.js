@@ -10,7 +10,7 @@ export const base44 = createClient({
   appId,
   token,
   functionsVersion,
-  serverUrl: currentOrigin,
+  serverUrl: '',
   requiresAuth: false,
   appBaseUrl: currentOrigin
 });
