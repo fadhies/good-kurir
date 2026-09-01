@@ -2,5 +2,5 @@ export const base44 = createClient({
   appId,
   token,
   functionsVersion,
-  appBaseUrl: 'https://www.goodkurir.online' // atau https://goodkurir.online
+  appBaseUrl: 'https://www.goodkurir.online'
 });
