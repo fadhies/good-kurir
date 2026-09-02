@@ -86,7 +86,7 @@ export default function AdminDashboard() {
     { label: "Driver Ditolak", value: stats.rejected, icon: XCircle, color: "from-red-500 to-rose-500", to: "/admin/driver" },
     { label: "Menunggu Verifikasi", value: stats.pending, icon: AlertCircle, color: "from-amber-500 to-orange-500", to: "/admin/driver" },
     { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-cyan-500 to-blue-500", to: "/admin/orders" },
-    { label: "Pendapatan Biaya Layanan", value: formatRupiah(stats.feeRevenue), icon: TrendingUp, color: "from-rose-500 to-pink-500", to: "/admin/orders" },
+    { label: "Pendapatan Biaya Layanan", value: formatRupiah(stats.feeRevenue), icon: TrendingUp, color: "from-rose-500 to-pink-500", to: "/admin/setoran" },
   ];
 
   return (
