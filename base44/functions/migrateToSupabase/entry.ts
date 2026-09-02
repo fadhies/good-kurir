@@ -13,6 +13,7 @@ const TABLES = {
   ChatMessage: { table: "chat_messages", cols: ["id","created_date","updated_date","created_by_id","order_id","sender_id","sender_name","sender_role","text","participants"] },
   WalletTransaction: { table: "wallet_transactions", cols: ["id","created_date","updated_date","created_by_id","user_id","type","amount","description","order_id"] },
   Notification: { table: "notifications", cols: ["id","created_date","updated_date","created_by_id","user_id","type","title","body","order_id","is_read"] },
+  AppSetting: { table: "app_settings", cols: ["id","created_date","updated_date","created_by_id","key","value"] },
 };
 
 function pick(rec, cols) {

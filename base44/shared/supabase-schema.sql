@@ -154,6 +154,17 @@ create table if not exists withdrawal_requests (
 create index if not exists withdrawal_requests_user_idx on withdrawal_requests (user_id);
 create index if not exists withdrawal_requests_status_idx on withdrawal_requests (status);
 
+-- App settings (key/value config: tariffs, admin_dana_number, owner_qris, ...)
+create table if not exists app_settings (
+  id text primary key,
+  created_date timestamptz,
+  updated_date timestamptz,
+  created_by_id text,
+  key text,
+  value text
+);
+create index if not exists app_settings_key_idx on app_settings (key);
+
 -- Lock down: only service_role (used by Base44 backend functions) can access.
 alter table orders enable row level security;
 alter table driver_profiles enable row level security;
@@ -162,4 +173,5 @@ alter table chat_messages enable row level security;
 alter table wallet_transactions enable row level security;
 alter table notifications enable row level security;
 alter table withdrawal_requests enable row level security;
+alter table app_settings enable row level security;
 -- No policies are defined; anon/authenticated roles get nothing.

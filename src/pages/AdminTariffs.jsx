@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Save, Tag, Smartphone } from "lucide-react";
 
@@ -32,8 +32,8 @@ export default function AdminTariffs() {
     setLoading(true);
     try {
       const [tRows, dRows] = await Promise.all([
-        base44.entities.AppSetting.filter({ key: "tariffs" }, "-created_date", 1),
-        base44.entities.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
+        S.AppSetting.filter({ key: "tariffs" }, "-created_date", 1),
+        S.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
       ]);
       const base = {
         food: { hemat: { base: 7000, base_km: 4, per_km: 1000 }, cepat: { base: 12000, base_km: 4, per_km: 2000 } },
@@ -57,9 +57,9 @@ export default function AdminTariffs() {
   }, []);
 
   async function upsertSetting(key, value) {
-    const rows = await base44.entities.AppSetting.filter({ key }, "-created_date", 1);
-    if (rows[0]) await base44.entities.AppSetting.update(rows[0].id, { value });
-    else await base44.entities.AppSetting.create({ key, value });
+    const rows = await S.AppSetting.filter({ key }, "-created_date", 1);
+    if (rows[0]) await S.AppSetting.update(rows[0].id, { value });
+    else await S.AppSetting.create({ key, value });
   }
 
   async function save() {

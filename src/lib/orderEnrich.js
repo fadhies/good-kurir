@@ -1,5 +1,5 @@
 import { reverseGeocodePoi } from "@/lib/googleMaps";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 
 // Backfill store_name (nama POI) untuk order lama yang store_name-nya kosong
 // atau hanya berupa pecahan alamat jalan. Dipersist agar tidak diulang.
@@ -15,7 +15,7 @@ export async function enrichOrdersStoreName(orders, onUpdated) {
       try {
         const { name } = await reverseGeocodePoi(o.store_lat, o.store_lng);
         if (name && name !== o.store_name) {
-          await base44.entities.Order.update(o.id, { store_name: name });
+          await S.Order.update(o.id, { store_name: name });
           onUpdated?.(o.id, name);
         }
       } catch {}

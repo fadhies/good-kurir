@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { Bike, Package, User, ArrowRight, Sparkles, ShieldCheck, Clock, MapPin } from "lucide-react";
 
 const SERVICES = [
@@ -38,7 +38,7 @@ export default function Home() {
   useEffect(() => {
     if (!user?.id) return;
     let active = true;
-    base44.entities.DriverProfile.filter({ user_id: user.id }).
+    S.DriverProfile.filter({ user_id: user.id }).
     then((list) => active && setDriverProfile(list[0] || null)).
     catch(() => active && setDriverProfile(null));
     return () => {active = false;};

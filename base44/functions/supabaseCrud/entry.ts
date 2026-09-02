@@ -33,6 +33,8 @@ function canRead(table, user, row) {
       return row.user_id === user.id;
     case 'chat_messages':
       return isParticipant(row, user.id);
+    case 'app_settings':
+      return true; // public read (tariffs, dana number, etc.)
     default:
       return false;
   }

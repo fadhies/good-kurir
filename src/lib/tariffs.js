@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 
 export const DEFAULT_TARIFFS = {
   food: {
@@ -13,7 +13,7 @@ export const DEFAULT_TARIFFS = {
 
 export async function getTariffs() {
   try {
-    const rows = await base44.entities.AppSetting.filter({ key: "tariffs" }, "-created_date", 1);
+    const rows = await S.AppSetting.filter({ key: "tariffs" }, "-created_date", 1);
     if (rows[0]?.value) return { ...DEFAULT_TARIFFS, ...JSON.parse(rows[0].value) };
   } catch {}
   return DEFAULT_TARIFFS;

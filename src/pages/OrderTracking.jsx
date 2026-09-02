@@ -247,7 +247,7 @@ export default function OrderTracking() {
 
   // Ambil QRIS pemilik (setting admin) untuk pembayaran
   useEffect(() => {
-    base44.entities.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1).
+    S.AppSetting.filter({ key: "owner_qris" }, "-created_date", 1).
     then((rows) => setOwnerQris(rows[0]?.value || null)).
     catch(() => {});
   }, []);

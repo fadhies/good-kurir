@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
@@ -23,7 +22,7 @@ export default function DriverRemittance() {
       const [completed, remits, qrisRows, wts] = await Promise.all([
       S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
       S.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
-      base44.entities.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
+      S.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
       S.WalletTransaction.filter({ user_id: user.id, type: "credit" }, "-created_date", 500)]
       );
       setAdminDana(qrisRows[0]?.value || "");
