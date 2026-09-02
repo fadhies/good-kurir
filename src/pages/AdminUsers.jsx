@@ -15,6 +15,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AdminUsers() {
   const { toast } = useToast();
@@ -26,6 +33,20 @@ export default function AdminUsers() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("admin");
   const [inviting, setInviting] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null);
+
+  async function changeRole(userId, role) {
+    setUpdatingId(userId);
+    try {
+      await base44.entities.User.update(userId, { role });
+      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role } : u)));
+      toast({ title: "Peran diperbarui", description: `Sekarang: ${role}.` });
+    } catch (e) {
+      toast({ title: "Gagal mengubah peran", description: e.message, variant: "destructive" });
+    } finally {
+      setUpdatingId(null);
+    }
+  }
 
   useEffect(() => {
     async function load() {
@@ -122,12 +143,23 @@ export default function AdminUsers() {
             <div key={u.id} className="grid grid-cols-12 px-4 py-3 border-t border-border items-center text-sm">
               <div className="col-span-5 font-medium truncate">{u.full_name || "Tanpa nama"}</div>
               <div className="col-span-5 hidden sm:block text-muted-foreground truncate">{u.email}</div>
-              <div className="col-span-2 text-right">
-                <span className={cn("inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize", roleBadge(u.role))}>
-                  {u.role}
-                </span>
+              <div className="col-span-2 flex items-center justify-end gap-1">
+                <Select
+                  value={u.role}
+                  disabled={updatingId === u.id}
+                  onValueChange={(r) => changeRole(u.id, r)}
+                >
+                  <SelectTrigger className="h-7 w-24 px-2 text-xs capitalize">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">user</SelectItem>
+                    <SelectItem value="driver">driver</SelectItem>
+                    <SelectItem value="admin">admin</SelectItem>
+                  </SelectContent>
+                </Select>
                 {driverIds.has(u.id) && (
-                  <span className="ml-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Driver</span>
+                  <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Driver</span>
                 )}
               </div>
             </div>
