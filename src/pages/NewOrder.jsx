@@ -156,7 +156,7 @@ export default function NewOrder() {
 
   return (
     <Layout>
-      <h1 className="font-display text-2xl font-extrabold mb-1">Buat Pesanan</h1>
+      <h1 className="text-2xl mb-1 [font-family:'Cabin',_sans-serif] font-medium">Buat Pesanan</h1>
       <p className="text-muted-foreground text-sm mb-6">Pilih layanan, tentukan toko & tujuan, lalu kami carikan driver terdekat.</p>
 
       {/* Type selector */}
