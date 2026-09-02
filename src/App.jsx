@@ -28,6 +28,7 @@ const AdminWithdrawals = lazy(() => import('@/pages/AdminWithdrawals'));
 const AdminTariffs = lazy(() => import('@/pages/AdminTariffs'));
 const AdminRemittance = lazy(() => import('@/pages/AdminRemittance'));
 const AdminPrivacy = lazy(() => import('@/pages/AdminPrivacy'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
 import ChatNotificationListener from '@/components/ChatNotificationListener';
 
 const TAB_PATHS = new Set(["/", "/pesan", "/pesanan-saya", "/driver", "/driver/dompet"]);
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
         <Route path="/driver" element={<TabKeepAlive active="driver" />} />
         <Route path="/driver/dompet" element={<TabKeepAlive active="driver-dompet" />} />
         <Route path="/jadi-driver" element={<BecomeDriver />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/driver" element={<AdminDrivers />} />
