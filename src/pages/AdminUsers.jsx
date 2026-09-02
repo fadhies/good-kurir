@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  DialogFooter } from
+"@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,8 +20,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 
 export default function AdminUsers() {
   const { toast } = useToast();
@@ -39,7 +39,7 @@ export default function AdminUsers() {
     setUpdatingId(userId);
     try {
       await base44.entities.User.update(userId, { role });
-      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role } : u)));
+      setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role } : u));
       toast({ title: "Peran diperbarui", description: `Sekarang: ${role}.` });
     } catch (e) {
       toast({ title: "Gagal mengubah peran", description: e.message, variant: "destructive" });
@@ -52,9 +52,9 @@ export default function AdminUsers() {
     async function load() {
       try {
         const [u, d] = await Promise.all([
-          base44.entities.User.list(),
-          S.DriverProfile.list(),
-        ]);
+        base44.entities.User.list(),
+        S.DriverProfile.list()]
+        );
         setUsers(u);
         setDrivers(d);
       } finally {
@@ -97,20 +97,20 @@ export default function AdminUsers() {
   }, [users, search]);
 
   const roleBadge = (r) =>
-    r === "admin"
-      ? "bg-purple-100 text-purple-700"
-      : r === "driver"
-      ? "bg-blue-100 text-blue-700"
-      : "bg-emerald-100 text-emerald-700";
+  r === "admin" ?
+  "bg-purple-100 text-purple-700" :
+  r === "driver" ?
+  "bg-blue-100 text-blue-700" :
+  "bg-emerald-100 text-emerald-700";
 
   return (
     <AdminLayout>
       <div className="flex items-start justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-display text-2xl font-extrabold mb-1">Pengguna</h1>
+          <h1 className="text-2xl font-extrabold mb-1 [font-family:'Cabin',_sans-serif]">Pengguna</h1>
           <p className="text-muted-foreground text-sm">Daftar semua akun terdaftar di platform.</p>
         </div>
-        <Button onClick={() => { setInviteRole("admin"); setInviteOpen(true); }} className="shrink-0">
+        <Button onClick={() => {setInviteRole("admin");setInviteOpen(true);}} className="shrink-0">
           <UserPlus className="w-4 h-4 mr-1.5" /> Undang Admin
         </Button>
       </div>
@@ -121,34 +121,34 @@ export default function AdminUsers() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari nama atau email..."
-          className="flex-1 bg-transparent text-sm outline-none"
-        />
+          className="flex-1 bg-transparent text-sm outline-none" />
+        
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-card rounded-2xl border border-dashed border-border">
+      {loading ?
+      <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div> :
+      filtered.length === 0 ?
+      <div className="text-center py-16 bg-card rounded-2xl border border-dashed border-border">
           <Users className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Tidak ada pengguna ditemukan.</p>
-        </div>
-      ) : (
-        <div className="bg-card rounded-2xl border border-border overflow-hidden">
+        </div> :
+
+      <div className="bg-card rounded-2xl border border-border overflow-hidden">
           <div className="grid grid-cols-12 px-4 py-3 bg-secondary/50 text-xs font-semibold text-muted-foreground">
             <div className="col-span-5">Nama</div>
             <div className="col-span-5 hidden sm:block">Email</div>
             <div className="col-span-2 text-right">Peran</div>
           </div>
-          {filtered.map((u) => (
-            <div key={u.id} className="grid grid-cols-12 px-4 py-3 border-t border-border items-center text-sm">
+          {filtered.map((u) =>
+        <div key={u.id} className="grid grid-cols-12 px-4 py-3 border-t border-border items-center text-sm">
               <div className="col-span-5 font-medium truncate">{u.full_name || "Tanpa nama"}</div>
               <div className="col-span-5 hidden sm:block text-muted-foreground truncate">{u.email}</div>
               <div className="col-span-2 flex items-center justify-end gap-1">
                 <Select
-                  value={u.role}
-                  disabled={updatingId === u.id}
-                  onValueChange={(r) => changeRole(u.id, r)}
-                >
+              value={u.role}
+              disabled={updatingId === u.id}
+              onValueChange={(r) => changeRole(u.id, r)}>
+              
                   <SelectTrigger className="h-7 w-24 px-2 text-xs capitalize">
                     <SelectValue />
                   </SelectTrigger>
@@ -158,14 +158,14 @@ export default function AdminUsers() {
                     <SelectItem value="admin">admin</SelectItem>
                   </SelectContent>
                 </Select>
-                {driverIds.has(u.id) && (
-                  <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Driver</span>
-                )}
+                {driverIds.has(u.id) &&
+            <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Driver</span>
+            }
               </div>
             </div>
-          ))}
+        )}
         </div>
-      )}
+      }
 
       <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
         <DialogContent>
@@ -180,8 +180,8 @@ export default function AdminUsers() {
             placeholder="admin@email.com"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
-            disabled={inviting}
-          />
+            disabled={inviting} />
+          
           <DialogFooter>
             <Button variant="outline" onClick={() => setInviteOpen(false)} disabled={inviting}>Batal</Button>
             <Button onClick={handleInvite} disabled={inviting || !inviteEmail.trim()}>
@@ -191,6 +191,6 @@ export default function AdminUsers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AdminLayout>
-  );
+    </AdminLayout>);
+
 }

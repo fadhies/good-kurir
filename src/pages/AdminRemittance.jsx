@@ -26,7 +26,7 @@ export default function AdminRemittance() {
       // Tanggal selesai stabil dari created_date wallet_transaction credit,
       // tidak ter-bump saat user memberi rating (yang menggeser updated_date).
       const at = {};
-      for (const w of wts) { if (w.order_id) at[w.order_id] = w.created_date; }
+      for (const w of wts) {if (w.order_id) at[w.order_id] = w.created_date;}
       setCompletedAt(at);
     } catch {
       setList([]);
@@ -55,7 +55,7 @@ export default function AdminRemittance() {
 
   return (
     <AdminLayout>
-      <h1 className="font-display text-2xl font-extrabold mb-1 flex items-center gap-2">
+      <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2 [font-family:'Cabin',_sans-serif]">
         <Banknote className="w-6 h-6 text-primary" /> Penghasilan Admin
       </h1>
       <p className="text-muted-foreground text-sm mb-6">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
@@ -102,17 +102,17 @@ export default function AdminRemittance() {
             </thead>
             <tbody>
               {orders.map((o) => {
-              const driver = userMap[o.driver_id];
-              return (
-                <tr key={o.id} className="border-t border-border">
+                const driver = userMap[o.driver_id];
+                return (
+                  <tr key={o.id} className="border-t border-border">
                   <td className="px-3 py-2 font-semibold selectable">#{String(o.id).slice(-6)}</td>
                   <td className="px-3 py-2 text-muted-foreground">{new Date(completedAt[o.id] || o.updated_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}</td>
                   <td className="px-3 py-2 max-w-[120px] truncate">{driver?.full_name || driver?.email || "—"}</td>
                   <td className="px-3 py-2 text-right">{formatRupiah(o.driver_remit_fee || 0)}</td>
                   <td className="px-3 py-2 text-right">{formatRupiah(o.service_fee || 0)}</td>
                   <td className="px-3 py-2 text-right font-bold text-primary">{formatRupiah((o.driver_remit_fee || 0) + (o.service_fee || 0))}</td>
-                </tr>
-              );
+                </tr>);
+
               })}
             </tbody>
           </table>
@@ -145,24 +145,24 @@ export default function AdminRemittance() {
           </thead>
           <tbody>
             {list.map((r) => {
-            const u = userMap[r.user_id];
-            return (
-              <tr key={r.id} className="border-t border-border align-top">
+              const u = userMap[r.user_id];
+              return (
+                <tr key={r.id} className="border-t border-border align-top">
                 <td className="px-3 py-2 font-semibold max-w-[120px] truncate">{u?.full_name || u?.email || "Driver"}</td>
                 <td className="px-3 py-2 text-muted-foreground">{r.date}</td>
                 <td className="px-3 py-2 text-right">{r.transaction_count || 0}</td>
                 <td className="px-3 py-2 text-right font-bold text-primary">{formatRupiah(r.amount)}</td>
                 <td className="px-3 py-2 text-center">
                   {r.proof_photo ?
-                  <a href={r.proof_photo} target="_blank" rel="noreferrer" className="inline-block w-12 h-12 rounded-lg overflow-hidden border border-border">
+                    <a href={r.proof_photo} target="_blank" rel="noreferrer" className="inline-block w-12 h-12 rounded-lg overflow-hidden border border-border">
                       <Image src={r.proof_photo} fittingType="fit" className="w-full h-full" />
                     </a> :
-                  <span className="text-muted-foreground">—</span>
-                  }
+                    <span className="text-muted-foreground">—</span>
+                    }
                 </td>
                 <td className="px-3 py-2 text-muted-foreground">{new Date(r.created_date).toLocaleDateString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
-              </tr>
-            );
+              </tr>);
+
             })}
           </tbody>
         </table>
