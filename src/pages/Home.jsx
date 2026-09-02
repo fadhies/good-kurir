@@ -55,7 +55,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-2 text-[hsl(var(--secondary-foreground))] bg-[hsl(var(--card-foreground))]">
               <Sparkles className="w-3 h-3" /> Halo, {user?.full_name?.split(" ")[0] || "Sobat"}!
             </div>
-            <h1 className="text-2xl md:text-3xl leading-tight text-[hsl(var(--popover-foreground))] [font-family:'Lexend',_ui-sans-serif,_system-ui,_sans-serif] font-semibold">
+            <h1 className="text-2xl md:text-3xl leading-tight text-[hsl(var(--popover-foreground))] [font-family:'Cabin',_sans-serif] font-medium">
               Pesan Antar Apa Saja
             </h1>
             <p className="mt-1 text-xs md:text-sm text-[hsl(var(--popover-foreground))]">
