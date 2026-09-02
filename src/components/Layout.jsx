@@ -57,92 +57,124 @@ export default function Layout({ children }) {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
-      {/* Top bar */}
-      <header className="sticky top-0 z-40 glass-card border-b border-border/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          {isDetail ?
-          <div className="flex items-center gap-1">
-              <button
-              onClick={() => navigate(-1)}
-              className="p-2 rounded-full hover:bg-secondary text-foreground transition-colors"
-              title="Kembali">
-              
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <span className="font-bold tracking-tight [font-family:'Archivo',_sans-serif] text-base">{pageTitle}</span>
-            </div> :
-
+    <div className="min-h-[100dvh] bg-background flex">
+      {/* Sidebar (desktop) */}
+      <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-card sticky top-0 h-screen">
+        <div className="h-16 flex items-center gap-2 px-5 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
-                <Image
-                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
-                  alt="Good Kurir"
-                  className="w-full h-full"
-                />
-              </div>
-              <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
-                Good<span className="text-primary">Kurir</span>
-              </span>
-            </Link>
-          }
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary">
-              <UserCircle className="w-4 h-4 text-secondary-foreground" />
-              <span className="text-sm font-medium text-secondary-foreground">
-                {user?.full_name || user?.email}
-              </span>
-              <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold capitalize">
-                {role === "driver" ? "Driver" : role === "admin" ? "Admin" : "User"}
-              </span>
+            <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
+              <Image
+                src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
+                alt="Good Kurir"
+                className="w-full h-full"
+              />
             </div>
+            <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-xl">
+              Good<span className="text-primary">Kurir</span>
+            </span>
+          </Link>
+        </div>
+        <nav className="flex-1 p-3 space-y-1">
+          {items.map((item) => {
+            const active = location.pathname === item.to;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                  active ?
+                  "bg-primary text-primary-foreground" :
+                  "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                )}>
+                <Icon className="w-4 h-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="p-3 border-t border-border space-y-2">
+          {isDetail &&
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Kembali
+            </button>}
+          <div className="flex items-center gap-2 px-3 py-1.5">
+            <UserCircle className="w-4 h-4 text-muted-foreground shrink-0" />
+            <span className="text-sm font-medium text-foreground truncate flex-1">
+              {user?.full_name || user?.email}
+            </span>
+            <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold capitalize shrink-0">
+              {role === "driver" ? "Driver" : role === "admin" ? "Admin" : "User"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 px-1">
             <NotificationBell />
             <AccountDeletionDialog />
             <button
-              onClick={handleExit}
-              className="md:hidden p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-              title="Keluar Aplikasi">
-              
-              <Power className="w-5 h-5" />
-            </button>
-            <button
               onClick={handleLogout}
-              className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-              title="Keluar">
-              
-              <LogOut className="w-5 h-5" />
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              title="Keluar Akun">
+              <LogOut className="w-4 h-4" /> Keluar
             </button>
           </div>
         </div>
-      </header>
+      </aside>
 
-      {/* Content */}
-      <main className={cn("flex-1 max-w-6xl w-full mx-auto px-4 py-6", isDetail ? "pb-10" : "pb-28 md:pb-10")}>
-        {children}
-      </main>
+      {/* Main column */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Top bar (mobile only) */}
+        <header className="md:hidden sticky top-0 z-40 glass-card border-b border-border/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="px-4 h-16 flex items-center justify-between">
+            {isDetail ?
+            <div className="flex items-center gap-1">
+                <button
+                onClick={() => navigate(-1)}
+                className="p-2 rounded-full hover:bg-secondary text-foreground transition-colors"
+                title="Kembali">
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <span className="font-bold tracking-tight [font-family:'Archivo',_sans-serif] text-base">{pageTitle}</span>
+              </div> :
+            <Link to="/" className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
+                  <Image
+                    src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
+                    alt="Good Kurir"
+                    className="w-full h-full"
+                  />
+                </div>
+                <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
+                  Good<span className="text-primary">Kurir</span>
+                </span>
+              </Link>
+            }
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <AccountDeletionDialog />
+              <button
+                onClick={handleExit}
+                className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                title="Keluar Aplikasi">
+                <Power className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                title="Keluar">
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </header>
 
-      {/* Side nav (desktop) - rendered as floating rail */}
-      <nav className="hidden md:flex fixed left-1/2 -translate-x-[19rem] top-1/2 -translate-y-1/2 flex-col gap-1">
-        {items.map((item) => {
-          const active = location.pathname === item.to;
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
-                active ?
-                "bg-primary text-primary-foreground shadow-md shadow-primary/30" :
-                "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              )}>
-              
-              <Icon className="w-5 h-5" />
-              {item.label}
-            </Link>);
-
-        })}
-      </nav>
+        {/* Content */}
+        <main className={cn("flex-1 w-full mx-auto px-4 py-6 max-w-4xl", isDetail ? "pb-10" : "pb-28 md:pb-10")}>
+          {children}
+        </main>
+      </div>
     </div>);
 
 }
