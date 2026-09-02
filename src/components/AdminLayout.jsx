@@ -33,7 +33,7 @@ export default function AdminLayout({ children }) {
             <ShieldCheck className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <p className="font-display font-extrabold text-sm leading-tight">Good Kurir</p>
+            <p className="leading-tight [font-family:'Cabin',_sans-serif] text-lg font-semibold">Good Kurir</p>
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           </div>
         </div>
