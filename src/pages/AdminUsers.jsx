@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
+import S from "@/lib/supabaseEntities";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Users, Search, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,7 @@ export default function AdminUsers() {
       try {
         const [u, d] = await Promise.all([
           base44.entities.User.list(),
-          base44.entities.DriverProfile.list(),
+          S.DriverProfile.list(),
         ]);
         setUsers(u);
         setDrivers(d);
@@ -42,7 +43,10 @@ export default function AdminUsers() {
     load();
   }, []);
 
-  const driverIds = useMemo(() => new Set(drivers.map((d) => d.user_id)), [drivers]);
+  const driverIds = useMemo(
+    () => new Set(drivers.filter((d) => d.verification_status === "approved").map((d) => d.user_id)),
+    [drivers]
+  );
 
   async function handleInvite() {
     const email = inviteEmail.trim();
