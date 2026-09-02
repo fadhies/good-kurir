@@ -83,10 +83,10 @@ export default function AdminDashboard() {
   }
 
   const cards = [
-    { label: "Driver Ditolak", value: stats.rejected, icon: XCircle, color: "from-red-500 to-rose-500" },
+    { label: "Driver Ditolak", value: stats.rejected, icon: XCircle, color: "from-red-500 to-rose-500", to: "/admin/driver" },
     { label: "Menunggu Verifikasi", value: stats.pending, icon: AlertCircle, color: "from-amber-500 to-orange-500", to: "/admin/driver" },
-    { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-cyan-500 to-blue-500" },
-    { label: "Pendapatan Biaya Layanan", value: formatRupiah(stats.feeRevenue), icon: TrendingUp, color: "from-rose-500 to-pink-500" },
+    { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-cyan-500 to-blue-500", to: "/admin/orders" },
+    { label: "Pendapatan Biaya Layanan", value: formatRupiah(stats.feeRevenue), icon: TrendingUp, color: "from-rose-500 to-pink-500", to: "/admin/orders" },
   ];
 
   return (
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
         {cards.map((c) => {
           const Icon = c.icon;
           const inner = (
-            <div className="bg-card border border-border p-5 hover:shadow-md transition-shadow rounded-2xl">
+            <div className="bg-card border border-border p-5 hover:shadow-md transition-shadow rounded-2xl cursor-pointer h-full">
               <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${c.color} flex items-center justify-center mb-3 shadow-md`}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
