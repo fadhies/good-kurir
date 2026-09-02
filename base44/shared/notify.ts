@@ -30,7 +30,7 @@ export async function createNotification(base44, { user_id, type, title, body, o
       title,
       content: body || title,
       action_label: order_id ? 'Lihat' : undefined,
-      action_url: order_id ? `https://ojol-kita.base44.app/pesanan/${order_id}` : undefined,
+      action_url: order_id ? `https://goodkurir.online/pesanan/${order_id}` : undefined,
     });
   } catch {
     // push gagal (mis. belum ada native build / device) — jangan gagalkan
