@@ -120,13 +120,13 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mt-8">
-        <h2 className="font-display text-xl font-extrabold mb-1 flex items-center gap-2 hidden">
-          <Wallet className="w-5 h-5 text-primary" /> Dompet Admin
-        </h2>
-        <p className="text-muted-foreground text-sm mb-4 hidden">Saldo: {formatRupiah(wallet.balance)}</p>
+        
+
+        
+        
         <div className="space-y-2">
-          {wallet.txs.length === 0 ?
-          <p className="text-sm text-muted-foreground text-center py-6 hidden">Belum ada transaksi</p> :
+          {wallet.txs.length === 0 ? null :
+
 
           wallet.txs.map((t) =>
           <div key={t.id} className="bg-card rounded-xl border border-border p-3 flex items-center justify-between">
