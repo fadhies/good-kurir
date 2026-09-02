@@ -27,6 +27,7 @@ const AdminOrders = lazy(() => import('@/pages/AdminOrders'));
 const AdminWithdrawals = lazy(() => import('@/pages/AdminWithdrawals'));
 const AdminTariffs = lazy(() => import('@/pages/AdminTariffs'));
 const AdminRemittance = lazy(() => import('@/pages/AdminRemittance'));
+const AdminPrivacy = lazy(() => import('@/pages/AdminPrivacy'));
 import ChatNotificationListener from '@/components/ChatNotificationListener';
 
 const TAB_PATHS = new Set(["/", "/pesan", "/pesanan-saya", "/driver", "/driver/dompet"]);
@@ -118,6 +119,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/penarikan" element={<AdminWithdrawals />} />
           <Route path="/admin/tarif" element={<AdminTariffs />} />
           <Route path="/admin/setoran" element={<AdminRemittance />} />
+          <Route path="/admin/privacy" element={<AdminPrivacy />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
