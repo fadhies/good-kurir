@@ -159,6 +159,13 @@ export default function Home() {
         }
         </div>
       }
+
+      {/* Footer */}
+      <div className="mt-10 pb-2 text-center">
+        <Link to="/privacy" className="text-xs text-muted-foreground underline underline-offset-2 hover:text-primary">
+          Kebijakan Privasi
+        </Link>
+      </div>
     </Layout>);
 
 }
