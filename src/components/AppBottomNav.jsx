@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useIsDriver } from "@/hooks/useIsDriver";
 import { Home, ShoppingBag, ListOrdered, LayoutDashboard, Wallet, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { nearestTabDistance } from "@/lib/navStack";
 
 const USER_ITEMS = [
   { to: "/", label: "Beranda", icon: Home },
@@ -49,12 +50,18 @@ export default function AppBottomNav() {
   if (location.pathname.startsWith("/admin")) return null;
 
   function handleTap(item) {
-    // Force redirect to the tab root when tapping the current tab — even from
-    // a nested detail route — so users always land on the root of that tab.
-    if (activeTab === item.to && location.pathname !== item.to) {
+    // Already at this tab's root — do nothing (don't push a duplicate entry).
+    if (location.pathname === item.to) return;
+    // If this tab already sits behind us in the history, go BACK to it instead
+    // of pushing a new entry. Collapsing the history keeps Home at the bottom
+    // of the stack, so a hardware back press on Home reaches the end of the
+    // WebView history and the system minimizes/exits the app.
+    const d = nearestTabDistance(item.to);
+    if (d > 0) {
+      navigate(-d);
+    } else if (item.to !== "/" && (location.pathname + "/").startsWith(item.to + "/")) {
+      // Nested screen of this tab with no earlier root — step up to the root.
       navigate(item.to, { replace: true });
-    } else if (location.pathname === item.to) {
-      navigate(item.to);
     } else {
       navigate(item.to);
     }

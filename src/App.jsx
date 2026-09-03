@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import { lazy, Suspense, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import { recordLocation } from '@/lib/navStack';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from 'next-themes';
@@ -59,6 +60,12 @@ const AuthenticatedApp = () => {
     idxRef.current = idx;
   }
   const direction = dirRef.current;
+
+  // Record the route at each WebView history index so bottom-tab taps can
+  // navigate back to an existing entry instead of pushing new history.
+  useEffect(() => {
+    recordLocation(window.history.state?.idx, location.pathname);
+  }, [location]);
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
