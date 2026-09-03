@@ -3,7 +3,8 @@ import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, Banknote, Wallet, Receipt } from "lucide-react";
+import { makassarDateKey, makassarToday } from "@/lib/dateKey";
+import { Loader2, Banknote, Wallet, Receipt, AlertTriangle } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 export default function AdminRemittance() {
@@ -53,6 +54,31 @@ export default function AdminRemittance() {
     return { adminFee, serviceFee, total: adminFee + serviceFee };
   }, [orders]);
 
+  // Rekap per driver per tanggal (hari lampau) yang belum ada setoran non-rejected.
+  const unsettledRows = useMemo(() => {
+    const today = makassarToday();
+    const settled = {};
+    for (const r of list || []) {
+      if (r.status === "rejected") continue;
+      (settled[r.user_id] ||= new Set()).add(r.date);
+    }
+    const agg = {};
+    for (const o of orders) {
+      if (!o.driver_id) continue;
+      const d = makassarDateKey(new Date(completedAt[o.id] || o.updated_date));
+      if (d >= today) continue;
+      if (settled[o.driver_id] && settled[o.driver_id].has(d)) continue;
+      const key = `${o.driver_id}|${d}`;
+      const row = agg[key] || (agg[key] = { driverId: o.driver_id, date: d, count: 0, adminFee: 0, serviceFee: 0 });
+      row.count++;
+      row.adminFee += o.driver_remit_fee || 0;
+      row.serviceFee += o.service_fee || 0;
+    }
+    return Object.values(agg).sort((a, b) =>
+      a.date < b.date ? -1 : a.date > b.date ? 1 : a.driverId.localeCompare(b.driverId)
+    );
+  }, [orders, completedAt, list]);
+
   return (
     <AdminLayout>
       <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2 [font-family:'Cabin',_sans-serif]">
@@ -76,6 +102,48 @@ export default function AdminRemittance() {
             <p className="font-bold">{formatRupiah(totals.serviceFee)}</p>
           </div>
         </div>
+      </div>
+
+      {/* Driver belum setor */}
+      <div className="mb-6">
+        <h2 className="font-bold mb-3 flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-destructive" /> Belum Setor Harian
+        </h2>
+        {unsettledRows.length === 0 ?
+        <div className="text-center py-10 bg-card rounded-2xl border border-dashed border-border">
+            <p className="text-sm text-muted-foreground">Semua driver sudah setor. Tidak ada tunggakan.</p>
+          </div> :
+
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <table className="w-full text-xs whitespace-nowrap">
+            <thead className="bg-secondary/50 text-muted-foreground">
+              <tr>
+                <th className="text-left font-semibold px-3 py-2">Nama Driver</th>
+                <th className="text-left font-semibold px-3 py-2">Tanggal</th>
+                <th className="text-right font-semibold px-3 py-2">Jumlah Order</th>
+                <th className="text-right font-semibold px-3 py-2">Fee Admin</th>
+                <th className="text-right font-semibold px-3 py-2">Fee Layanan</th>
+                <th className="text-right font-semibold px-3 py-2">Total Harus Disetor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {unsettledRows.map((row) => {
+                const u = userMap[row.driverId];
+                return (
+                  <tr key={`${row.driverId}-${row.date}`} className="border-t border-border">
+                  <td className="px-3 py-2 font-semibold max-w-[140px] truncate">{u?.full_name || u?.email || "—"}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.date}</td>
+                  <td className="px-3 py-2 text-right">{row.count}</td>
+                  <td className="px-3 py-2 text-right">{formatRupiah(row.adminFee)}</td>
+                  <td className="px-3 py-2 text-right">{formatRupiah(row.serviceFee)}</td>
+                  <td className="px-3 py-2 text-right font-bold text-destructive">{formatRupiah(row.adminFee + row.serviceFee)}</td>
+                </tr>);
+
+              })}
+            </tbody>
+          </table>
+        </div>
+        }
       </div>
 
       {/* Transaction detail */}
