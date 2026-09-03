@@ -172,7 +172,7 @@ export default function AdminUsers() {
           <DialogHeader>
             <DialogTitle>Undang Admin Baru</DialogTitle>
             <DialogDescription>
-              Masukkan email. Penerima akan dikirangi link pendaftaran; setelah selesai mendaftar, akun otomatis jadi admin.
+              Masukkan email. Penerima akan dikirimi link pendaftaran; setelah selesai mendaftar, akun otomatis jadi admin.
             </DialogDescription>
           </DialogHeader>
           <Input
