@@ -99,9 +99,14 @@ function scopeFilter(table, user, filter) {
   // chat_messages.participants is a jsonb array; translate a plain string
   // filter (used by the chat listener) into a containment query for everyone.
   if (table === 'chat_messages') {
+    // Normalize a plain string (used by the chat listener) into a containment
+    // query, then for non-admins ALWAYS force containment of the caller's own
+    // id — regardless of what type/shape of participants filter was sent —
+    // so a caller can never read chats they are not a participant of.
     if (f.participants && typeof f.participants === 'string') {
       f.participants = { $cs: [f.participants] };
-    } else if (!f.participants && !isAdmin(user)) {
+    }
+    if (!isAdmin(user)) {
       f.participants = { $cs: [user.id] };
     }
   }
