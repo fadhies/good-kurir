@@ -263,7 +263,7 @@ export default function DriverDashboard() {
   return (
     <Layout>
       <PullToRefresh onRefresh={async () => { await loadProfile(); await loadTotalTrips(); await loadOrders(); }}>
-      <h1 className="font-display text-2xl font-extrabold mb-1">Dashboard Driver</h1>
+      <h1 className="text-2xl mb-1 [font-family:'Cabin',_sans-serif] font-medium">Dashboard Driver</h1>
       <p className="text-muted-foreground text-sm mb-6">Kelola ketersediaan & lihat pesanan masuk.</p>
 
       {/* Verification banner */}
