@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
+import { base44 } from "@/api/base44Client";
 import { Loader2, Send, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -59,6 +60,10 @@ export default function OrderChat({ order }) {
         text: t,
         participants,
       });
+      // Kirim push ke tray HP + notifikasi lonceng penerima (best-effort).
+      base44.functions
+        .invoke("notifyChatMessage", { orderId: order.id, text: t })
+        .catch(() => {});
       await load();
       setPending(null);
     } catch (e) {
