@@ -718,7 +718,7 @@ export default function OrderTracking() {
               </h3>
               <p className="text-sm text-muted-foreground">
                 Total tagihan: <span className="font-semibold text-foreground">
-                  {formatRupiah(order.store_qris_photo ? order.item_cost : order.item_cost + order.delivery_fee + order.service_fee)}
+                  {formatRupiah(order.store_qris_photo ? order.item_cost : order.item_cost)}
                 </span>
               </p>
               {order.store_qris_photo ?
