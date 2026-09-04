@@ -38,7 +38,7 @@ export default function DriverWallet() {
 
   return (
     <Layout>
-      <h1 className="font-display text-2xl font-extrabold mb-1">{user?.role === "admin" ? "Dompet Admin" : "Dompet Driver"}</h1>
+      <h1 className="text-2xl mb-1 [font-family:'Cabin',_sans-serif] font-medium">{user?.role === "admin" ? "Dompet Admin" : "Dompet Driver"}</h1>
       <p className="text-muted-foreground text-sm mb-6">Penghasilan Anda dari setiap pesanan.</p>
 
       {/* Balance card */}
