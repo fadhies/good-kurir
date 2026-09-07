@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
+import { subscribeOrder } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation, X } from "lucide-react";
 
@@ -192,13 +193,11 @@ export default function OrderTracking() {
   // Subscribe umum untuk deteksi perubahan status sepanjang siklus order.
   useEffect(() => {
     loadOrder();
-    const unsub = S.Order.subscribe((event) => {
-      if (event.id === id) loadOrder();
-    });
+    const unsubP = subscribeOrder(id, () => loadOrder());
     const onWake = () => { if (!document.hidden) loadOrder(); };
     document.addEventListener("visibilitychange", onWake);
     window.addEventListener("online", onWake);
-    return () => {unsub();document.removeEventListener("visibilitychange", onWake);window.removeEventListener("online", onWake);};
+    return () => {Promise.resolve(unsubP).then((u) => u && u());document.removeEventListener("visibilitychange", onWake);window.removeEventListener("online", onWake);};
   }, [id]);
 
   // Polling khusus fase "mencari driver" (pending_match):

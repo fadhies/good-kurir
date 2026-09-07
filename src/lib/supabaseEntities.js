@@ -13,37 +13,8 @@ async function invoke(payload) {
   return base44.functions.invoke("supabaseCrud", payload);
 }
 
-// Emulate base44 realtime subscriptions via polling (Supabase REST has no
-// websocket subscription here). Calls back with { id, type, data } on changes.
-function makeSubscribe(entity) {
-  return function subscribe(callback) {
-    const last = new Map();
-    let initialized = false;
-    const tick = async () => {
-      try {
-        const rows = await entity.filter({}, "-updated_date", 100);
-        for (const r of rows) {
-          const cur = r.updated_date || null;
-          const prev = last.get(r.id);
-          if (prev === undefined) {
-            // First sync: record state silently so mount doesn't storm the
-            // callback with one event per existing row.
-            last.set(r.id, cur);
-            if (initialized) callback({ id: r.id, type: "create", data: r });
-          } else if (prev !== cur) {
-            last.set(r.id, cur);
-            callback({ id: r.id, type: "update", data: r });
-          }
-        }
-        initialized = true;
-      } catch {
-        // ignore poll errors
-      }
-    };
-    const h = setInterval(tick, 4000);
-    return () => clearInterval(h);
-  };
-}
+// Pembaruan data kini memakai sinyal Supabase Realtime Broadcast (trigger
+// database) — lihat src/lib/realtime.js dan base44/shared/realtime.sql.
 
 function makeEntity(table) {
   const entity = {
@@ -66,7 +37,6 @@ function makeEntity(table) {
       return unwrap(await invoke({ table, op: "updateMany", query, patch }));
     },
   };
-  entity.subscribe = makeSubscribe(entity);
   return entity;
 }
 

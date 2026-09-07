@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
+import { subscribeOrder } from "@/lib/realtime";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Send, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -25,9 +26,13 @@ export default function OrderChat({ order }) {
 
   useEffect(() => {
     load();
-    const unsub = S.ChatMessage.subscribe(() => { load(); });
-    const poll = setInterval(load, 3000);
-    return () => { unsub(); clearInterval(poll); };
+    const unsubP = subscribeOrder(order.id, () => load());
+    // Jaring pengaman bila sinyal realtime belum aktif di database
+    const poll = setInterval(load, 30000);
+    return () => {
+      clearInterval(poll);
+      Promise.resolve(unsubP).then((u) => u && u());
+    };
   }, [order.id]);
 
   useEffect(() => {

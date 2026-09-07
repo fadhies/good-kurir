@@ -7,6 +7,7 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { useIsDriver } from "@/hooks/useIsDriver";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
+import { subscribeOrders } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { Loader2, ShoppingBag, Bike, ChevronRight } from "lucide-react";
@@ -34,12 +35,12 @@ export default function MyOrders() {
     }}
   useEffect(() => {
     reload();
-    const unsub = S.Order.subscribe(() => reload());
+    const unsubP = subscribeOrders(() => reload());
     const onWake = () => {if (!document.hidden) reload();};
     document.addEventListener("visibilitychange", onWake);
     window.addEventListener("online", onWake);
     return () => {
-      unsub();
+      Promise.resolve(unsubP).then((u) => u && u());
       document.removeEventListener("visibilitychange", onWake);
       window.removeEventListener("online", onWake);
     };

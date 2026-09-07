@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import S from "@/lib/supabaseEntities";
+import { subscribeUser, subscribeOrders } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
 import DriverRemittance from "@/components/DriverRemittance";
@@ -31,9 +32,9 @@ export default function DriverWallet() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => load(), 600);
     };
-    const unsubW = S.WalletTransaction.subscribe(refresh);
-    const unsubO = S.Order.subscribe(refresh);
-    return () => {unsubW();unsubO();if (timer) clearTimeout(timer);};
+    const unsubU = subscribeUser(user.id, refresh);
+    const unsubO = subscribeOrders(refresh);
+    return () => {Promise.resolve(unsubU).then((u) => u && u());Promise.resolve(unsubO).then((u) => u && u());if (timer) clearTimeout(timer);};
   }, []);
 
   return (

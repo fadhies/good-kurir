@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
+import { subscribeUser } from "@/lib/realtime";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
@@ -90,10 +91,13 @@ export default function ChatNotificationListener() {
       })
       .catch(() => {});
 
-    const poll = setInterval(check, 5000);
+    const unsubP = subscribeUser(user.id, check);
+    // Jaring pengaman bila sinyal realtime belum aktif di database
+    const poll = setInterval(check, 60000);
     return () => {
       active = false;
       clearInterval(poll);
+      Promise.resolve(unsubP).then((u) => u && u());
     };
   }, [user?.id]);
 

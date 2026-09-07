@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
+import { subscribeUser } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2 } from "lucide-react";
 
@@ -25,8 +26,8 @@ export default function WithdrawalList() {
 
   useEffect(() => {
     load();
-    const unsub = S.WithdrawalRequest.subscribe(() => load());
-    return unsub;
+    const unsubP = subscribeUser(user.id, () => load());
+    return () => Promise.resolve(unsubP).then((u) => u && u());
   }, []);
 
   if (list === null) {

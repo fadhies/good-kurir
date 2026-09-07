@@ -7,6 +7,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
+import { subscribeOrders } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { fireNewOrderAlert } from "@/lib/newOrderAlert";
@@ -138,7 +139,7 @@ export default function DriverDashboard() {
     let pollH = null;
     const startPoll = () => { if (!pollH && !document.hidden) pollH = setInterval(() => { loadOrders(); loadAvailable(); }, 20000); };
     const stopPoll = () => { if (pollH) { clearInterval(pollH); pollH = null; } };
-    const unsub = S.Order.subscribe(() => {
+    const unsubP = subscribeOrders(() => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => { loadOrders(); loadAvailable(); }, 600);
     });
@@ -151,7 +152,7 @@ export default function DriverDashboard() {
     startPoll();
     document.addEventListener("visibilitychange", onWake);
     window.addEventListener("online", onWake);
-    return () => { unsub(); stopPoll(); if (timer) clearTimeout(timer); document.removeEventListener("visibilitychange", onWake); window.removeEventListener("online", onWake); };
+    return () => { Promise.resolve(unsubP).then((u) => u && u()); stopPoll(); if (timer) clearTimeout(timer); document.removeEventListener("visibilitychange", onWake); window.removeEventListener("online", onWake); };
   }, [profile]);
 
   async function toggleOnline() {

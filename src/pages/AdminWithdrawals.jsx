@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
+import { subscribeWithdrawals } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -48,8 +49,8 @@ export default function AdminWithdrawals() {
 
   useEffect(() => {
     load();
-    const unsub = S.WithdrawalRequest.subscribe(() => load());
-    return unsub;
+    const unsubP = subscribeWithdrawals(() => load());
+    return () => Promise.resolve(unsubP).then((u) => u && u());
   }, []);
 
   function userName(id) {

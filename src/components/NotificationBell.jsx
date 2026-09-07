@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
+import { subscribeUser } from "@/lib/realtime";
 import { Bell, Bike, CheckCircle2, MessageCircle, ShoppingBag, Package, User } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
@@ -40,14 +41,12 @@ export default function NotificationBell() {
 
   useEffect(() => {
     load();
-    const poll = setInterval(load, 5000);
-    let unsub = () => {};
-    try {
-      unsub = S.Notification.subscribe(() => load());
-    } catch {}
+    const unsubP = user?.id ? subscribeUser(user.id, () => load()) : Promise.resolve(() => {});
+    // Jaring pengaman bila sinyal realtime belum aktif di database
+    const poll = setInterval(load, 60000);
     return () => {
       clearInterval(poll);
-      unsub();
+      Promise.resolve(unsubP).then((u) => u && u());
     };
   }, [user?.id]);
 
