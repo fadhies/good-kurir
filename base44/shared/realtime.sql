@@ -1,11 +1,15 @@
--- Realtime Broadcast signals untuk Good Kurir.
--- Jalankan sekali di Supabase Dashboard -> SQL Editor.
+-- Realtime Broadcast signals untuk Good Kurir (VERSI 2 — pakai realtime.send).
+-- Jalankan SEKALI lagi di Supabase Dashboard -> SQL Editor (menggantikan versi lama).
 --
--- Setiap trigger mengirim payload MINIMAL (hanya id/status) ke topik channel;
--- klien lalu menarik ulang data lengkap lewat endpoint yang menerapkan ACL
--- (supabaseCrud). Tidak ada data pribadi yang disiarkan melalui channel.
+-- Versi lama memakai realtime.broadcast_changes dan gagal karena signature di
+-- project ini tidak cocok. Versi ini memakai realtime.send() yang tersedia di
+-- semua project, dengan payload MINIMAL (id/status saja) — data lengkap selalu
+-- ditarik ulang lewat endpoint ACL (supabaseCrud).
+--
+-- Catatan: broadcast dari database default-nya PRIVATE; kita kirim dengan flag
+-- `false` (publik) agar klien anon (Base44 auth, bukan Supabase auth) bisa
+-- menerima. Topik random (order:<id>, user:<id>) sehingga tidak bisa ditebak.
 -- Sisi klien: src/lib/realtime.js
--- Topik: order:<id>, user:<id>, orders:all, withdrawals:all
 
 -- ============================================================
 -- 1) orders
@@ -19,41 +23,41 @@ declare
   r record;
 begin
   r := case when tg_op = 'DELETE' then old else new end;
-
-  -- Halaman pelacakan pesanan
-  perform realtime.broadcast_changes(
-    'order:' || r.id,
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('id', r.id, 'status', r.status),
-    null
-  );
-
-  -- Dashboard driver & daftar pesanan
-  perform realtime.broadcast_changes(
-    'orders:all',
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('id', r.id, 'status', r.status),
-    null
-  );
-
-  -- Sinyal personal untuk pemesan & driver (lonceng, dompet, listener chat)
-  if r.created_by_id is not null then
-    perform realtime.broadcast_changes(
-      'user:' || r.created_by_id,
-      tg_op, tg_op, tg_table_name, tg_table_schema,
+  begin
+    -- Halaman pelacakan pesanan
+    perform realtime.send(
       jsonb_build_object('id', r.id, 'status', r.status),
-      null
+      tg_op,
+      'order:' || r.id,
+      false
     );
-  end if;
-  if r.driver_id is not null and (r.created_by_id is null or r.driver_id <> r.created_by_id) then
-    perform realtime.broadcast_changes(
-      'user:' || r.driver_id,
-      tg_op, tg_op, tg_table_name, tg_table_schema,
+    -- Dashboard driver & daftar pesanan
+    perform realtime.send(
       jsonb_build_object('id', r.id, 'status', r.status),
-      null
+      tg_op,
+      'orders:all',
+      false
     );
-  end if;
-
+    -- Sinyal personal pemesan & driver (lonceng, dompet, listener chat)
+    if r.created_by_id is not null then
+      perform realtime.send(
+        jsonb_build_object('id', r.id, 'status', r.status),
+        tg_op,
+        'user:' || r.created_by_id,
+        false
+      );
+    end if;
+    if r.driver_id is not null and (r.created_by_id is null or r.driver_id <> r.created_by_id) then
+      perform realtime.send(
+        jsonb_build_object('id', r.id, 'status', r.status),
+        tg_op,
+        'user:' || r.driver_id,
+        false
+      );
+    end if;
+  exception when others then
+    null; -- jangan gagalkan penulisan data bila realtime bermasalah
+  end;
   return null;
 end;
 $$ language plpgsql;
@@ -75,12 +79,16 @@ declare
   r record;
 begin
   r := case when tg_op = 'DELETE' then old else new end;
-  perform realtime.broadcast_changes(
-    'order:' || r.order_id,
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('order_id', r.order_id),
-    null
-  );
+  begin
+    perform realtime.send(
+      jsonb_build_object('order_id', r.order_id),
+      tg_op,
+      'order:' || r.order_id,
+      false
+    );
+  exception when others then
+    null;
+  end;
   return null;
 end;
 $$ language plpgsql;
@@ -102,12 +110,16 @@ declare
   r record;
 begin
   r := case when tg_op = 'DELETE' then old else new end;
-  perform realtime.broadcast_changes(
-    'user:' || r.user_id,
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('user_id', r.user_id, 'type', r.type),
-    null
-  );
+  begin
+    perform realtime.send(
+      jsonb_build_object('user_id', r.user_id, 'type', r.type),
+      tg_op,
+      'user:' || r.user_id,
+      false
+    );
+  exception when others then
+    null;
+  end;
   return null;
 end;
 $$ language plpgsql;
@@ -129,12 +141,16 @@ declare
   r record;
 begin
   r := case when tg_op = 'DELETE' then old else new end;
-  perform realtime.broadcast_changes(
-    'user:' || r.user_id,
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('user_id', r.user_id),
-    null
-  );
+  begin
+    perform realtime.send(
+      jsonb_build_object('user_id', r.user_id),
+      tg_op,
+      'user:' || r.user_id,
+      false
+    );
+  exception when others then
+    null;
+  end;
   return null;
 end;
 $$ language plpgsql;
@@ -156,18 +172,22 @@ declare
   r record;
 begin
   r := case when tg_op = 'DELETE' then old else new end;
-  perform realtime.broadcast_changes(
-    'user:' || r.user_id,
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('user_id', r.user_id, 'status', r.status),
-    null
-  );
-  perform realtime.broadcast_changes(
-    'withdrawals:all',
-    tg_op, tg_op, tg_table_name, tg_table_schema,
-    jsonb_build_object('user_id', r.user_id, 'status', r.status),
-    null
-  );
+  begin
+    perform realtime.send(
+      jsonb_build_object('user_id', r.user_id, 'status', r.status),
+      tg_op,
+      'user:' || r.user_id,
+      false
+    );
+    perform realtime.send(
+      jsonb_build_object('user_id', r.user_id, 'status', r.status),
+      tg_op,
+      'withdrawals:all',
+      false
+    );
+  exception when others then
+    null;
+  end;
   return null;
 end;
 $$ language plpgsql;
