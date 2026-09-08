@@ -4,14 +4,18 @@ import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
-import { Loader2, Banknote, Wallet, Receipt, AlertTriangle } from "lucide-react";
+import { Loader2, Banknote, Wallet, Receipt, AlertTriangle, Calendar } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function AdminRemittance() {
   const [list, setList] = useState(null);
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [completedAt, setCompletedAt] = useState({});
+  // Filter periode: default hari ini (zona Makassar)
+  const [filterMonth, setFilterMonth] = useState(() => makassarToday().slice(0, 7));
+  const [filterDate, setFilterDate] = useState(() => makassarToday());
 
   async function load() {
     try {
@@ -44,15 +48,59 @@ export default function AdminRemittance() {
     return m;
   }, [users]);
 
+  // Kunci tanggal (Makassar) tiap order selesai & setoran
+  const orderDay = useMemo(() => {
+    const m = {};
+    for (const o of orders) m[o.id] = makassarDateKey(new Date(completedAt[o.id] || o.updated_date));
+    return m;
+  }, [orders, completedAt]);
+
+  const remitDay = useMemo(() => {
+    const m = {};
+    for (const r of list || []) m[r.id] = r.date || makassarDateKey(new Date(r.created_date));
+    return m;
+  }, [list]);
+
+  const inPeriod = (day) => {
+    if (filterDate !== "all") return day === filterDate;
+    if (filterMonth !== "all") return (day || "").startsWith(filterMonth);
+    return true;
+  };
+
+  const filteredOrders = useMemo(
+    () => orders.filter((o) => inPeriod(orderDay[o.id])),
+    [orders, orderDay, filterDate, filterMonth]
+  );
+  const filteredRemits = useMemo(
+    () => (list || []).filter((r) => inPeriod(remitDay[r.id])),
+    [list, remitDay, filterDate, filterMonth]
+  );
+
+  const monthOptions = useMemo(() => {
+    const s = new Set();
+    Object.values(orderDay).forEach((d) => s.add(d.slice(0, 7)));
+    Object.values(remitDay).forEach((d) => d && s.add(d.slice(0, 7)));
+    s.add(makassarToday().slice(0, 7));
+    return [...s].sort().reverse();
+  }, [orderDay, remitDay]);
+
+  const dateOptions = useMemo(() => {
+    const s = new Set();
+    Object.values(orderDay).forEach((d) => s.add(d));
+    Object.values(remitDay).forEach((d) => d && s.add(d));
+    s.add(makassarToday());
+    return [...s].filter((d) => filterMonth === "all" || d.startsWith(filterMonth)).sort().reverse();
+  }, [orderDay, remitDay, filterMonth]);
+
   const totals = useMemo(() => {
     let adminFee = 0;
     let serviceFee = 0;
-    for (const o of orders) {
+    for (const o of filteredOrders) {
       adminFee += o.driver_remit_fee || 0;
       serviceFee += o.service_fee || 0;
     }
     return { adminFee, serviceFee, total: adminFee + serviceFee };
-  }, [orders]);
+  }, [filteredOrders]);
 
   // Rekap per driver per tanggal (hari lampau) yang belum ada setoran non-rejected.
   const unsettledRows = useMemo(() => {
@@ -63,9 +111,9 @@ export default function AdminRemittance() {
       (settled[r.user_id] ||= new Set()).add(r.date);
     }
     const agg = {};
-    for (const o of orders) {
+    for (const o of filteredOrders) {
       if (!o.driver_id) continue;
-      const d = makassarDateKey(new Date(completedAt[o.id] || o.updated_date));
+      const d = orderDay[o.id];
       if (d >= today) continue;
       if (settled[o.driver_id] && settled[o.driver_id].has(d)) continue;
       const key = `${o.driver_id}|${d}`;
@@ -77,14 +125,53 @@ export default function AdminRemittance() {
     return Object.values(agg).sort((a, b) =>
       a.date < b.date ? -1 : a.date > b.date ? 1 : a.driverId.localeCompare(b.driverId)
     );
-  }, [orders, completedAt, list]);
+  }, [filteredOrders, orderDay, list]);
 
   return (
     <AdminLayout>
       <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2 [font-family:'Cabin',_sans-serif]">
         <Banknote className="w-6 h-6 text-primary" /> Penghasilan Admin
       </h1>
-      <p className="text-muted-foreground text-sm mb-6">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
+      <p className="text-muted-foreground text-sm mb-4">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
+
+      {/* Filter periode */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Calendar className="w-4 h-4" /> Periode
+        </div>
+        <Select
+          value={filterMonth}
+          onValueChange={(v) => {
+            setFilterMonth(v);
+            setFilterDate("all");
+          }}
+        >
+          <SelectTrigger className="w-[140px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua bulan</SelectItem>
+            {monthOptions.map((m) => (
+              <SelectItem key={m} value={m}>
+                {new Date(m + "-02").toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterDate} onValueChange={setFilterDate}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua tanggal</SelectItem>
+            {dateOptions.map((d) => (
+              <SelectItem key={d} value={d}>
+                {new Date(d + "T00:00:00").toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Balance card */}
       <div className="rounded-2xl p-5 mb-6 bg-[#EAF01C] text-stone-900">
@@ -94,7 +181,7 @@ export default function AdminRemittance() {
         <p className="font-display text-4xl font-extrabold mb-3">{formatRupiah(totals.total)}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-xl bg-white/15 px-3 py-2">
-            <p className="text-xs text-[hsl(var(--foreground))]">Fee Admin (Rp1.000 × {orders.length})</p>
+            <p className="text-xs text-[hsl(var(--foreground))]">Fee Admin (Rp1.000 × {filteredOrders.length})</p>
             <p className="font-bold">{formatRupiah(totals.adminFee)}</p>
           </div>
           <div className="rounded-xl bg-white/15 px-3 py-2">
@@ -151,9 +238,9 @@ export default function AdminRemittance() {
         <h2 className="font-bold mb-3 flex items-center gap-2">
           <Receipt className="w-5 h-5 text-primary" /> Rincian Transaksi
         </h2>
-        {orders.length === 0 ?
+        {filteredOrders.length === 0 ?
         <div className="text-center py-10 bg-card rounded-2xl border border-dashed border-border">
-            <p className="text-sm text-muted-foreground">Belum ada order selesai.</p>
+            <p className="text-sm text-muted-foreground">Tidak ada transaksi pada periode ini.</p>
           </div> :
 
         <div className="max-h-[362px] overflow-auto rounded-xl border border-border bg-card">
@@ -169,7 +256,7 @@ export default function AdminRemittance() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((o) => {
+              {filteredOrders.map((o) => {
                 const driver = userMap[o.driver_id];
                 return (
                   <tr key={o.id} className="border-t border-border">
@@ -194,9 +281,9 @@ export default function AdminRemittance() {
       </h2>
       {list === null ?
       <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div> :
-      list.length === 0 ?
+      filteredRemits.length === 0 ?
       <div className="text-center py-12 bg-card rounded-2xl border border-dashed border-border">
-          <p className="text-sm text-muted-foreground">Belum ada setoran masuk.</p>
+          <p className="text-sm text-muted-foreground">Belum ada setoran masuk pada periode ini.</p>
         </div> :
 
       <div className="max-h-[682px] overflow-auto rounded-xl border border-border bg-card">
@@ -212,7 +299,7 @@ export default function AdminRemittance() {
             </tr>
           </thead>
           <tbody>
-            {list.map((r) => {
+            {filteredRemits.map((r) => {
               const u = userMap[r.user_id];
               return (
                 <tr key={r.id} className="border-t border-border align-top">
