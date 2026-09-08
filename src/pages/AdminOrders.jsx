@@ -24,7 +24,7 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
-  const [date, setDate] = useState("all");
+  const [date, setDate] = useState(makassarToday());
 
   useEffect(() => {
     async function load() {
