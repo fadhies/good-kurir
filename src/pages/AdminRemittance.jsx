@@ -156,9 +156,9 @@ export default function AdminRemittance() {
             <p className="text-sm text-muted-foreground">Belum ada order selesai.</p>
           </div> :
 
-        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        <div className="max-h-[362px] overflow-auto rounded-xl border border-border bg-card">
           <table className="w-full text-xs whitespace-nowrap">
-            <thead className="bg-secondary/50 text-muted-foreground">
+            <thead className="bg-secondary/50 text-muted-foreground sticky top-0">
               <tr>
                 <th className="text-left font-semibold px-3 py-2">Order</th>
                 <th className="text-left font-semibold px-3 py-2">Tgl</th>
@@ -199,9 +199,9 @@ export default function AdminRemittance() {
           <p className="text-sm text-muted-foreground">Belum ada setoran masuk.</p>
         </div> :
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+      <div className="max-h-[682px] overflow-auto rounded-xl border border-border bg-card">
         <table className="w-full text-xs whitespace-nowrap">
-          <thead className="bg-secondary/50 text-muted-foreground">
+          <thead className="bg-secondary/50 text-muted-foreground sticky top-0">
             <tr>
               <th className="text-left font-semibold px-3 py-2">Driver</th>
               <th className="text-left font-semibold px-3 py-2">Tgl Setoran</th>
