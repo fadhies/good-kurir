@@ -137,11 +137,23 @@ function orderOrScope(table, user) {
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
+    let user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // A session created BEFORE the user was promoted to admin (invite link)
+    // can still carry the stale role from the token. Re-check the
+    // authoritative role stored on the User record so admins promoted via
+    // invite see admin data without having to re-login.
+    try {
+      if (user.role !== 'admin') {
+        const rec = await base44.entities.User.get(user.id);
+        if (rec?.role === 'admin') user = { ...user, role: 'admin' };
+      }
+    } catch (_e) { /* fall back to me() role */ }
 
     const body = await req.json();
     const { op, table = 'orders' } = body;
+    console.log(`supabaseCrud ${op}/${table} user=${user.id} role=${user.role}`);
 
     if (op === 'list') {
       if (!isAdmin(user)) return Response.json({ error: 'Forbidden' }, { status: 403 });
