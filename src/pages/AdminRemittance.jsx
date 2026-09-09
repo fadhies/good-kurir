@@ -6,6 +6,7 @@ import { formatRupiah } from "@/lib/geo";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
 import { Loader2, Banknote, Wallet, Receipt, AlertTriangle, Calendar } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function AdminRemittance() {
@@ -16,26 +17,27 @@ export default function AdminRemittance() {
   // Filter periode: default hari ini (zona Makassar)
   const [filterMonth, setFilterMonth] = useState(() => makassarToday().slice(0, 7));
   const [filterDate, setFilterDate] = useState(() => makassarToday());
+  const { toast } = useToast();
 
   async function load() {
-    try {
-      const [r, u, o, wts] = await Promise.all([
+    const [r, u, o, wts] = await Promise.allSettled([
       S.DriverRemittance.filter({}, "-created_date", 200),
       base44.entities.User.list(),
       S.Order.filter({ status: "completed" }, "-updated_date", 500),
-      S.WalletTransaction.filter({ type: "credit" }, "-created_date", 1000)]
-      );
-      setList(r);
-      setUsers(u);
-      setOrders(o);
-      // Tanggal selesai stabil dari created_date wallet_transaction credit,
-      // tidak ter-bump saat user memberi rating (yang menggeser updated_date).
-      const at = {};
-      for (const w of wts) {if (w.order_id) at[w.order_id] = w.created_date;}
-      setCompletedAt(at);
-    } catch {
-      setList([]);
+      S.WalletTransaction.filter({ type: "credit" }, "-created_date", 1000)
+    ]);
+    if (u.status === "rejected") toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
+    if (r.status === "rejected" || o.status === "rejected" || wts.status === "rejected") {
+      toast({ title: "Gagal memuat data setoran", description: String(r.reason?.message || o.reason?.message || wts.reason?.message), variant: "destructive" });
     }
+    setList(r.status === "fulfilled" ? r.value : []);
+    if (u.status === "fulfilled") setUsers(u.value);
+    setOrders(o.status === "fulfilled" ? o.value : []);
+    // Tanggal selesai stabil dari created_date wallet_transaction credit,
+    // tidak ter-bump saat user memberi rating (yang menggeser updated_date).
+    const at = {};
+    for (const w of wts.status === "fulfilled" ? wts.value : []) {if (w.order_id) at[w.order_id] = w.created_date;}
+    setCompletedAt(at);
   }
 
   useEffect(() => {

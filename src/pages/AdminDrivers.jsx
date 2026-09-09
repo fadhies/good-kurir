@@ -24,16 +24,15 @@ export default function AdminDrivers() {
 
   async function load() {
     setLoading(true);
-    try {
-      const [d, u] = await Promise.all([
+    const [d, u] = await Promise.allSettled([
       S.DriverProfile.list("-created_date", 200),
-      base44.entities.User.list()]
-      );
-      setDrivers(d);
-      setUsers(u);
-    } finally {
-      setLoading(false);
-    }
+      base44.entities.User.list(),
+    ]);
+    if (d.status === "fulfilled") setDrivers(d.value);
+    else toast({ title: "Gagal memuat driver", description: String(d.reason?.message || d.reason), variant: "destructive" });
+    if (u.status === "fulfilled") setUsers(u.value);
+    else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
+    setLoading(false);
   }
 
   useEffect(() => {load();}, []);

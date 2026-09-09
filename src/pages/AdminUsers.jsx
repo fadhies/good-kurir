@@ -29,16 +29,15 @@ export default function AdminUsers() {
 
   useEffect(() => {
     async function load() {
-      try {
-        const [u, d] = await Promise.all([
-          base44.entities.User.list(),
-          S.DriverProfile.list(),
-        ]);
-        setUsers(u);
-        setDrivers(d);
-      } finally {
-        setLoading(false);
-      }
+      const [u, d] = await Promise.allSettled([
+        base44.entities.User.list(),
+        S.DriverProfile.list(),
+      ]);
+      if (u.status === "fulfilled") setUsers(u.value);
+      else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
+      if (d.status === "fulfilled") setDrivers(d.value);
+      else toast({ title: "Gagal memuat data driver", description: String(d.reason?.message || d.reason), variant: "destructive" });
+      setLoading(false);
     }
     load();
   }, []);

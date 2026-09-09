@@ -6,6 +6,7 @@ import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, ListOrdered, Search, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -25,19 +26,19 @@ export default function AdminOrders() {
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
   const [date, setDate] = useState(makassarToday());
+  const { toast } = useToast();
 
   useEffect(() => {
     async function load() {
-      try {
-        const [o, u] = await Promise.all([
+      const [o, u] = await Promise.allSettled([
         S.Order.list("-created_date", 200),
-        base44.entities.User.list()]
-        );
-        setOrders(o);
-        setUsers(u);
-      } finally {
-        setLoading(false);
-      }
+        base44.entities.User.list(),
+      ]);
+      if (o.status === "fulfilled") setOrders(o.value);
+      else toast({ title: "Gagal memuat pesanan", description: String(o.reason?.message || o.reason), variant: "destructive" });
+      if (u.status === "fulfilled") setUsers(u.value);
+      else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
+      setLoading(false);
     }
     load();
   }, []);
