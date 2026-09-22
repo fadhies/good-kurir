@@ -51,7 +51,7 @@ export default function Layout({ children }) {
       toast({
         title: "Gunakan tombol Back HP",
         description: "Di halaman utama, tekan tombol Back HP sekali untuk keluar/minimize aplikasi.",
-        duration: 3000,
+        duration: 3000
       });
     }
   };
@@ -66,8 +66,8 @@ export default function Layout({ children }) {
               <Image
                 src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
                 alt="Good Kurir"
-                className="w-full h-full"
-              />
+                className="w-full h-full hidden" />
+              
             </div>
             <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-xl">
               Good<span className="text-primary">Kurir</span>
@@ -90,15 +90,15 @@ export default function Layout({ children }) {
                 )}>
                 <Icon className="w-4 h-4" />
                 {item.label}
-              </Link>
-            );
+              </Link>);
+
           })}
         </nav>
         <div className="p-3 border-t border-border space-y-2">
           {isDetail &&
-            <button
-              onClick={() => navigate(-1)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" /> Kembali
             </button>}
           <div className="flex items-center gap-2 px-3 py-1.5">
@@ -141,10 +141,10 @@ export default function Layout({ children }) {
             <Link to="/" className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
                   <Image
-                    src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
-                    alt="Good Kurir"
-                    className="w-full h-full"
-                  />
+                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
+                  alt="Good Kurir"
+                  className="w-full h-full" />
+                
                 </div>
                 <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
                   Good<span className="text-primary">Kurir</span>
