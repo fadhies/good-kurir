@@ -247,7 +247,7 @@ export default function NewOrder() {
                 accent={currentType.accent}
                 biasCenter={userLoc} />
 
-              <div className="mt-3">
+              <div className="mt-2">
                 <input
                   value={storeDetail}
                   onChange={(e) => setStoreDetail(e.target.value)}
@@ -272,7 +272,7 @@ export default function NewOrder() {
                 accent="158 64% 45%"
                 biasCenter={userLoc} />
 
-              <div className="mt-3">
+              <div className="mt-2">
                 <input
                   value={destDetail}
                   onChange={(e) => setDestDetail(e.target.value)}
