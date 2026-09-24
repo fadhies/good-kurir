@@ -59,12 +59,12 @@ export default function MyOrders() {
 
       {/* Tab pemesan / driver — hanya untuk driver */}
       {isDriver &&
-        <div className="grid grid-cols-2 gap-2 mb-6 bg-secondary p-1 rounded-2xl">
+        <div className="mb-6 bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
         <button
             onClick={() => setTab("pemesan")}
             className={cn(
-              "flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
-              tab === "pemesan" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+              "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
+              tab === "pemesan" ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
             )}>
             
           <ShoppingBag className="w-4 h-4" /> Sebagai Pemesan
@@ -72,8 +72,8 @@ export default function MyOrders() {
         <button
             onClick={() => setTab("driver")}
             className={cn(
-              "flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
-              tab === "driver" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+              "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
+              tab === "driver" ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
             )}>
             
           <Bike className="w-4 h-4" /> Sebagai Driver
