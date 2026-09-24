@@ -105,8 +105,8 @@ export default function Home() {
                     onClick={() => navigate(`/pesan?type=${s.key}`)}
                     className="group text-left flex flex-col items-center text-center rounded-2xl p-2 hover:bg-white/50 transition-colors">
 
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.chip} transition-transform group-hover:scale-110`}>
-                      <Icon className="w-5 h-5" />
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${s.chip} transition-transform group-hover:scale-110`}>
+                      <Icon className="w-7 h-7" />
                     </div>
                     <h3 className="text-[11px] font-bold text-slate-900 leading-tight mt-2">{s.title}</h3>
                     <p className="text-[9px] text-slate-900/60 leading-tight mt-0.5">{s.desc}</p>
