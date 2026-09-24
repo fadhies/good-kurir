@@ -426,7 +426,7 @@ export default function NewOrder() {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-2xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 text-sm active:scale-95 disabled:opacity-60 whitespace-nowrap">
+            className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-3 rounded-2xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 text-sm active:scale-95 disabled:opacity-60 whitespace-nowrap">
 
             {submitting ?
             <>
