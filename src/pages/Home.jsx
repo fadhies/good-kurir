@@ -95,7 +95,7 @@ export default function Home() {
       {/* Main services grid */}
       <div className="mt-6">
         <h2 className="text-sm font-bold text-foreground tracking-tight mb-3">Layanan Utama</h2>
-        <div className="rounded-3xl shadow-[0_6px_20px_rgba(15,23,42,0.08)] p-4 bg-gray-100">
+        <div className="rounded-3xl shadow-[0_6px_20px_rgba(15,23,42,0.08)] p-4 bg-[#e1efe8]">
           <div className="grid grid-cols-3 gap-3">
             {SERVICES.map((s) => {
                 const Icon = s.icon;
