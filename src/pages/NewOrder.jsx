@@ -11,9 +11,9 @@ import { Bike, Package, Utensils, Loader2, MapPin, FileText, Route, Tags, Bankno
 import { useToast } from "@/components/ui/use-toast";
 
 const TYPES = {
+  food: { label: "Beli Makanan", icon: Utensils, accent: "217 91% 50%" },
   person: { label: "Antar Orang", icon: Bike, accent: "24 90% 55%" },
-  goods: { label: "Antar Barang", icon: Package, accent: "158 64% 40%" },
-  food: { label: "Beli Makanan", icon: Utensils, accent: "217 91% 50%" }
+  goods: { label: "Antar Barang", icon: Package, accent: "158 64% 40%" }
 };
 
 export default function NewOrder() {
