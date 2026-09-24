@@ -235,6 +235,9 @@ export default function NewOrder() {
                 <span className="w-2 h-2 rounded-full bg-current" />
               </div>
               <div className="w-[2px] flex-1 border-l-2 border-dashed border-slate-300" />
+              <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                <MapPin className="w-3.5 h-3.5" />
+              </div>
             </div>
             <div className="flex-1 min-w-0">
               <label className="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">
@@ -256,14 +259,8 @@ export default function NewOrder() {
 
               </div>
             </div>
-          </div>
 
-          {/* Tujuan */}
-          <div className="flex items-start gap-3 mt-4">
-            <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-              <MapPin className="w-3.5 h-3.5" />
-            </div>
-            <div className="flex-1 min-w-0">
+            <div className="mt-4">
               <label className="block text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1.5">Lokasi Tujuan</label>
               <LocationPicker
                 label="Tujuan pengantaran"
