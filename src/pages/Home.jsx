@@ -58,7 +58,7 @@ export default function Home() {
             <h1 className="text-2xl md:text-3xl leading-tight [font-family:'Cabin',_sans-serif] font-medium text-[#ffffff]">
               Pesan Antar Apa Saja
             </h1>
-            <p className="mt-1 text-xs md:text-sm text-[hsl(var(--popover-foreground))]">
+            <p className="mt-1 text-xs md:text-sm text-[#ffffff]">
               Makanan, barang, atau naik ojek — driver terdekat siap bantu.
             </p>
           </div>
