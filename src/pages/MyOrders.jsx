@@ -64,7 +64,9 @@ export default function MyOrders() {
             onClick={() => setTab("pemesan")}
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
-              tab === "pemesan" ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
+              tab === "pemesan" 
+              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
+              : "text-slate-600 hover:text-slate-900"
             )}>
             
           <ShoppingBag className="w-4 h-4" /> Sebagai Pemesan
@@ -73,7 +75,9 @@ export default function MyOrders() {
             onClick={() => setTab("driver")}
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
-              tab === "driver" ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
+              tab === "driver" 
+              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
+              : "text-slate-600 hover:text-slate-900"
             )}>
             
           <Bike className="w-4 h-4" /> Sebagai Driver
