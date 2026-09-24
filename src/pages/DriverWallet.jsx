@@ -6,6 +6,7 @@ import { subscribeUser, subscribeOrders } from "@/lib/realtime";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, Wallet, ArrowDownLeft, ArrowUpRight, Banknote } from "lucide-react";
 import DriverRemittance from "@/components/DriverRemittance";
+import PullToRefresh from "@/components/PullToRefresh";
 
 export default function DriverWallet() {
   const { user } = useAuth();
@@ -39,6 +40,7 @@ export default function DriverWallet() {
 
   return (
     <Layout>
+      <PullToRefresh onRefresh={load}>
       <h1 className="text-2xl mb-1 [font-family:'Cabin',_sans-serif] font-medium">{user?.role === "admin" ? "Dompet Admin" : "Dompet Driver"}</h1>
       <p className="text-muted-foreground text-sm mb-6">Penghasilan Anda dari setiap pesanan.</p>
 
@@ -103,6 +105,7 @@ export default function DriverWallet() {
         )}
         </div>
       }
+      </PullToRefresh>
     </Layout>);
 
 }

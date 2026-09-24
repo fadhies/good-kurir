@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
+import PullToRefresh from "@/components/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { haversineKm, formatRupiah } from "@/lib/geo";
@@ -57,6 +58,14 @@ export default function NewOrder() {
   useEffect(() => {
     if (!cashAvailable && paymentMethod === "cash" && type === "food") setPaymentMethod("qris");
   }, [cashAvailable, paymentMethod, type]);
+
+  async function refresh() {
+    getTariffs().then(setTariffs).catch(() => {});
+    base44.functions.
+    invoke("checkCashAvailable", {}).
+    then((res) => setCashAvailable(!!res.data?.available)).
+    catch(() => setCashAvailable(false));
+  }
 
   useEffect(() => {
     if (type !== "food" && paymentMethod === "qris") setPaymentMethod("cash");
@@ -167,6 +176,7 @@ export default function NewOrder() {
 
   return (
     <Layout>
+      <PullToRefresh onRefresh={refresh}>
       <h1 className="text-base font-extrabold text-foreground tracking-tight leading-tight">Buat Pesanan</h1>
       <p className="text-[11px] text-muted-foreground font-medium mb-4">Lengkapi rincian perjalanan Anda</p>
 
@@ -423,6 +433,7 @@ export default function NewOrder() {
           </button>
         </div>
       </div>
+      </PullToRefresh>
     </Layout>);
 
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
+import PullToRefresh from "@/components/PullToRefresh";
 import S from "@/lib/supabaseEntities";
 import { Bike, Package, Utensils, ArrowRight, Zap, Ticket } from "lucide-react";
 
@@ -35,17 +36,23 @@ export default function Home() {
   const role = user?.role || "user";
   const [driverProfile, setDriverProfile] = useState(null);
 
-  useEffect(() => {
+  async function loadDriver() {
     if (!user?.id) return;
-    let active = true;
-    S.DriverProfile.filter({ user_id: user.id }).
-    then((list) => active && setDriverProfile(list[0] || null)).
-    catch(() => active && setDriverProfile(null));
-    return () => {active = false;};
+    try {
+      const list = await S.DriverProfile.filter({ user_id: user.id });
+      setDriverProfile(list[0] || null);
+    } catch {
+      setDriverProfile(null);
+    }
+  }
+
+  useEffect(() => {
+    loadDriver();
   }, [user?.id]);
 
   return (
     <Layout>
+      <PullToRefresh onRefresh={loadDriver}>
       {/* Greeting card */}
       <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-slate-900">
         <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl" />
@@ -170,6 +177,7 @@ export default function Home() {
           Kebijakan Privasi
         </Link>
       </div>
+      </PullToRefresh>
     </Layout>);
 
 }
