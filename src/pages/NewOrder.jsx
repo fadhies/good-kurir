@@ -23,6 +23,13 @@ export default function NewOrder() {
   const { toast } = useToast();
 
   const [type, setType] = useState(params.get("type") || "food");
+
+  // Tab pesan tetap ter-mount, jadi sinkronkan tipe setiap kali param
+  // ?type= berubah (mis. dari kartu layanan di Beranda).
+  useEffect(() => {
+    const t = params.get("type");
+    if (t && TYPES[t]) setType(t);
+  }, [params]);
   const [mode, setMode] = useState("hemat");
   const [store, setStore] = useState(null);
   const [destination, setDestination] = useState(null);
