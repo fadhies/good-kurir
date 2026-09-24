@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <Layout>
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl p-5 md:p-8 text-white shadow-xl shadow-green/30 bg-[#046222]">
+      <div className="relative overflow-hidden rounded-2xl bg-[#D3D919] p-5 md:p-8 text-white shadow-xl shadow-green/30">
         <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
         <div className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -55,7 +55,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-2 text-[hsl(var(--secondary-foreground))] bg-[hsl(var(--card-foreground))]">
               <Sparkles className="w-3 h-3" /> Halo, {user?.full_name?.split(" ")[0] || "Sobat"}!
             </div>
-            <h1 className="text-2xl md:text-3xl leading-tight text-[hsl(var(--popover-foreground))] [font-family:'Cabin',_sans-serif] font-medium">
+            <h1 className="text-2xl md:text-3xl leading-tight [font-family:'Cabin',_sans-serif] font-medium text-[#ffffff]">
               Pesan Antar Apa Saja
             </h1>
             <p className="mt-1 text-xs md:text-sm text-[hsl(var(--popover-foreground))]">
