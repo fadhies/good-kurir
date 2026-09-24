@@ -63,7 +63,7 @@ export default function MyOrders() {
         <button
             onClick={() => setTab("pemesan")}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
+              "flex-1 flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all",
               tab === "pemesan" 
               ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
               : "text-slate-600 hover:text-slate-900"
@@ -74,7 +74,7 @@ export default function MyOrders() {
         <button
             onClick={() => setTab("driver")}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all",
+              "flex-1 flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all",
               tab === "driver" 
               ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
               : "text-slate-600 hover:text-slate-900"
