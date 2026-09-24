@@ -59,7 +59,7 @@ export default function Home() {
         <div className="relative z-10 flex justify-between items-start">
           <div>
             <p className="text-xs text-slate-400 font-medium">Halo, {user?.full_name?.split(" ")[0] || "Sobat"}! 👋</p>
-            <h1 className="text-xl font-bold mt-1 tracking-tight">Mau ke mana hari ini?</h1>
+            <h1 className="text-xl font-bold mt-1 tracking-tight">Mau pesan apa hari ini?</h1>
           </div>
           <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
             Active
