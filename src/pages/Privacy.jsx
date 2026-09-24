@@ -11,7 +11,7 @@ export default function Privacy() {
           <Lock className="w-6 h-6 text-primary" /> Kebijakan Privasi
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Bagaimana Good Kurir mengelola dan melindungi data pribadi Anda.
+          Bagaimana OjekTa mengelola dan melindungi data pribadi Anda.
         </p>
       </div>
       <PrivacyPolicyContent />

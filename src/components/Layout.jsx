@@ -39,7 +39,7 @@ export default function Layout({ children }) {
   "Detail Pesanan" :
   location.pathname === "/jadi-driver" ?
   "Daftar Driver" :
-  "Good Kurir";
+  "OjekTa";
 
   const handleLogout = () => {
     logout();
@@ -63,6 +63,11 @@ export default function Layout({ children }) {
         <div className="h-16 flex items-center gap-2 px-5 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
+              <Image
+                src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png"
+                alt="OjekTa"
+                className="w-full h-full"
+              />
               
 
 
@@ -70,7 +75,7 @@ export default function Layout({ children }) {
               
             </div>
             <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-xl">
-              Good<span className="text-primary">Kurir</span>
+              Ojek<span className="text-primary">Ta</span>
             </span>
           </Link>
         </div>
@@ -141,13 +146,13 @@ export default function Layout({ children }) {
             <Link to="/" className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
                   <Image
-                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png"
-                  alt="Good Kurir"
+                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png"
+                  alt="OjekTa"
                   className="w-full h-full" />
                 
                 </div>
                 <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
-                  Good<span className="text-primary">Kurir</span>
+                  Ojek<span className="text-primary">Ta</span>
                 </span>
               </Link>
             }

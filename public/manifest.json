@@ -1,6 +1,6 @@
 {
-  "name": "Good Kurir — Pesan Antar Apa Saja",
-  "short_name": "Good Kurir",
+  "name": "OjekTa — Pesan Antar Apa Saja",
+  "short_name": "OjekTa",
   "description": "Pesan antar makanan, barang, atau naik ojek dengan driver terdekat.",
   "start_url": "/",
   "scope": "/",
@@ -10,13 +10,13 @@
   "theme_color": "#ecf5fa",
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png",
+      "src": "https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bbb112975_Screenshot93.png",
+      "src": "https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
