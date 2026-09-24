@@ -93,7 +93,7 @@ export default function Home() {
       </div>
 
       {/* Main services grid */}
-      <div className="mt-6">
+      <div className="mt-3">
         <h2 className="text-sm font-bold text-foreground tracking-tight mb-3">Layanan Utama</h2>
         <div className="rounded-3xl shadow-[0_6px_20px_rgba(15,23,42,0.08)] p-4 bg-[#e1efe8]">
           <div className="grid grid-cols-3 gap-3">
