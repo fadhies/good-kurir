@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import PullToRefresh from "@/components/PullToRefresh";
 import S from "@/lib/supabaseEntities";
-import { Bike, Package, Utensils, ArrowRight, Zap, Ticket } from "lucide-react";
+import { Bike, Package, Utensils, ArrowRight, Zap, Ticket, MapPin } from "lucide-react";
 
 const SERVICES = [
 {
@@ -57,31 +57,34 @@ export default function Home() {
     <Layout>
       <PullToRefresh onRefresh={loadDriver}>
       {/* Greeting card */}
-      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-[#002d0c]">
-        <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl" />
+      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-[#0B241A]">
+        {/* Dekorasi rute: garis putus-putus melengkung + pin lokasi */}
+        <svg className="absolute right-0 top-0 h-full w-32 pointer-events-none" viewBox="0 0 128 140" fill="none" preserveAspectRatio="xMidYMid slice">
+          <path d="M118 6 C 70 10, 40 40, 60 78 C 72 100, 100 112, 96 130" stroke="#4ADE80" strokeOpacity="0.45" strokeWidth="2" strokeDasharray="4 6" strokeLinecap="round" />
+        </svg>
+        <div className="absolute right-3 bottom-11 text-[#4ADE80] pointer-events-none">
+          <MapPin className="w-6 h-6" fill="#4ADE80" strokeWidth="0" />
+        </div>
         <div className="relative z-10 flex justify-between items-start">
           <div>
-            <p className="text-xs text-slate-400 font-medium">Halo, {user?.full_name?.split(" ")[0] || "Sobat"}! 👋</p>
+            <p className="text-xs text-[#E0E0E0] font-medium">Halo, {user?.full_name?.split(" ")[0] || "Sobat"}! 👋</p>
             <h1 className="text-xl font-bold mt-1 tracking-tight">Mau pesan apa hari ini?</h1>
           </div>
-          <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+          <span className="bg-[#1A3D30] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
             Active
           </span>
         </div>
         {role !== "driver" &&
-          <div className="relative z-10 mt-5 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-emerald-400 shrink-0">
-              <Zap className="w-4 h-4" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Siap Antar</p>
-              <p className="text-sm font-bold text-white truncate">Driver terdekat menunggumu</p>
-            </div>
+          <div className="relative z-10 mt-5 pt-4 border-t border-[#2C4A3E] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Bike className="w-4 h-4 text-white shrink-0" />
+            <p className="text-xs font-medium text-[#E0E0E0] truncate">
+              Siap Antar — Driver terdekat menunggumu
+            </p>
           </div>
           <button
               onClick={() => navigate("/pesan")}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 whitespace-nowrap">
+              className="bg-[#1DB97D] hover:bg-[#1DB97D]/90 text-white font-bold text-xs px-4 py-2 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap">
 
               Pesan <ArrowRight className="w-3 h-3" />
           </button>
