@@ -54,7 +54,7 @@ export default function Home() {
     <Layout>
       <PullToRefresh onRefresh={loadDriver}>
       {/* Greeting card */}
-      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-[#086320]">
+      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-[#002d0c]">
         <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl" />
         <div className="relative z-10 flex justify-between items-start">
           <div>
