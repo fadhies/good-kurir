@@ -281,43 +281,64 @@ export default function DriverDashboard() {
       )}
 
       {/* Status card */}
-      <div className={`rounded-2xl p-5 mb-4 ${profile.is_online ? "bg-[#EAF01C] text-stone-900" : "bg-card border border-border"}`}>
-        <div className="flex items-center justify-between">
+      <div className="relative overflow-hidden rounded-3xl p-5 mb-4 text-white shadow-xl shadow-slate-900/10 bg-slate-900">
+        <div className={`absolute -right-6 -bottom-6 w-32 h-32 rounded-full blur-2xl ${profile.is_online ? "bg-emerald-500/20" : "bg-slate-500/20"}`} />
+        <div className="relative z-10 flex justify-between items-start">
           <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile.is_online ? "bg-white/20" : "bg-secondary"}`}>
-              <Bike className={`w-6 h-6 ${profile.is_online ? "text-stone-900" : "text-muted-foreground"}`} />
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile.is_online ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-800 text-slate-400"}`}>
+              <Bike className="w-6 h-6" />
             </div>
             <div>
-              <p className={`font-bold ${profile.is_online ? "text-stone-900" : ""}`}>{profile.is_online ? "Online" : "Offline"}</p>
-              <p className={`text-sm ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>
+              <p className="text-lg font-bold tracking-tight">{profile.is_online ? "Online" : "Offline"}</p>
+              <p className="text-xs text-slate-400">
                 {profile.vehicle_type === "motorcycle" ? "Motor" : "Mobil"} • {profile.license_plate}
               </p>
             </div>
           </div>
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border ${
+            profile.is_online
+              ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+              : "bg-slate-700/50 text-slate-400 border-slate-600/50"
+          }`}>
+            {profile.is_online ? "Active" : "Standby"}
+          </span>
+        </div>
+        <div className="relative z-10 mt-5 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${profile.is_online ? "bg-slate-800 text-emerald-400" : "bg-slate-800 text-slate-500"}`}>
+              <Power className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Ketersediaan</p>
+              <p className="text-sm font-bold text-white truncate">{profile.is_online ? "Siap menerima pesanan" : "Belum siap menerima pesanan"}</p>
+            </div>
+          </div>
           <button
             onClick={toggleOnline}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm ${
-              profile.is_online ? "bg-white text-primary" : "bg-primary text-primary-foreground"
+            className={`font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md flex items-center gap-1.5 whitespace-nowrap ${
+              profile.is_online
+                ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20"
+                : "bg-white hover:bg-slate-200 text-slate-950 shadow-slate-900/20"
             }`}
           >
-            <Power className="w-4 h-4" />
-            {profile.is_online ? "Offline" : "Online"}
+            <Power className="w-3 h-3" />
+            {profile.is_online ? "Nonaktifkan" : "Aktifkan"}
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-3 mt-4">
-          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-stone-900/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold ${profile.is_online ? "text-stone-900" : ""}`}>{totalTrips}</p>
-            <p className={`text-xs ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>Trip</p>
+        <div className="relative z-10 grid grid-cols-3 gap-3 mt-4">
+          <div className="rounded-xl p-3 text-center bg-slate-800">
+            <p className="text-lg font-bold text-white">{totalTrips}</p>
+            <p className="text-xs text-slate-400">Trip</p>
           </div>
-          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-stone-900/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold flex items-center justify-center gap-0.5 ${profile.is_online ? "text-stone-900" : ""}`}>
-              <Star className="w-3.5 h-3.5 fill-current" /> {(profile.rating || 5).toFixed(1)}
+          <div className="rounded-xl p-3 text-center bg-slate-800">
+            <p className="text-lg font-bold text-white flex items-center justify-center gap-0.5">
+              <Star className="w-3.5 h-3.5 fill-current text-emerald-400" /> {(profile.rating || 5).toFixed(1)}
             </p>
-            <p className={`text-xs ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>Rating</p>
+            <p className="text-xs text-slate-400">Rating</p>
           </div>
-          <div className={`rounded-xl p-3 text-center ${profile.is_online ? "bg-stone-900/15" : "bg-secondary"}`}>
-            <p className={`text-lg font-bold ${profile.is_online ? "text-stone-900" : ""}`}>{orders.length}</p>
-            <p className={`text-xs ${profile.is_online ? "text-amber-950/80" : "text-muted-foreground"}`}>Orderan Aktif</p>
+          <div className="rounded-xl p-3 text-center bg-slate-800">
+            <p className="text-lg font-bold text-white">{orders.length}</p>
+            <p className="text-xs text-slate-400">Orderan Aktif</p>
           </div>
         </div>
       </div>
