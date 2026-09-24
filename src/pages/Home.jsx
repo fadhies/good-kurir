@@ -3,29 +3,29 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import S from "@/lib/supabaseEntities";
-import { Bike, Package, User, ArrowRight, Sparkles, ShieldCheck, Clock, MapPin } from "lucide-react";
+import { Bike, Package, Utensils, ArrowRight, Zap, Ticket } from "lucide-react";
 
 const SERVICES = [
 {
-  key: "food",
-  title: "Beli Makanan",
-  desc: "Pesan dari restoran favorit, driver belikan & antar",
+  key: "person",
+  title: "Antar Orang",
+  desc: "Ojek Cepat",
   icon: Bike,
-  color: "from-orange-400 to-rose-500"
+  chip: "bg-blue-50 text-blue-600"
 },
 {
   key: "goods",
   title: "Antar Barang",
-  desc: "Kirim paket atau barang ke mana saja",
+  desc: "Kirim Paket",
   icon: Package,
-  color: "from-emerald-400 to-teal-500"
+  chip: "bg-emerald-50 text-emerald-600"
 },
 {
-  key: "person",
-  title: "Antar Orang",
-  desc: "Naik ojek sampai tujuan dengan aman",
-  icon: User,
-  color: "from-sky-400 to-indigo-500"
+  key: "food",
+  title: "Beli Makanan",
+  desc: "Kulineran",
+  icon: Utensils,
+  chip: "bg-amber-50 text-amber-600"
 }];
 
 
@@ -46,54 +46,57 @@ export default function Home() {
 
   return (
     <Layout>
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl p-5 md:p-8 text-white shadow-xl shadow-green/30 bg-[#187a00]">
-        <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full bg-accent/20 blur-3xl" />
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Greeting card */}
+      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-slate-900">
+        <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl" />
+        <div className="relative z-10 flex justify-between items-start">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-2 text-[hsl(var(--secondary-foreground))] bg-[hsl(var(--card-foreground))]">
-              <Sparkles className="w-3 h-3" /> Halo, {user?.full_name?.split(" ")[0] || "Sobat"}!
-            </div>
-            <h1 className="text-2xl md:text-3xl leading-tight [font-family:'Cabin',_sans-serif] font-medium text-[#ffffff]">
-              Pesan Antar Apa Saja
-            </h1>
-            <p className="mt-1 text-xs md:text-sm text-[#ffffff]">
-              Makanan, barang, atau naik ojek — driver terdekat siap bantu.
-            </p>
+            <p className="text-xs text-slate-400 font-medium">Halo, {user?.full_name?.split(" ")[0] || "Sobat"}! 👋</p>
+            <h1 className="text-xl font-bold mt-1 tracking-tight">Mau ke mana hari ini?</h1>
           </div>
-          {role !== "driver" &&
+          <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+            Active
+          </span>
+        </div>
+        {role !== "driver" &&
+        <div className="relative z-10 mt-5 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-emerald-400 shrink-0">
+              <Zap className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Siap Antar</p>
+              <p className="text-sm font-bold text-white truncate">Driver terdekat menunggumu</p>
+            </div>
+          </div>
           <button
             onClick={() => navigate("/pesan")}
-            className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all self-start sm:self-auto whitespace-nowrap text-sm">
-            
-              Pesan Sekarang <ArrowRight className="w-4 h-4" />
-            </button>
-          }
+            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 whitespace-nowrap">
+
+              Pesan <ArrowRight className="w-3 h-3" />
+          </button>
         </div>
+        }
       </div>
 
-      {/* Services */}
-      <div className="mt-5">
-        <h2 className="text-lg mb-3 [font-family:'Aether',_sans-serif] font-normal">Pilih Layanan</h2>
-        <div className="grid sm:grid-cols-3 gap-3">
+      {/* Main services grid */}
+      <div className="mt-6">
+        <h2 className="text-sm font-bold text-foreground tracking-tight mb-3">Layanan Utama</h2>
+        <div className="grid grid-cols-3 gap-3">
           {SERVICES.map((s) => {
             const Icon = s.icon;
             return (
               <button
                 key={s.key}
                 onClick={() => navigate(`/pesan?type=${s.key}`)}
-                className="group text-left bg-card rounded-xl p-3 border border-border hover:border-primary/40 hover:shadow-lg transition-all flex items-center gap-3 sm:flex-col sm:items-start">
-                
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md sm:mb-2 shrink-0`}>
-                  <Icon className="w-5 h-5 text-white" />
+                className="group bg-card p-4 rounded-2xl border border-border shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left flex flex-col justify-between">
+
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.chip} group-hover:scale-110 transition-transform`}>
+                  <Icon className="w-5 h-5" />
                 </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-base leading-tight">{s.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 sm:line-clamp-none">{s.desc}</p>
-                  <div className="mt-1 sm:mt-2 inline-flex items-center gap-1 text-primary text-xs font-semibold group-hover:gap-2 transition-all">
-                    Pesan <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
+                <div className="mt-4">
+                  <h3 className="text-xs font-bold text-foreground">{s.title}</h3>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.desc}</p>
                 </div>
               </button>);
 
@@ -101,31 +104,32 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Features */}
-      <div className="mt-10 grid sm:grid-cols-3 gap-4">
-        {[
-        { icon: MapPin, title: "Driver Terdekat", desc: "Otomatis cari ojek paling dekat dengan toko" },
-        { icon: ShieldCheck, title: "Pembayaran Aman", desc: "Bayar di aplikasi, driver terima penghasilan" },
-        { icon: Clock, title: "Cepat & Real-time", desc: "Pantau status pesanan setiap saat" }].
-        map((f) => {
-          const Icon = f.icon;
-          return (
-            <div key={f.title} className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/50">
-              <div className="w-10 h-10 rounded-xl bg-card flex items-center justify-center shrink-0">
-                <Icon className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm">{f.title}</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
-              </div>
-            </div>);
+      {/* Promo banner */}
+      <div className="mt-6 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-5 text-white shadow-lg shadow-emerald-600/15 relative overflow-hidden">
+        <div className="max-w-[70%]">
+          <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider backdrop-blur-sm">
+            Promo Spesial
+          </span>
+          <h3 className="text-base font-extrabold mt-2 leading-snug">Diskon 50% Naik Ojek Pertama!</h3>
+          <p className="text-xs text-emerald-100 mt-1 opacity-90">Gunakan kode <span className="font-bold underline">OJEKTANEW</span></p>
+        </div>
+        <Ticket className="w-24 h-24 text-white/10 absolute -right-2 -bottom-3 rotate-12" />
+      </div>
 
-        })}
+      {/* Driver status info */}
+      <div className="mt-6 bg-card p-4 rounded-2xl border border-border shadow-sm flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+          <Zap className="w-4 h-4" />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-xs font-bold text-foreground">Driver Terdekat Siap!</h4>
+          <p className="text-[11px] text-muted-foreground">Estimasi penjemputan &lt; 3 menit di sekitarmu.</p>
+        </div>
       </div>
 
       {/* Driver CTA */}
       {role === "user" &&
-      <div className="mt-8 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="mt-6 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-lg">Mau jadi driver OjekTa?</h3>
             <p className="text-sm text-muted-foreground">
@@ -142,7 +146,7 @@ export default function Home() {
         <button
           disabled
           className="bg-muted text-muted-foreground font-semibold px-5 py-2.5 rounded-xl cursor-not-allowed whitespace-nowrap">
-          
+
               {driverProfile.verification_status === "pending" ?
           "Menunggu Verifikasi" :
           driverProfile.verification_status === "approved" ?
@@ -153,9 +157,9 @@ export default function Home() {
         <Link
           to="/jadi-driver"
           className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap">
-          
+
               Daftar Jadi Driver
-            </Link>
+        </Link>
         }
         </div>
       }
