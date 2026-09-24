@@ -54,7 +54,7 @@ export default function Home() {
     <Layout>
       <PullToRefresh onRefresh={loadDriver}>
       {/* Greeting card */}
-      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-slate-900">
+      <div className="relative overflow-hidden rounded-3xl p-5 text-white shadow-xl shadow-slate-900/10 bg-[#086320]">
         <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl" />
         <div className="relative z-10 flex justify-between items-start">
           <div>
@@ -66,7 +66,7 @@ export default function Home() {
           </span>
         </div>
         {role !== "driver" &&
-        <div className="relative z-10 mt-5 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+          <div className="relative z-10 mt-5 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-emerald-400 shrink-0">
               <Zap className="w-4 h-4" />
@@ -77,13 +77,13 @@ export default function Home() {
             </div>
           </div>
           <button
-            onClick={() => navigate("/pesan")}
-            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 whitespace-nowrap">
+              onClick={() => navigate("/pesan")}
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 whitespace-nowrap">
 
               Pesan <ArrowRight className="w-3 h-3" />
           </button>
         </div>
-        }
+          }
       </div>
 
       {/* Main services grid */}
@@ -91,12 +91,12 @@ export default function Home() {
         <h2 className="text-sm font-bold text-foreground tracking-tight mb-3">Layanan Utama</h2>
         <div className="grid grid-cols-3 gap-3">
           {SERVICES.map((s) => {
-            const Icon = s.icon;
-            return (
-              <button
-                key={s.key}
-                onClick={() => navigate(`/pesan?type=${s.key}`)}
-                className="group bg-card p-4 rounded-2xl border border-border shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left flex flex-col justify-between">
+              const Icon = s.icon;
+              return (
+                <button
+                  key={s.key}
+                  onClick={() => navigate(`/pesan?type=${s.key}`)}
+                  className="group bg-card p-4 rounded-2xl border border-border shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left flex flex-col justify-between">
 
                 <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.chip} group-hover:scale-110 transition-transform`}>
                   <Icon className="w-5 h-5" />
@@ -107,7 +107,7 @@ export default function Home() {
                 </div>
               </button>);
 
-          })}
+            })}
         </div>
       </div>
 
@@ -136,40 +136,40 @@ export default function Home() {
 
       {/* Driver CTA */}
       {role === "user" &&
-      <div className="mt-6 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-6 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-lg">Mau jadi driver OjekTa?</h3>
             <p className="text-sm text-muted-foreground">
               {driverProfile?.verification_status === "pending" ?
-            "Pendaftaran Anda sedang diverifikasi admin." :
-            driverProfile?.verification_status === "approved" ?
-            "Anda sudah terdaftar sebagai driver." :
-            driverProfile?.verification_status === "rejected" ?
-            "Pendaftaran Anda ditolak. Hubungi admin untuk informasi." :
-            "Daftar dan mulai dapat penghasilan hari ini."}
+              "Pendaftaran Anda sedang diverifikasi admin." :
+              driverProfile?.verification_status === "approved" ?
+              "Anda sudah terdaftar sebagai driver." :
+              driverProfile?.verification_status === "rejected" ?
+              "Pendaftaran Anda ditolak. Hubungi admin untuk informasi." :
+              "Daftar dan mulai dapat penghasilan hari ini."}
             </p>
           </div>
           {driverProfile ?
-        <button
-          disabled
-          className="bg-muted text-muted-foreground font-semibold px-5 py-2.5 rounded-xl cursor-not-allowed whitespace-nowrap">
+          <button
+            disabled
+            className="bg-muted text-muted-foreground font-semibold px-5 py-2.5 rounded-xl cursor-not-allowed whitespace-nowrap">
 
               {driverProfile.verification_status === "pending" ?
-          "Menunggu Verifikasi" :
-          driverProfile.verification_status === "approved" ?
-          "Sudah Terdaftar" :
-          "Pendaftaran Ditolak"}
+            "Menunggu Verifikasi" :
+            driverProfile.verification_status === "approved" ?
+            "Sudah Terdaftar" :
+            "Pendaftaran Ditolak"}
             </button> :
 
-        <Link
-          to="/jadi-driver"
-          className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap">
+          <Link
+            to="/jadi-driver"
+            className="bg-primary text-primary-foreground font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap">
 
               Daftar Jadi Driver
         </Link>
-        }
+          }
         </div>
-      }
+        }
 
       {/* Footer */}
       <div className="mt-10 pb-2 text-center">
