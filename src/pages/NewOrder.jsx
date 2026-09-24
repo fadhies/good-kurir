@@ -194,23 +194,27 @@ export default function NewOrder() {
         </div>
 
         {/* 2. Mode pengantaran (khusus makanan) */}
-        {type === "food" &&
+        {type === "food" && (
         <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
-            {[
-          { v: "hemat", l: "Hemat", desc: `Rp${tariffs.food.hemat.base.toLocaleString("id-ID")} / ${tariffs.food.hemat.base_km}km` },
-          { v: "cepat", l: "Cepat", desc: `Rp${tariffs.food.cepat.base.toLocaleString("id-ID")} / ${tariffs.food.cepat.base_km}km` }].
-          map((o) =>
-          <button
-            key={o.v}
-            onClick={() => setMode(o.v)}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${
-            mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"}`}>
-              
-              {o.l} · {o.desc}
+          {[
+            { v: "hemat", l: "Hemat", desc: `Rp${tariffs.food.hemat.base.toLocaleString("id-ID")} / ${tariffs.food.hemat.base_km}km` },
+            { v: "cepat", l: "Cepat", desc: `Rp${tariffs.food.cepat.base.toLocaleString("id-ID")} / ${tariffs.food.cepat.base_km}km` }
+          ].map((o) => (
+            <button
+              key={o.v}
+              onClick={() => setMode(o.v)}
+              className={`flex-1 py-2 px-2 rounded-xl transition-all flex flex-col items-center justify-center ${
+                mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span className="text-xs font-bold leading-tight">{o.l}</span>
+              <span className={`text-[10px] mt-0.5 font-medium ${mode === o.v ? "text-emerald-100" : "text-slate-500"}`}>
+                {o.desc}
+              </span>
             </button>
-          )}
-          </div>
-        }
+          ))}
+        </div>
+      )}
 
         {/* 3. Kartu lokasi jemput & tujuan */}
         <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
