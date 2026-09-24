@@ -95,25 +95,25 @@ export default function Home() {
       {/* Main services grid */}
       <div className="mt-6">
         <h2 className="text-sm font-bold text-foreground tracking-tight mb-3">Layanan Utama</h2>
-        <div className="grid grid-cols-3 gap-3">
-          {SERVICES.map((s) => {
-              const Icon = s.icon;
-              return (
-                <button
-                  key={s.key}
-                  onClick={() => navigate(`/pesan?type=${s.key}`)}
-                  className={`group ${s.card} aspect-square p-3.5 rounded-3xl shadow-[0_6px_20px_rgba(15,23,42,0.08)] hover:shadow-[0_10px_28px_rgba(15,23,42,0.14)] hover:-translate-y-0.5 transition-all text-left flex flex-col`}>
+        <div className="bg-[#E6FAF0] rounded-3xl shadow-[0_6px_20px_rgba(15,23,42,0.08)] p-4">
+          <div className="grid grid-cols-3 gap-3">
+            {SERVICES.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <button
+                    key={s.key}
+                    onClick={() => navigate(`/pesan?type=${s.key}`)}
+                    className="group text-left flex flex-col items-center text-center rounded-2xl p-2 hover:bg-white/50 transition-colors">
 
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${s.chip} transition-transform group-hover:scale-110`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-[11px] font-bold text-slate-900 leading-tight">{s.title}</h3>
-                  <p className="text-[9px] text-slate-900/60 mt-0.5 leading-tight">{s.desc}</p>
-                </div>
-              </button>);
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.chip} transition-transform group-hover:scale-110`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-[11px] font-bold text-slate-900 leading-tight mt-2">{s.title}</h3>
+                    <p className="text-[9px] text-slate-900/60 leading-tight mt-0.5">{s.desc}</p>
+                  </button>);
 
-            })}
+              })}
+          </div>
         </div>
       </div>
 
