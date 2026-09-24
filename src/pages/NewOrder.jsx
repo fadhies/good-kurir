@@ -229,9 +229,12 @@ export default function NewOrder() {
         {/* 3. Kartu lokasi jemput & tujuan */}
         <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
           {/* Lokasi jemput / resto */}
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-              <span className="w-2 h-2 rounded-full bg-current" />
+          <div className="flex items-stretch gap-3">
+            <div className="flex flex-col items-center w-8 shrink-0">
+              <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                <span className="w-2 h-2 rounded-full bg-current" />
+              </div>
+              <div className="w-[2px] flex-1 border-l-2 border-dashed border-slate-300" />
             </div>
             <div className="flex-1 min-w-0">
               <label className="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">
@@ -254,9 +257,6 @@ export default function NewOrder() {
               </div>
             </div>
           </div>
-
-          {/* Garis putus-putus penghubung */}
-          <div className="h-5 border-l-2 border-dashed border-slate-300 ml-[31px]" />
 
           {/* Tujuan */}
           <div className="flex items-start gap-3">
