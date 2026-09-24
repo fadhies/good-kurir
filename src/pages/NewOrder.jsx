@@ -259,7 +259,7 @@ export default function NewOrder() {
           </div>
 
           {/* Tujuan */}
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 mt-5 pt-4 border-t border-slate-100">
             <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
               <MapPin className="w-3.5 h-3.5" />
             </div>
