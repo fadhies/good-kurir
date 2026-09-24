@@ -7,6 +7,13 @@ import { Bike, Package, Utensils, ArrowRight, Zap, Ticket } from "lucide-react";
 
 const SERVICES = [
 {
+  key: "food",
+  title: "Beli Makanan",
+  desc: "Kulineran",
+  icon: Utensils,
+  chip: "bg-amber-50 text-amber-600"
+},
+{
   key: "person",
   title: "Antar Orang",
   desc: "Ojek Cepat",
@@ -19,13 +26,6 @@ const SERVICES = [
   desc: "Kirim Paket",
   icon: Package,
   chip: "bg-emerald-50 text-emerald-600"
-},
-{
-  key: "food",
-  title: "Beli Makanan",
-  desc: "Kulineran",
-  icon: Utensils,
-  chip: "bg-amber-50 text-amber-600"
 }];
 
 
