@@ -172,7 +172,7 @@ export default function NewOrder() {
 
       <div className="space-y-4">
         {/* 1. Pilihan layanan */}
-        <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
+        <div class="bg-slate-200/70 p-1 rounded-2xl grid grid-cols-3 gap-1">
           {Object.entries(TYPES).map(([key, t]) => {
             const Icon = t.icon;
             const active = type === key;
@@ -180,16 +180,16 @@ export default function NewOrder() {
               <button
                 key={key}
                 onClick={() => setType(key)}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                active ?
-                "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" :
-                "text-slate-600 hover:text-slate-900"}`
-                }>
-
-                <Icon className="w-4 h-4" />
-                <span>{t.label}</span>
-              </button>);
-
+                className={`py-2 px-1 rounded-xl text-[11px] font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
+                  active
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span class="truncate text-center">{t.label}</span>
+              </button>
+            );
           })}
         </div>
 
