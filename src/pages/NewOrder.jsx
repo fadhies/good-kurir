@@ -207,8 +207,8 @@ export default function NewOrder() {
         {type === "food" && (
         <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
           {[
-            { v: "hemat", l: "Hemat", desc: `Rp${tariffs.food.hemat.base.toLocaleString("id-ID")} / ${tariffs.food.hemat.base_km}km` },
-            { v: "cepat", l: "Cepat", desc: `Rp${tariffs.food.cepat.base.toLocaleString("id-ID")} / ${tariffs.food.cepat.base_km}km` }
+            { v: "hemat", l: "Hemat", desc: "Mulai Rp6.000" },
+            { v: "cepat", l: "Cepat", desc: "Mulai Rp12.000" }
           ].map((o) => (
             <button
               key={o.v}
