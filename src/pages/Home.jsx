@@ -12,21 +12,24 @@ const SERVICES = [
   title: "Beli Makanan",
   desc: "Kulineran",
   icon: Utensils,
-  chip: "bg-amber-50 text-amber-600"
+  card: "bg-[#FFF7E6]",
+  chip: "bg-[#FFEBC9] text-[#F59E0B]"
 },
 {
   key: "person",
   title: "Antar Orang",
   desc: "Ojek Cepat",
   icon: Bike,
-  chip: "bg-blue-50 text-blue-600"
+  card: "bg-[#EEF2FF]",
+  chip: "bg-[#E0E7FF] text-[#3B82F6]"
 },
 {
   key: "goods",
   title: "Antar Barang",
   desc: "Kirim Paket",
   icon: Package,
-  chip: "bg-emerald-50 text-emerald-600"
+  card: "bg-[#E6FAF0]",
+  chip: "bg-[#D1FAE5] text-[#10B981]"
 }];
 
 
@@ -96,14 +99,14 @@ export default function Home() {
                 <button
                   key={s.key}
                   onClick={() => navigate(`/pesan?type=${s.key}`)}
-                  className="group bg-card p-4 rounded-2xl border border-border shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left flex flex-col justify-between">
+                  className={`group ${s.card} p-4 rounded-3xl shadow-[0_6px_20px_rgba(15,23,42,0.08)] hover:shadow-[0_10px_28px_rgba(15,23,42,0.14)] hover:-translate-y-0.5 transition-all text-left flex flex-col`}>
 
-                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.chip} group-hover:scale-110 transition-transform`}>
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.chip} transition-transform group-hover:scale-110`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="mt-4">
-                  <h3 className="text-xs font-bold text-foreground">{s.title}</h3>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.desc}</p>
+                  <h3 className="text-xs font-bold text-slate-900">{s.title}</h3>
+                  <p className="text-[10px] text-slate-900/60 mt-0.5">{s.desc}</p>
                 </div>
               </button>);
 
