@@ -69,27 +69,27 @@ export default function Home() {
           <div>
             <p className="text-xs text-[#E0E0E0] font-medium">Halo, {user?.full_name?.split(" ")[0] || "Sobat"}! 👋</p>
             <h1 className="text-xl font-bold mt-1 tracking-tight">Mau pesan apa hari ini?</h1>
+            {role !== "driver" &&
+              <button
+                onClick={() => navigate("/pesan")}
+                className="mt-3 bg-[#1DB97D] hover:bg-[#1DB97D]/90 text-white font-bold text-xs px-4 py-2 rounded-full transition-all inline-flex items-center gap-1.5">
+
+                Pesan <ArrowRight className="w-3 h-3" />
+              </button>
+            }
           </div>
-          <span className="bg-[#1A3D30] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+          <span className="bg-[#1A3D30] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
             Active
           </span>
         </div>
         {role !== "driver" &&
-          <div className="relative z-10 mt-5 pt-4 border-t border-[#2C4A3E] flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="relative z-10 mt-5 pt-4 border-t border-[#2C4A3E] flex items-center gap-2.5">
             <Bike className="w-4 h-4 text-white shrink-0" />
-            <p className="text-xs font-medium text-[#E0E0E0] truncate">
+            <p className="text-xs font-medium text-[#E0E0E0]">
               Siap Antar — Driver terdekat menunggumu
             </p>
           </div>
-          <button
-              onClick={() => navigate("/pesan")}
-              className="bg-[#1DB97D] hover:bg-[#1DB97D]/90 text-white font-bold text-xs px-4 py-2 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap">
-
-              Pesan <ArrowRight className="w-3 h-3" />
-          </button>
-        </div>
-          }
+        }
       </div>
 
       {/* Main services grid */}
