@@ -36,7 +36,7 @@ export default function ServiceGrid() {
           <button
             key={s.key}
             onClick={() => navigate(`/pesan?type=${s.key}`)}
-            className={`flex flex-col items-center text-center text-[#10243a] px-1 py-2 active:scale-95 transition-transform ${i < SERVICES.length - 1 ? "border-r border-[#d8e3de]" : ""}`}
+            className={`flex flex-col items-center text-center text-[#10243a] px-1 py-2 ${i < SERVICES.length - 1 ? "border-r border-[#d8e3de]" : ""}`}
           >
             <span
               className="w-[72px] h-[72px] rounded-full grid place-items-center text-white shadow-[0_10px_16px_rgba(10,106,79,0.16)]"

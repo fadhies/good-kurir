@@ -24,7 +24,7 @@ export default function HomeHero({ firstName }) {
 
       <button
         onClick={startOrder}
-        className="absolute z-20 left-5 right-5 top-[220px] h-[58px] rounded-[19px] bg-white grid grid-cols-[35px_1fr_30px] items-center px-4 text-left text-[#667085] shadow-[0_12px_30px_rgba(21,87,55,0.12)] active:scale-[0.98] transition-transform"
+        className="absolute z-20 left-5 right-5 top-[220px] h-[58px] rounded-[19px] bg-white grid grid-cols-[35px_1fr_30px] items-center px-4 text-left text-[#667085] shadow-[0_12px_30px_rgba(21,87,55,0.12)]"
       >
         <MapPin className="w-5 h-5 text-[#079447]" />
         <span className="text-xs font-medium truncate">Mau dijemput di mana hari ini?</span>
@@ -38,7 +38,7 @@ export default function HomeHero({ firstName }) {
             <button
               key={q.label}
               onClick={startOrder}
-              className="rounded-[22px] px-[13px] py-2.5 bg-white/90 backdrop-blur text-[#174539] flex items-center gap-1.5 text-[11px] font-medium whitespace-nowrap active:scale-95 transition-transform"
+              className="rounded-[22px] px-[13px] py-2.5 bg-white/90 backdrop-blur text-[#174539] flex items-center gap-1.5 text-[11px] font-medium whitespace-nowrap"
             >
               <Icon className="w-4 h-4 text-[#087c61]" />
               {q.label}
