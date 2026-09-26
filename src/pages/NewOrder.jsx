@@ -269,9 +269,9 @@ export default function NewOrder() {
         {/* Ongkos Kirim: mode pengantaran + keterangan tarif */}
         <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm hidden">
-              <Tags className="w-4 h-4" />
-            </div>
+            
+
+              
             <h3 className="text-xs font-bold text-foreground">Ongkos Kirim</h3>
           </div>
           {type === "food" &&
