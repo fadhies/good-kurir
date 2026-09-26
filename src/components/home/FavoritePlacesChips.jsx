@@ -115,7 +115,7 @@ export default function FavoritePlacesChips({ userId }) {
         ))}
         <button onClick={() => openDialog(BUILT_INS[0], true)} className={chipCls}>
           <Plus className="w-4 h-4 text-[#087c61]" />
-          Tambah Lokasi
+          Lokasi
         </button>
       </div>
 
