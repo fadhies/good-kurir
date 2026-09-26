@@ -31,9 +31,13 @@ export default function Home() {
     <div className="min-h-[100dvh] bg-[#eef8f2]">
       <div
         className="max-w-[430px] mx-auto bg-white min-h-[100dvh] md:my-6 md:min-h-0 md:rounded-[30px] md:shadow-[0_20px_70px_rgba(0,83,56,0.16)] px-[18px] pb-28 [font-family:'Poppins',_sans-serif] text-[#10243a]"
-        style={{ paddingTop: "max(16px, env(safe-area-inset-top))" }}
       >
-        <HomeTopBar />
+        <div
+          className="sticky top-0 z-40 -mx-[18px] px-[18px] bg-white md:rounded-t-[30px]"
+          style={{ paddingTop: "max(16px, env(safe-area-inset-top))" }}
+        >
+          <HomeTopBar />
+        </div>
         <PullToRefresh onRefresh={loadDriver}>
           <HomeHero firstName={user?.full_name?.split(" ")[0] || "Sobat"} />
           <ServiceGrid />
