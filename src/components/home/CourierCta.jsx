@@ -11,28 +11,28 @@ export default function CourierCta({ driverProfile }) {
       </span>
       <div>
         <b className="text-[11px] font-bold leading-[1.25] block text-[#10243a]">
-          {status === "pending"
-            ? "Pendaftaran Anda sedang diverifikasi admin."
-            : status === "approved"
-            ? "Anda sudah terdaftar sebagai kurir OjekTa."
-            : status === "rejected"
-            ? "Pendaftaran kurir Anda ditolak."
-            : "Semua bisa jadi kurir, semua bisa jadi pelanggan!"}
+          {status === "pending" ?
+          "Pendaftaran Anda sedang diverifikasi admin." :
+          status === "approved" ?
+          "Anda sudah terdaftar sebagai kurir OjekTa." :
+          status === "rejected" ?
+          "Pendaftaran kurir Anda ditolak." :
+          "Semua bisa jadi kurir, semua bisa jadi pelanggan!"}
         </b>
         <small className="text-[10px] text-[#667085]">Yuk, mulai perjalanan bersama OjekTa.</small>
       </div>
-      {driverProfile ? (
-        <span className="bg-[#f1f5f3] text-[#667085] rounded-[17px] px-3 py-2.5 text-[9px] font-semibold whitespace-nowrap">
+      {driverProfile ?
+      <span className="bg-[#f1f5f3] text-[#667085] rounded-[17px] px-3 py-2.5 text-[9px] font-semibold whitespace-nowrap">
           {status === "pending" ? "Menunggu Verifikasi" : status === "approved" ? "Sudah Terdaftar" : "Ditolak"}
-        </span>
-      ) : (
-        <Link
-          to="/jadi-driver"
-          className="bg-[#f1faf5] text-[#07935b] rounded-[17px] px-3 py-2.5 text-[9px] font-semibold flex items-center whitespace-nowrap"
-        >
+        </span> :
+
+      <Link
+        to="/jadi-driver"
+        className="bg-[#f1faf5] text-[#07935b] rounded-[17px] px-3 py-2.5 font-semibold flex items-center whitespace-nowrap text-xs">
+        
           Daftar Kurir <ChevronRight className="w-3.5 h-3.5" />
         </Link>
-      )}
-    </section>
-  );
+      }
+    </section>);
+
 }
