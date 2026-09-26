@@ -5,6 +5,16 @@ import OrderChat from "@/components/OrderChat";
 import S from "@/lib/supabaseEntities";
 import { Loader2, MessageCircle } from "lucide-react";
 
+// Judul halaman: jenis layanan + nama toko/resto (makanan) atau tujuan antar.
+function titleFor(order) {
+  if (!order) return "Pesan Chat";
+  const typeLabel =
+    order.type === "food" ? "Beli Makanan" : order.type === "person" ? "Antar Orang" : "Antar Barang";
+  const subject =
+    order.type === "food" ? order.store_name : (order.destination_address || "").split(",")[0];
+  return subject ? `${typeLabel} · ${subject}` : typeLabel;
+}
+
 // Halaman percakapan saja untuk satu pesanan — tanpa membuka keseluruhan
 // halaman pelacakan pesanan.
 export default function ChatDetail() {
@@ -42,7 +52,7 @@ export default function ChatDetail() {
   return (
     <Layout>
       <h1 className="text-base font-extrabold text-foreground tracking-tight leading-tight">
-        Chat Pesanan #{String(id).slice(0, 8)}
+        {titleFor(order)}
       </h1>
       <p className="text-[11px] text-muted-foreground font-medium mb-4">
         Percakapan driver/pemesan untuk pesanan ini
