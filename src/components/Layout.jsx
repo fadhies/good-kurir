@@ -128,7 +128,7 @@ export default function Layout({ children }) {
                   className="w-full h-full" />
                 
                 </div>
-                <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-2xl">
+                <span className="tracking-tight text-2xl [font-family:'Poppins',_sans-serif] font-bold">
                   Ojek<span className="text-primary">Ta</span>
                 </span>
               </Link>
