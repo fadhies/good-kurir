@@ -10,7 +10,7 @@ export default function CourierCta({ driverProfile }) {
         <UserRoundPlus className="w-5 h-5" />
       </span>
       <div>
-        <b className="text-[11px] font-bold leading-[1.25] block text-[#10243a]">
+        <b className="font-bold leading-[1.25] block text-[#10243a] text-base">
           {status === "pending" ?
           "Pendaftaran Anda sedang diverifikasi admin." :
           status === "approved" ?
