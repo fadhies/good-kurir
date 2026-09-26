@@ -366,7 +366,7 @@ export default function NewOrder() {
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Pembayaran</span>
               <span className="font-semibold">
-                {paymentMethod === "cash" ? "Tunai" : "QRIS"}
+                {paymentMethod === "cash" ? "Tunai" : "Non Tunai"}
               </span>
             </div>
             <div className="flex justify-between text-sm py-1">
