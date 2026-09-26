@@ -8,7 +8,7 @@ export default function HomeHero({ firstName, userId }) {
   const startOrder = () => navigate("/pesan?type=person");
 
   return (
-    <section className="relative overflow-hidden rounded-[32px] h-[290px] p-6 text-white bg-[linear-gradient(112deg,#007b64_0%,#02864f_43%,#8bd540_100%)]">
+    <section className="relative overflow-hidden rounded-[32px] h-[290px] p-6 mt-3 text-white bg-[linear-gradient(112deg,#007b64_0%,#02864f_43%,#8bd540_100%)]">
       <p className="font-semibold text-sm">Halo, {firstName}! 👋</p>
       <h1 className="leading-[1.04] font-extrabold tracking-tight mt-2 mb-2 text-xl">
         Mau ke mana<br />hari ini?
