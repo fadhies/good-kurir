@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Search } from "lucide-react";
+import { Image } from "@/components/ui/image";
 import FavoritePlacesChips from "@/components/home/FavoritePlacesChips";
 
 export default function HomeHero({ firstName, userId }) {
@@ -15,6 +16,14 @@ export default function HomeHero({ firstName, userId }) {
       </h1>
       <div className="text-xs leading-[1.5]">
         Jalan lebih mudah, aktivitas lebih dekat<br />bersama OjekTa Bulukumba.
+      </div>
+
+      <div className="absolute top-0 right-0 h-[150px] w-[160px] overflow-hidden rounded-tr-[32px] pointer-events-none">
+        <Image
+          src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/5d7d2a09a_driverhero.png"
+          alt="Driver OjekTa Bulukumba"
+          className="w-full h-full"
+        />
       </div>
 
       <button
