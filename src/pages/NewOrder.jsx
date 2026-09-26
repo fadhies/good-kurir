@@ -92,6 +92,8 @@ export default function NewOrder() {
   const [tariffs, setTariffs] = useState(DEFAULT_TARIFFS);
   const draftAppliedRef = useRef(false);
   const destAppliedRef = useRef(false);
+  const [storeMapOpen, setStoreMapOpen] = useState(false);
+  const [destMapOpen, setDestMapOpen] = useState(false);
 
   useEffect(() => {
     getTariffs().then(setTariffs).catch(() => {});
@@ -260,8 +262,10 @@ export default function NewOrder() {
                   value={store}
                   onChange={setStore}
                   accent={currentType.accent}
-                  biasCenter={userLoc} />
+                  biasCenter={userLoc}
+                  onExpandChange={setStoreMapOpen} />
 
+              {storeMapOpen &&
               <div className="mt-2">
                 <input
                     value={storeDetail}
@@ -270,6 +274,7 @@ export default function NewOrder() {
                     className={detailInputCls} />
 
               </div>
+              }
             </div>
           </div>
 
@@ -292,8 +297,10 @@ export default function NewOrder() {
                   value={destination}
                   onChange={setDestination}
                   accent="158 64% 45%"
-                  biasCenter={userLoc} />
+                  biasCenter={userLoc}
+                  onExpandChange={setDestMapOpen} />
 
+              {destMapOpen &&
               <div className="mt-2">
                 <input
                     value={destDetail}
@@ -302,6 +309,7 @@ export default function NewOrder() {
                     className={detailInputCls} />
 
               </div>
+              }
             </div>
           </div>
         </div>

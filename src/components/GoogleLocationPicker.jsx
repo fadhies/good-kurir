@@ -4,8 +4,9 @@ import { Search, Loader2, MapPin } from "lucide-react";
 
 const DEFAULT_CENTER = { lat: -6.2, lng: 106.816666 };
 
-export default function GoogleLocationPicker({ label, value, onChange, biasCenter }) {
+export default function GoogleLocationPicker({ label, value, onChange, biasCenter, onExpandChange }) {
   const [query, setQuery] = useState(value?.address || "");
+  const [mapOpen, setMapOpen] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -20,12 +21,34 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
   const sessionTokenRef = useRef(null);
   const debounceRef = useRef(null);
   const userCenterRef = useRef(null);
+  const mapInitRef = useRef(false);
 
+  // Siapkan layanan (geocoder, autocomplete) saat mount agar pencarian
+  // tetap berfungsi sebelum peta dibuka.
   useEffect(() => {
     let active = true;
     loadGoogleMaps().
     then((gmaps) => {
-      if (!active || !mapElRef.current) return;
+      if (!active) return;
+      geocoderRef.current = new gmaps.Geocoder();
+      acServiceRef.current = new gmaps.places.AutocompleteService();
+      placesRef.current = new gmaps.places.PlacesService(document.createElement("div"));
+      sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
+    }).
+    catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Peta baru dibuat saat user menekan "pilih di peta".
+  useEffect(() => {
+    let active = true;
+    if (!mapOpen || mapInitRef.current) return;
+    loadGoogleMaps().
+    then((gmaps) => {
+      if (!active || !mapElRef.current || mapInitRef.current) return;
+      mapInitRef.current = true;
       const center =
       value?.lat != null && value?.lng != null ?
       { lat: value.lat, lng: value.lng } :
@@ -40,11 +63,6 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         fullscreenControl: false,
         gestureHandling: "greedy"
       });
-      geocoderRef.current = new gmaps.Geocoder();
-      acServiceRef.current = new gmaps.places.AutocompleteService();
-      placesRef.current = new gmaps.places.PlacesService(mapRef.current);
-      sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
-
       const pinSvg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="48" viewBox="0 0 28 48">' +
       '<path d="M11 20 L17 20 L14 46 Z" fill="#F5F5F5" stroke="#333333" stroke-width="1.5" stroke-linejoin="round"/>' +
@@ -87,7 +105,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mapOpen]);
 
   useEffect(() => {
     if (!ready || !mapRef.current || !markerRef.current) return;
@@ -239,6 +257,15 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
           </div>
         }
       </div>
+      {!mapOpen &&
+      <button
+        type="button"
+        onClick={() => { setMapOpen(true); onExpandChange?.(true); }}
+        className="flex items-center gap-1 text-xs font-semibold text-primary">
+        <MapPin className="w-3.5 h-3.5" /> pilih di peta
+      </button>
+      }
+      {mapOpen &&
       <div className="rounded-xl overflow-hidden border border-border h-56 bg-muted/30">
         {!ready &&
         <div className="h-full flex items-center justify-center">
@@ -247,9 +274,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         }
         <div ref={mapElRef} style={{ height: "100%", width: "100%" }} />
       </div>
-      <p className="text-xs text-muted-foreground">
-        Klik peta untuk pin atau cari lewat kotak pencarian.
-      </p>
+      }
     </div>);
 
 }
