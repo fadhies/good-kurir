@@ -68,7 +68,7 @@ export default function Chat() {
             {conversations.map((m) => (
               <button
                 key={m.order_id}
-                onClick={() => navigate(`/pesanan/${m.order_id}`)}
+                onClick={() => navigate(`/chat/${m.order_id}`)}
                 className="w-full text-left bg-card p-4 rounded-2xl border border-border shadow-sm flex items-center gap-3 hover:border-primary/40 transition-colors"
               >
                 <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">

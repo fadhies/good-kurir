@@ -33,6 +33,8 @@ export default function Layout({ children }) {
   const isDetail = !tabPaths.includes(location.pathname);
   const pageTitle = /^\/pesanan\//.test(location.pathname) ?
   "Detail Pesanan" :
+  /^\/chat\//.test(location.pathname) ?
+  "Chat" :
   location.pathname === "/jadi-driver" ?
   "Daftar Driver" :
   "OjekTa";

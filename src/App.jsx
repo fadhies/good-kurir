@@ -20,6 +20,7 @@ import ResetPassword from '@/pages/ResetPassword';
 // Add page imports here
 import AdminRoute from '@/components/AdminRoute';
 const OrderTracking = lazy(() => import('@/pages/OrderTracking'));
+const ChatDetail = lazy(() => import('@/pages/ChatDetail'));
 const BecomeDriver = lazy(() => import('@/pages/BecomeDriver'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 const AdminDrivers = lazy(() => import('@/pages/AdminDrivers'));
@@ -115,6 +116,7 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<TabKeepAlive active="home" />} />
         <Route path="/pesan" element={<TabKeepAlive active="pesan" />} />
         <Route path="/chat" element={<TabKeepAlive active="chat" />} />
+        <Route path="/chat/:id" element={<ChatDetail />} />
         <Route path="/pesanan-saya" element={<TabKeepAlive active="pesanan-saya" />} />
         <Route path="/pesanan/:id" element={<OrderTracking />} />
         <Route path="/driver" element={<TabKeepAlive active="driver" />} />
