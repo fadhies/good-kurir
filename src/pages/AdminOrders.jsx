@@ -82,7 +82,7 @@ export default function AdminOrders() {
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-extrabold mb-1 [font-family:'Cabin',_sans-serif]">Pesanan</h1>
+      <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg">Pesanan</h1>
       <p className="text-muted-foreground text-sm mb-6">Pantau semua pesanan di platform.</p>
 
       <div className="flex flex-wrap items-center gap-2 mb-4">

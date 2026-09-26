@@ -84,7 +84,7 @@ export default function AdminWithdrawals() {
 
   return (
     <AdminLayout>
-      <h1 className="font-display text-2xl font-extrabold mb-1">Penarikan Driver</h1>
+      <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg">Penarikan Driver</h1>
       <p className="text-muted-foreground text-sm mb-6">Proses permintaan penarikan saldo driver.</p>
 
       {list === null ? (

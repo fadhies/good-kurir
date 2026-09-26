@@ -131,7 +131,7 @@ export default function AdminRemittance() {
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2 [font-family:'Cabin',_sans-serif]">
+      <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg flex items-center gap-2">
         <Banknote className="w-6 h-6 text-primary" /> Penghasilan Admin
       </h1>
       <p className="text-muted-foreground text-sm mb-4">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
@@ -180,7 +180,7 @@ export default function AdminRemittance() {
         <div className="flex items-center gap-2 text-sm mb-2 text-[hsl(var(--foreground))]">
           <Wallet className="w-4 h-4" /> Total Penghasilan Admin
         </div>
-        <p className="font-display text-4xl font-extrabold mb-3">{formatRupiah(totals.total)}</p>
+        <p className="text-4xl font-extrabold mb-3 [font-family:'Poppins',_sans-serif]">{formatRupiah(totals.total)}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-xl bg-white/15 px-3 py-2">
             <p className="text-xs text-[hsl(var(--foreground))]">Fee Admin (Rp1.000 × {filteredOrders.length})</p>

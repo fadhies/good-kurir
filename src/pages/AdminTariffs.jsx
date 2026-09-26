@@ -92,7 +92,7 @@ export default function AdminTariffs() {
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2 [font-family:'Cabin',_sans-serif]">
+      <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg flex items-center gap-2">
         <Tag className="w-6 h-6 text-primary" /> Pengaturan Tarif
       </h1>
       <p className="text-muted-foreground text-sm mb-6">Atur tarif antar per layanan, fee layanan, dan setoran driver.</p>

@@ -85,7 +85,7 @@ export default function AdminUsers() {
     <AdminLayout>
       <div className="flex items-start justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-display text-2xl font-extrabold mb-1">Pengguna</h1>
+          <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg">Pengguna</h1>
           <p className="text-muted-foreground text-sm">Daftar semua akun terdaftar di platform.</p>
         </div>
         <Button onClick={() => { setInviteRole("admin"); setInviteOpen(true); }} className="shrink-0">

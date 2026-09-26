@@ -7,7 +7,7 @@ export default function AdminPrivacy() {
   return (
     <AdminLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-lg font-medium flex items-center gap-2 [font-family:'Poppins',_sans-serif]">
           <Lock className="w-6 h-6 text-primary" /> Kebijakan Privasi
         </h1>
         <p className="text-sm text-muted-foreground mt-1">

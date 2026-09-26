@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-[100dvh] bg-background flex">
+    <div className="min-h-[100dvh] bg-background flex [font-family:'Poppins',_sans-serif]">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-card sticky top-0 h-screen">
         <div className="h-16 flex items-center gap-2 px-5 border-b border-border">
@@ -29,7 +29,7 @@ export default function AdminLayout({ children }) {
             <ShieldCheck className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <p className="leading-tight [font-family:'Cabin',_sans-serif] text-lg font-semibold">OjekTa</p>
+            <p className="leading-tight text-lg font-semibold [font-family:'Poppins',_sans-serif]">OjekTa</p>
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           </div>
         </div>
