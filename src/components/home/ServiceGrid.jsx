@@ -39,10 +39,10 @@ export default function ServiceGrid() {
             className={`flex flex-col items-center text-center text-[#10243a] px-1 py-2 ${i < SERVICES.length - 1 ? "border-r border-[#d8e3de]" : ""}`}
           >
             <span
-              className="w-[72px] h-[72px] rounded-full grid place-items-center text-white shadow-[0_10px_16px_rgba(10,106,79,0.16)]"
+              className="w-[70px] h-[70px] rounded-full grid place-items-center text-white shadow-[0_10px_16px_rgba(10,106,79,0.16)]"
               style={{ background: s.gradient }}
             >
-              <Icon className="w-[38px] h-[38px]" />
+              <Icon className="w-[35px] h-[35px]" />
             </span>
             <b className="text-base font-bold mt-2">{s.name}</b>
             <small className="text-[9px] leading-[1.25] text-[#26384b]">{s.desc}</small>
