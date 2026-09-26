@@ -83,7 +83,6 @@ export default function NewOrder() {
   const [userLoc, setUserLoc] = useState(null);
   const [tariffs, setTariffs] = useState(DEFAULT_TARIFFS);
   const draftAppliedRef = useRef(false);
-  const location = useLocation();
 
   useEffect(() => {
     getTariffs().then(setTariffs).catch(() => {});
