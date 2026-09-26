@@ -10,7 +10,7 @@ export default function PromoCard() {
         <span className="uppercase bg-[#0b9c54] text-white rounded-[12px] px-2.5 py-1 text-[9px] font-bold tracking-wide">
           Promo Spesial
         </span>
-        <h2 className="text-xl leading-[1.15] font-bold text-[#10243a] mt-2 mb-1">
+        <h2 className="leading-[1.15] font-bold text-[#10243a] mt-2 mb-1 text-base">
           Diskon 50% Naik Ojek Pertama!
         </h2>
         <p className="text-[11px] text-[#10243a] m-0">
@@ -20,8 +20,8 @@ export default function PromoCard() {
       </div>
       <div
         className="absolute right-6 top-7 text-[#159a3c] flex items-center gap-1 pointer-events-none"
-        style={{ transform: "rotate(-9deg)" }}
-      >
+        style={{ transform: "rotate(-9deg)" }}>
+        
         <TicketPercent className="w-[58px] h-[58px] text-[#38b83f]" />
         <b className="text-[10px] leading-tight">
           Lebih Hemat<br />Lebih Dekat
@@ -30,10 +30,10 @@ export default function PromoCard() {
       <button
         aria-label="Lihat promo"
         onClick={() => toast({ title: "Kode promo: OJEKTANEW" })}
-        className="absolute right-4 bottom-3 w-[29px] h-[29px] rounded-full bg-[#07935b] text-white grid place-items-center active:scale-90 transition-transform"
-      >
+        className="absolute right-4 bottom-3 w-[29px] h-[29px] rounded-full bg-[#07935b] text-white grid place-items-center active:scale-90 transition-transform">
+        
         <ChevronRight className="w-4 h-4" />
       </button>
-    </section>
-  );
+    </section>);
+
 }
