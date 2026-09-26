@@ -246,6 +246,26 @@ export default function NewOrder() {
           </div>
         </div>
 
+        {/* Rincian Pesanan */}
+        <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
+          <label className="block text-xs font-bold text-foreground mb-1.5">
+            {type === "food" ? "Rincian pesanan (opsional)" : "Catatan untuk Driver (opsional)"}
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={3}
+            placeholder={
+            type === "food" ?
+            "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
+            type === "goods" ?
+            "Mis: Paket berupa dokumen, tolong hati-hati" :
+            "Mis: Penumpang 1 orang, bawa tas kecil"
+            }
+            className={`${detailInputCls} resize-none`} />
+
+        </div>
+
         {/* Ongkos Kirim: mode pengantaran + keterangan tarif */}
         <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
           <div className="flex items-center gap-3 mb-3">
@@ -324,26 +344,6 @@ export default function NewOrder() {
               Pembayaran tunai tidak tersedia (tidak ada driver online saat ini).
             </p>
           }
-        </div>
-
-        {/* Rincian Pesanan */}
-        <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
-          <label className="block text-xs font-bold text-foreground mb-1.5">
-            {type === "food" ? "Rincian pesanan (opsional)" : "Catatan untuk Driver (opsional)"}
-          </label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            placeholder={
-            type === "food" ?
-            "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
-            type === "goods" ?
-            "Mis: Paket berupa dokumen, tolong hati-hati" :
-            "Mis: Penumpang 1 orang, bawa tas kecil"
-            }
-            className={`${detailInputCls} resize-none`} />
-
         </div>
 
         {/* 6. Ringkasan */}
