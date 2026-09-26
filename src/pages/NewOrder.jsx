@@ -246,107 +246,104 @@ export default function NewOrder() {
           </div>
         </div>
 
-        {/* 2. Mode pengantaran (khusus makanan) */}
-        {type === "food" && (
-        <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
-          {[
-            { v: "hemat", l: "Hemat" },
-            { v: "cepat", l: "Cepat" }
-          ].map((o) => (
-            <button
-              key={o.v}
-              onClick={() => setMode(o.v)}
-              className={`flex-1 py-2.5 px-2 rounded-xl transition-all flex items-center justify-center ${
-                mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span className="text-xs font-bold leading-tight">{o.l}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-        {/* 4. Info tarif */}
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/60 p-3.5 rounded-2xl flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-            <Tags className="w-4 h-4" />
-          </div>
-          <div className="flex-1">
-            <p className="text-[11px] font-bold text-emerald-900">Tarif Antar</p>
-            <p className="text-[11px] text-emerald-700 mt-0.5">
-              <span className="font-bold">Rp{(activeTariff?.base ?? 0).toLocaleString("id-ID")}</span> ({activeTariff?.base_km ?? 0} km pertama), +Rp{(activeTariff?.per_km ?? 0).toLocaleString("id-ID")}/km berikutnya.
-            </p>
-          </div>
-        </div>
-
-        {/* 5. Metode pembayaran & catatan */}
-        <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-foreground mb-2">Metode Pembayaran</label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-              { v: "cash", l: "Tunai", sub: "Bayar ke driver", Icon: Banknote },
-              { v: "qris", l: "Non Tunai", sub: "QRIS", Icon: Wallet }].
-              map((o) => {
-                const active = paymentMethod === o.v;
-                const disabled = o.v === "cash" && !cashAvailable || o.v === "qris" && type !== "food";
-                const Icon = o.Icon;
-                return (
-                  <button
-                    key={o.v}
-                    disabled={disabled}
-                    onClick={() => setPaymentMethod(o.v)}
-                    className={`p-3 rounded-2xl flex items-center justify-between text-left transition-all ${
-                    active ? "border-2 border-emerald-600 bg-emerald-50/50" : "border border-slate-200 bg-background hover:border-slate-300"} ${
-                    disabled ? "opacity-40 cursor-not-allowed" : ""}`}>
-
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Icon className={`w-4 h-4 shrink-0 ${active ? "text-emerald-600" : "text-muted-foreground"}`} />
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-foreground">{o.l}</p>
-                        <p className="text-[10px] text-muted-foreground truncate">{o.sub}</p>
-                      </div>
-                    </div>
-                    {active && <CircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />}
-                  </button>);
-
-              })}
+        {/* Ongkos Kirim: mode pengantaran + keterangan tarif */}
+        <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <Tags className="w-4 h-4" />
             </div>
-            {paymentMethod === "cash" &&
-            <p className="text-xs text-muted-foreground mt-2">
-                Pelanggan membayar ke driver setelah pesanan selesai.
-              </p>
-            }
-            {paymentMethod === "qris" &&
-            <p className="text-xs text-muted-foreground mt-2">
-                Pelanggan bayar langsung ke toko/resto atau transfer ke driver.
-              </p>
-            }
-            {!cashAvailable &&
-            <p className="text-xs text-destructive mt-2">
-                Pembayaran tunai tidak tersedia (tidak ada driver online saat ini).
-              </p>
-            }
+            <h3 className="text-xs font-bold text-foreground">Ongkos Kirim</h3>
           </div>
-
-          <div>
-            <label className="block text-xs font-bold text-foreground mb-1.5">
-              {type === "food" ? "Rincian pesanan (opsional)" : "Catatan untuk Driver (opsional)"}
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              placeholder={
-              type === "food" ?
-              "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
-              type === "goods" ?
-              "Mis: Paket berupa dokumen, tolong hati-hati" :
-              "Mis: Penumpang 1 orang, bawa tas kecil"
-              }
-              className={`${detailInputCls} resize-none`} />
-
+          {type === "food" && (
+          <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1 mb-3">
+            {[
+              { v: "hemat", l: "Hemat" },
+              { v: "cepat", l: "Cepat" }
+            ].map((o) => (
+              <button
+                key={o.v}
+                onClick={() => setMode(o.v)}
+                className={`flex-1 py-2.5 px-2 rounded-xl transition-all flex items-center justify-center ${
+                  mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span className="text-xs font-bold leading-tight">{o.l}</span>
+              </button>
+            ))}
           </div>
+          )}
+          <p className="text-[11px] text-emerald-700">
+            <span className="font-bold">Rp{(activeTariff?.base ?? 0).toLocaleString("id-ID")}</span> ({activeTariff?.base_km ?? 0} km pertama), +Rp{(activeTariff?.per_km ?? 0).toLocaleString("id-ID")}/km berikutnya.
+          </p>
+        </div>
+
+        {/* Metode Pembayaran */}
+        <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
+          <label className="block text-xs font-bold text-foreground mb-2">Metode Pembayaran</label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+            { v: "cash", l: "Tunai", sub: "Bayar ke driver", Icon: Banknote },
+            { v: "qris", l: "Non Tunai", Icon: Wallet }].
+            map((o) => {
+              const active = paymentMethod === o.v;
+              const disabled = o.v === "cash" && !cashAvailable || o.v === "qris" && type !== "food";
+              const Icon = o.Icon;
+              return (
+                <button
+                  key={o.v}
+                  disabled={disabled}
+                  onClick={() => setPaymentMethod(o.v)}
+                  className={`p-3 rounded-2xl flex items-center justify-between text-left transition-all ${
+                  active ? "border-2 border-emerald-600 bg-emerald-50/50" : "border border-slate-200 bg-background hover:border-slate-300"} ${
+                  disabled ? "opacity-40 cursor-not-allowed" : ""}`}>
+
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon className={`w-4 h-4 shrink-0 ${active ? "text-emerald-600" : "text-muted-foreground"}`} />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-foreground">{o.l}</p>
+                      {o.sub && <p className="text-[10px] text-muted-foreground truncate">{o.sub}</p>}
+                    </div>
+                  </div>
+                  {active && <CircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />}
+                </button>);
+
+            })}
+          </div>
+          {paymentMethod === "cash" &&
+          <p className="text-xs text-muted-foreground mt-2">
+              Pelanggan membayar ke driver setelah pesanan selesai.
+            </p>
+          }
+          {paymentMethod === "qris" &&
+          <p className="text-xs text-muted-foreground mt-2">
+              Pelanggan bayar langsung ke toko/resto atau transfer ke driver.
+            </p>
+          }
+          {!cashAvailable &&
+          <p className="text-xs text-destructive mt-2">
+              Pembayaran tunai tidak tersedia (tidak ada driver online saat ini).
+            </p>
+          }
+        </div>
+
+        {/* Rincian Pesanan */}
+        <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
+          <label className="block text-xs font-bold text-foreground mb-1.5">
+            {type === "food" ? "Rincian pesanan (opsional)" : "Catatan untuk Driver (opsional)"}
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={3}
+            placeholder={
+            type === "food" ?
+            "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
+            type === "goods" ?
+            "Mis: Paket berupa dokumen, tolong hati-hati" :
+            "Mis: Penumpang 1 orang, bawa tas kecil"
+            }
+            className={`${detailInputCls} resize-none`} />
+
         </div>
 
         {/* 6. Ringkasan */}
