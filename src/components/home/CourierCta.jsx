@@ -19,7 +19,7 @@ export default function CourierCta({ driverProfile }) {
           "Pendaftaran kurir Anda ditolak." :
           "Semua bisa jadi kurir, semua bisa jadi pelanggan!"}
         </b>
-        <small className="text-[10px] text-[#667085]">Yuk, mulai perjalanan bersama OjekTa.</small>
+        <small className="text-[#667085] text-xs">Yuk, mulai perjalanan bersama OjekTa.</small>
       </div>
       {driverProfile ?
       <span className="bg-[#f1f5f3] text-[#667085] rounded-[17px] px-3 py-2.5 text-[9px] font-semibold whitespace-nowrap">
