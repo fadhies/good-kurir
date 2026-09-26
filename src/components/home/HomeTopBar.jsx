@@ -6,7 +6,7 @@ import ProfileMenu from "@/components/ProfileMenu";
 
 export default function HomeTopBar() {
   return (
-    <div className="h-[76px] flex items-center justify-between shrink-0 -ml-2">
+    <div className="h-[56px] flex items-center justify-between shrink-0 -ml-2">
       <Link to="/" aria-label="OjekTa Beranda" className="flex items-center">
         <div className="h-[50px] w-[140px]">
           <Image
