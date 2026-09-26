@@ -11,7 +11,6 @@ import CourierCta from "@/components/home/CourierCta";
 
 export default function Home() {
   const { user } = useAuth();
-  const role = user?.role || "user";
   const [driverProfile, setDriverProfile] = useState(null);
 
   async function loadDriver() {
@@ -39,7 +38,7 @@ export default function Home() {
           <HomeHero firstName={user?.full_name?.split(" ")[0] || "Sobat"} />
           <ServiceGrid />
           <PromoCard />
-          {role === "user" && <CourierCta driverProfile={driverProfile} />}
+          <CourierCta driverProfile={driverProfile} />
           <div className="mt-10 text-center">
             <Link
               to="/privacy"

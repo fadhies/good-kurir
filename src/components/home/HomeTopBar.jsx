@@ -7,13 +7,15 @@ import ProfileMenu from "@/components/ProfileMenu";
 export default function HomeTopBar() {
   return (
     <div className="h-[76px] flex items-center justify-between shrink-0">
-      <Link to="/" aria-label="OjekTa Beranda" className="flex items-center gap-[7px]">
-        <Image
-          src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/c08c7d07f_logo-ojekta.png"
-          alt="Logo OjekTa Bulukumba"
-          className="w-[72px] h-[72px] object-contain"
-          fittingType="fit"
-        />
+      <Link to="/" aria-label="OjekTa Beranda" className="flex items-center">
+        <div className="h-[64px] w-[220px]">
+          <Image
+            src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bad1deb81_LogoSosmed2.png"
+            alt="Logo OjekTa Bulukumba"
+            className="w-full h-full"
+            fittingType="fit"
+          />
+        </div>
       </Link>
       <div className="flex items-center gap-4">
         <NotificationBell />
