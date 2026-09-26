@@ -30,21 +30,21 @@ export default function MyOrders() {
     } catch (e) {
 
 
+
+
       // Jangan hapus data yang sudah ada saat error sesaat (mis. saat idle).
       // Data lama tetap ditampilkan sampai fetch berikutnya berhasil.
-    }}
-  useEffect(() => {
-    reload();
-    const unsubP = subscribeOrders(() => reload());
-    const onWake = () => {if (!document.hidden) reload();};
-    document.addEventListener("visibilitychange", onWake);
-    window.addEventListener("online", onWake);
-    return () => {
-      Promise.resolve(unsubP).then((u) => u && u());
-      document.removeEventListener("visibilitychange", onWake);
-      window.removeEventListener("online", onWake);
-    };
-  }, []);
+    }}useEffect(() => {reload();
+      const unsubP = subscribeOrders(() => reload());
+      const onWake = () => {if (!document.hidden) reload();};
+      document.addEventListener("visibilitychange", onWake);
+      window.addEventListener("online", onWake);
+      return () => {
+        Promise.resolve(unsubP).then((u) => u && u());
+        document.removeEventListener("visibilitychange", onWake);
+        window.removeEventListener("online", onWake);
+      };
+    }, []);
 
   const asPemesan = (orders || []).filter((o) => o.created_by_id === user?.id);
   const asDriver = (orders || []).filter((o) => o.driver_id === user?.id);
@@ -54,7 +54,7 @@ export default function MyOrders() {
   return (
     <Layout>
       <PullToRefresh onRefresh={reload}>
-      <h1 className="text-2xl mb-1 [font-family:'Cabin',_sans-serif] font-medium">Pesanan Saya</h1>
+      <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-xl">Pesanan Saya</h1>
       <p className="text-muted-foreground text-sm mb-4">Riwayat dan status pesanan Anda.</p>
 
       {/* Tab pemesan / driver — hanya untuk driver */}
@@ -64,9 +64,9 @@ export default function MyOrders() {
             onClick={() => setTab("pemesan")}
             className={cn(
               "flex-1 flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all",
-              tab === "pemesan" 
-              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
-              : "text-slate-600 hover:text-slate-900"
+              tab === "pemesan" ?
+              "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" :
+              "text-slate-600 hover:text-slate-900"
             )}>
             
           <ShoppingBag className="w-4 h-4" /> Sebagai Pemesan
@@ -75,9 +75,9 @@ export default function MyOrders() {
             onClick={() => setTab("driver")}
             className={cn(
               "flex-1 flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl text-sm font-semibold transition-all",
-              tab === "driver" 
-              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
-              : "text-slate-600 hover:text-slate-900"
+              tab === "driver" ?
+              "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" :
+              "text-slate-600 hover:text-slate-900"
             )}>
             
           <Bike className="w-4 h-4" /> Sebagai Driver
