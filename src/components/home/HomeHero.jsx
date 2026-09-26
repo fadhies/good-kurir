@@ -13,7 +13,7 @@ export default function HomeHero({ firstName }) {
   const startOrder = () => navigate("/pesan?type=person");
 
   return (
-    <section className="relative overflow-hidden rounded-[32px] h-[362px] p-6 text-white bg-[linear-gradient(112deg,#007b64_0%,#02864f_43%,#8bd540_100%)]">
+    <section className="relative overflow-hidden rounded-[32px] h-[290px] p-6 text-white bg-[linear-gradient(112deg,#007b64_0%,#02864f_43%,#8bd540_100%)]">
       <p className="font-semibold text-sm">Halo, {firstName}! 👋</p>
       <h1 className="leading-[1.04] font-extrabold tracking-tight mt-2 mb-2 text-xl">
         Mau ke mana<br />hari ini?
@@ -24,7 +24,7 @@ export default function HomeHero({ firstName }) {
 
       <button
         onClick={startOrder}
-        className="absolute z-20 left-5 right-5 top-[220px] h-[58px] rounded-[19px] bg-white grid grid-cols-[35px_1fr_30px] items-center px-4 text-left text-[#667085] shadow-[0_12px_30px_rgba(21,87,55,0.12)]">
+        className="absolute z-20 left-5 right-5 top-[160px] h-[58px] rounded-[19px] bg-white grid grid-cols-[35px_1fr_30px] items-center px-4 text-left text-[#667085] shadow-[0_12px_30px_rgba(21,87,55,0.12)]">
         
         <MapPin className="w-5 h-5 text-[#079447]" />
         <span className="text-xs font-medium truncate">Mau dijemput di mana hari ini?</span>
