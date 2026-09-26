@@ -11,7 +11,8 @@ export default function PromoCard() {
           Promo Spesial
         </span>
         <h2 className="leading-[1.15] font-bold text-[#10243a] mt-2 mb-1 text-base">
-          Diskon 50% Naik Ojek Pertama!
+          Diskon 50% 
+          Naik Ojek Pertama!
         </h2>
         <p className="text-[11px] text-[#10243a] m-0">
           Gunakan kode{" "}
