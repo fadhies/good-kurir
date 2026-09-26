@@ -138,7 +138,7 @@ export default function Layout({ children }) {
         </header>
 
         {/* Content */}
-        <main className={cn("flex-1 w-full mx-auto px-4 pt-2 max-w-4xl", isDetail ? "pb-10" : "pb-28 md:pb-10")}>
+        <main className={cn("flex-1 w-full mx-auto px-4 pt-1 max-w-4xl", isDetail ? "pb-10" : "pb-28 md:pb-10")}>
           {children}
         </main>
       </div>
