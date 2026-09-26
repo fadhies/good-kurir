@@ -23,10 +23,14 @@ const OPTIONS = [
   { key: "wallet", label: "Riwayat dompet saya" },
 ];
 
-export default function AccountDeletionDialog() {
+export default function AccountDeletionDialog({ open: openProp, onOpenChange }) {
   const { logout } = useAuth();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  // Bisa dibuka dari luar (menu profil) lewat props open/onOpenChange.
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : internalOpen;
+  const setOpen = (v) => (isControlled ? onOpenChange?.(v) : setInternalOpen(v));
   const [picked, setPicked] = useState({ orders: true, driver: true, wallet: true });
   const [loading, setLoading] = useState(false);
 
@@ -54,6 +58,7 @@ export default function AccountDeletionDialog() {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
+      {!isControlled &&
       <AlertDialogTrigger asChild>
         <button
           className="p-2 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
@@ -61,7 +66,7 @@ export default function AccountDeletionDialog() {
         >
           <Trash2 className="w-5 h-5" />
         </button>
-      </AlertDialogTrigger>
+      </AlertDialogTrigger>}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">

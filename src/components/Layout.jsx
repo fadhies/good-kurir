@@ -2,17 +2,14 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useIsDriver } from "@/hooks/useIsDriver";
-import { Bike, Home, ShoppingBag, ListOrdered, Wallet, UserCircle, LogOut, LayoutDashboard, ShieldCheck, ArrowLeft, Power } from "lucide-react";
+import { Home, MessageCircle, ListOrdered, Wallet, UserCircle, LayoutDashboard, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { exitApp } from "@/lib/exitApp";
-import AccountDeletionDialog from "@/components/AccountDeletionDialog";
+import ProfileMenu from "@/components/ProfileMenu";
 import NotificationBell from "@/components/NotificationBell";
 import { Image } from "@/components/ui/image";
-import { useToast } from "@/components/ui/use-toast";
-
 const USER_ITEMS = [
 { to: "/", label: "Beranda", icon: Home },
-{ to: "/pesan", label: "Pesan", icon: ShoppingBag },
+{ to: "/chat", label: "Chat", icon: MessageCircle },
 { to: "/pesanan-saya", label: "Pesanan", icon: ListOrdered }];
 
 const DRIVER_ITEMS = [
@@ -24,12 +21,11 @@ const ADMIN_ITEMS = [
 
 
 export default function Layout({ children }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const role = user?.role || "user";
   const isDriver = useIsDriver();
-  const { toast } = useToast();
 
   const items = [...USER_ITEMS, ...(isDriver ? DRIVER_ITEMS : []), ...(role === "admin" ? ADMIN_ITEMS : [])];
 
@@ -40,21 +36,6 @@ export default function Layout({ children }) {
   location.pathname === "/jadi-driver" ?
   "Daftar Driver" :
   "OjekTa";
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  const handleExit = async () => {
-    const ok = await exitApp();
-    if (!ok) {
-      toast({
-        title: "Gunakan tombol Back HP",
-        description: "Di halaman utama, tekan tombol Back HP sekali untuk keluar/minimize aplikasi.",
-        duration: 3000
-      });
-    }
-  };
 
   return (
     <div className="min-h-[100dvh] bg-background flex">
@@ -117,13 +98,7 @@ export default function Layout({ children }) {
           </div>
           <div className="flex items-center gap-1 px-1">
             <NotificationBell />
-            <AccountDeletionDialog />
-            <button
-              onClick={handleLogout}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-              title="Keluar Akun">
-              <LogOut className="w-4 h-4" /> Keluar
-            </button>
+            <ProfileMenu />
           </div>
         </div>
       </aside>
@@ -158,19 +133,7 @@ export default function Layout({ children }) {
             }
             <div className="flex items-center gap-1">
               <NotificationBell />
-              <AccountDeletionDialog />
-              <button
-                onClick={handleExit}
-                className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                title="Keluar Aplikasi">
-                <Power className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="p-2 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-                title="Keluar">
-                <LogOut className="w-5 h-5" />
-              </button>
+              <ProfileMenu />
             </div>
           </div>
         </header>

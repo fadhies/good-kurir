@@ -2,13 +2,13 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useIsDriver } from "@/hooks/useIsDriver";
-import { Home, ShoppingBag, ListOrdered, LayoutDashboard, Wallet, ShieldCheck } from "lucide-react";
+import { Home, MessageCircle, ListOrdered, LayoutDashboard, Wallet, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { nearestTabDistance } from "@/lib/navStack";
 
 const USER_ITEMS = [
   { to: "/", label: "Beranda", icon: Home },
-  { to: "/pesan", label: "Pesan", icon: ShoppingBag },
+  { to: "/chat", label: "Chat", icon: MessageCircle },
   { to: "/pesanan-saya", label: "Pesanan", icon: ListOrdered }
 ];
 

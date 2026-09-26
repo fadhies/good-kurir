@@ -7,12 +7,14 @@ import { getScrollEl } from "@/lib/appScroll";
 const Home = lazy(() => import("@/pages/Home"));
 const NewOrder = lazy(() => import("@/pages/NewOrder"));
 const MyOrders = lazy(() => import("@/pages/MyOrders"));
+const Chat = lazy(() => import("@/pages/Chat"));
 const DriverDashboard = lazy(() => import("@/pages/DriverDashboard"));
 const DriverWallet = lazy(() => import("@/pages/DriverWallet"));
 
 const TABS = {
   home: Home,
   pesan: NewOrder,
+  chat: Chat,
   "pesanan-saya": MyOrders,
   driver: DriverDashboard,
   "driver-dompet": DriverWallet,

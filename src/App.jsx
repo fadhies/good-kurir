@@ -32,7 +32,7 @@ const AdminPrivacy = lazy(() => import('@/pages/AdminPrivacy'));
 const Privacy = lazy(() => import('@/pages/Privacy'));
 import ChatNotificationListener from '@/components/ChatNotificationListener';
 
-const TAB_PATHS = new Set(["/", "/pesan", "/pesanan-saya", "/driver", "/driver/dompet"]);
+const TAB_PATHS = new Set(["/", "/pesan", "/chat", "/pesanan-saya", "/driver", "/driver/dompet"]);
 
 // Directional page transitions: push slides left, pop slides right.
 const pageVariants = {
@@ -114,6 +114,7 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/" element={<TabKeepAlive active="home" />} />
         <Route path="/pesan" element={<TabKeepAlive active="pesan" />} />
+        <Route path="/chat" element={<TabKeepAlive active="chat" />} />
         <Route path="/pesanan-saya" element={<TabKeepAlive active="pesanan-saya" />} />
         <Route path="/pesanan/:id" element={<OrderTracking />} />
         <Route path="/driver" element={<TabKeepAlive active="driver" />} />
