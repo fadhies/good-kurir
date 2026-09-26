@@ -48,6 +48,7 @@ export function shortAddress(address) {
     /^kel(urahan)?\b/i,
     /^kec(amatan)?\b/i,
     /^kab(upaten)?\b/i,
+    /^prov(insi)?\b/i,
     /^indonesia$/i,
     /^\d{4,5}$/,
   ];
