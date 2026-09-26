@@ -108,32 +108,29 @@ export default function Layout({ children }) {
       {/* Main column */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top bar (mobile only) */}
-        <header className="md:hidden sticky top-0 z-40 glass-card border-b border-border/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-          <div className="px-4 h-16 flex items-center justify-between">
+        <header className="md:hidden sticky top-0 z-40 bg-white" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
+          <div className="px-4 h-[76px] flex items-center justify-between">
             {isDetail ?
             <div className="flex items-center gap-1">
                 <button
                 onClick={() => navigate(-1)}
-                className="p-2 rounded-full hover:bg-secondary text-foreground transition-colors"
+                className="p-2 -ml-2 rounded-full hover:bg-secondary text-foreground transition-colors"
                 title="Kembali">
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <span className="font-bold tracking-tight [font-family:'Poppins',_sans-serif] text-lg">{pageTitle}</span>
               </div> :
-            <Link to="/" className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md shadow-primary/30 ring-2 ring-primary/20">
+            <Link to="/" className="flex items-center -ml-2">
+                <div className="h-[50px] w-[140px]">
                   <Image
-                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png"
-                  alt="OjekTa"
-                  className="w-full h-full" />
-                
+                  src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bad1deb81_LogoSosmed2.png"
+                  alt="Logo OjekTa Bulukumba"
+                  className="w-full h-full"
+                  fittingType="fit" />
                 </div>
-                <span className="tracking-tight text-2xl [font-family:'Poppins',_sans-serif] font-bold">
-                  Ojek<span className="text-primary">Ta</span>
-                </span>
               </Link>
             }
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-4">
               <NotificationBell />
               <ProfileMenu />
             </div>
