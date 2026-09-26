@@ -194,7 +194,7 @@ export default function OrderTracking() {
   useEffect(() => {
     loadOrder();
     const unsubP = subscribeOrder(id, () => loadOrder());
-    const onWake = () => { if (!document.hidden) loadOrder(); };
+    const onWake = () => {if (!document.hidden) loadOrder();};
     document.addEventListener("visibilitychange", onWake);
     window.addEventListener("online", onWake);
     return () => {Promise.resolve(unsubP).then((u) => u && u());document.removeEventListener("visibilitychange", onWake);window.removeEventListener("online", onWake);};
@@ -217,24 +217,24 @@ export default function OrderTracking() {
         toast({
           title: "Driver tidak ditemukan",
           description: "Tidak ada driver yang menerima pesanan dalam 4 menit. Silakan buat ulang pesanan.",
-          variant: "destructive",
+          variant: "destructive"
         });
         loadOrder();
       } catch {}
     };
 
-    if (remaining <= 0) { markNotFound(); return; }
+    if (remaining <= 0) {markNotFound();return;}
 
     let pollH = null;
-    const startPoll = () => { if (!pollH && !document.hidden) pollH = setInterval(loadOrder, 3000); };
-    const stopPoll = () => { if (pollH) { clearInterval(pollH); pollH = null; } };
+    const startPoll = () => {if (!pollH && !document.hidden) pollH = setInterval(loadOrder, 3000);};
+    const stopPoll = () => {if (pollH) {clearInterval(pollH);pollH = null;}};
     const onVis = () => {
-      if (document.hidden) stopPoll();
-      else { loadOrder(); startPoll(); }
+      if (document.hidden) stopPoll();else
+      {loadOrder();startPoll();}
     };
 
     startPoll();
-    const timeoutH = setTimeout(() => { stopPoll(); markNotFound(); }, remaining);
+    const timeoutH = setTimeout(() => {stopPoll();markNotFound();}, remaining);
     document.addEventListener("visibilitychange", onVis);
 
     return () => {
@@ -398,9 +398,9 @@ export default function OrderTracking() {
     completed: "Sampai di Tujuan"
   };
   const labeledTimeline = TIMELINE.map((t) => {
-  if (order.type === "person" && personLabels[t.key]) return { ...t, label: personLabels[t.key] };
-  if (t.key === "at_store") return { ...t, label: order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" };
-  return t;
+    if (order.type === "person" && personLabels[t.key]) return { ...t, label: personLabels[t.key] };
+    if (t.key === "at_store") return { ...t, label: order.type === "goods" ? "Di Lokasi Ambil" : "Di Toko, Memesan" };
+    return t;
   });
   const timeline = isQris && order.type === "food" ?
   labeledTimeline :
@@ -412,7 +412,7 @@ export default function OrderTracking() {
     <Layout>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold selectable">Pesanan #{String(order.id).slice(-6)}</h1>
+          <h1 className="font-extrabold selectable [font-family:'Poppins',_sans-serif] text-base">Pesanan #{String(order.id).slice(-6)}</h1>
           <p className="text-sm text-muted-foreground capitalize">{order.type === "food" ? "Beli Makanan" : order.type === "goods" ? "Antar Barang" : "Antar Orang"}</p>
         </div>
         <OrderStatusBadge status={order.status} />
@@ -805,9 +805,9 @@ export default function OrderTracking() {
             <Loader2 className="w-6 h-6 animate-spin text-amber-600 mx-auto mb-1" />
             <p className="text-sm text-amber-700 font-medium">Menunggu driver menerima pesanan Anda...</p>
             <button
-          onClick={() => setCancelOpen(true)}
-          disabled={acting}
-          className="w-full bg-destructive text-destructive-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2">
+            onClick={() => setCancelOpen(true)}
+            disabled={acting}
+            className="w-full bg-destructive text-destructive-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2">
               <X className="w-4 h-4" />
               Batalkan Pesanan
             </button>
@@ -820,8 +820,8 @@ export default function OrderTracking() {
               Maaf, tidak ada driver yang menerima pesanan Anda dalam batas waktu (4 menit).
             </p>
             <button
-          onClick={() => navigate("/pesan")}
-          className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90">
+            onClick={() => navigate("/pesan")}
+            className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90">
               Buat Pesanan Baru
             </button>
           </div>
@@ -861,8 +861,8 @@ export default function OrderTracking() {
             <AlertDialogAction
               onClick={cancelOrder}
               disabled={acting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              
               {acting ? "Memproses..." : "Ya, Batalkan"}
             </AlertDialogAction>
           </AlertDialogFooter>
