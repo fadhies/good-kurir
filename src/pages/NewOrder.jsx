@@ -181,29 +181,6 @@ export default function NewOrder() {
       <p className="text-[11px] text-muted-foreground font-medium mb-4">Lengkapi rincian perjalanan Anda</p>
 
       <div className="space-y-4">
-        {/* 2. Mode pengantaran (khusus makanan) */}
-        {type === "food" && (
-        <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
-          {[
-            { v: "hemat", l: "Hemat", desc: `Mulai Rp${tariffs.food.hemat.base.toLocaleString("id-ID")}` },
-            { v: "cepat", l: "Cepat", desc: `Mulai Rp${tariffs.food.cepat.base.toLocaleString("id-ID")}` }
-          ].map((o) => (
-            <button
-              key={o.v}
-              onClick={() => setMode(o.v)}
-              className={`flex-1 py-2 px-2 rounded-xl transition-all flex flex-col items-center justify-center ${
-                mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span className="text-xs font-bold leading-tight">{o.l}</span>
-              <span className={`text-[10px] mt-0.5 font-medium ${mode === o.v ? "text-emerald-100" : "text-slate-500"}`}>
-                {o.desc}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-
         {/* 3. Kartu lokasi jemput & tujuan */}
         <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
           {/* Lokasi jemput / resto */}
@@ -268,6 +245,29 @@ export default function NewOrder() {
             </div>
           </div>
         </div>
+
+        {/* 2. Mode pengantaran (khusus makanan) */}
+        {type === "food" && (
+        <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
+          {[
+            { v: "hemat", l: "Hemat", desc: `Mulai Rp${tariffs.food.hemat.base.toLocaleString("id-ID")}` },
+            { v: "cepat", l: "Cepat", desc: `Mulai Rp${tariffs.food.cepat.base.toLocaleString("id-ID")}` }
+          ].map((o) => (
+            <button
+              key={o.v}
+              onClick={() => setMode(o.v)}
+              className={`flex-1 py-2 px-2 rounded-xl transition-all flex flex-col items-center justify-center ${
+                mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span className="text-xs font-bold leading-tight">{o.l}</span>
+              <span className={`text-[10px] mt-0.5 font-medium ${mode === o.v ? "text-emerald-100" : "text-slate-500"}`}>
+                {o.desc}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
         {/* 4. Info tarif */}
         <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/60 p-3.5 rounded-2xl flex items-center gap-3">
