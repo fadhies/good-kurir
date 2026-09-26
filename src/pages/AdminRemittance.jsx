@@ -21,11 +21,11 @@ export default function AdminRemittance() {
 
   async function load() {
     const [r, u, o, wts] = await Promise.allSettled([
-      S.DriverRemittance.filter({}, "-created_date", 200),
-      base44.entities.User.list(),
-      S.Order.filter({ status: "completed" }, "-updated_date", 500),
-      S.WalletTransaction.filter({ type: "credit" }, "-created_date", 1000)
-    ]);
+    S.DriverRemittance.filter({}, "-created_date", 200),
+    base44.entities.User.list(),
+    S.Order.filter({ status: "completed" }, "-updated_date", 500),
+    S.WalletTransaction.filter({ type: "credit" }, "-created_date", 1000)]
+    );
     if (u.status === "rejected") toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
     if (r.status === "rejected" || o.status === "rejected" || wts.status === "rejected") {
       toast({ title: "Gagal memuat data setoran", description: String(r.reason?.message || o.reason?.message || wts.reason?.message), variant: "destructive" });
@@ -125,7 +125,7 @@ export default function AdminRemittance() {
       row.serviceFee += o.service_fee || 0;
     }
     return Object.values(agg).sort((a, b) =>
-      a.date < b.date ? -1 : a.date > b.date ? 1 : a.driverId.localeCompare(b.driverId)
+    a.date < b.date ? -1 : a.date > b.date ? 1 : a.driverId.localeCompare(b.driverId)
     );
   }, [filteredOrders, orderDay, list]);
 
@@ -146,18 +146,18 @@ export default function AdminRemittance() {
           onValueChange={(v) => {
             setFilterMonth(v);
             setFilterDate("all");
-          }}
-        >
+          }}>
+          
           <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua bulan</SelectItem>
-            {monthOptions.map((m) => (
-              <SelectItem key={m} value={m}>
+            {monthOptions.map((m) =>
+            <SelectItem key={m} value={m}>
                 {new Date(m + "-02").toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
         <Select value={filterDate} onValueChange={setFilterDate}>
@@ -166,17 +166,17 @@ export default function AdminRemittance() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua tanggal</SelectItem>
-            {dateOptions.map((d) => (
-              <SelectItem key={d} value={d}>
+            {dateOptions.map((d) =>
+            <SelectItem key={d} value={d}>
                 {new Date(d + "T00:00:00").toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
       </div>
 
       {/* Balance card */}
-      <div className="rounded-2xl p-5 mb-6 bg-[#EAF01C] text-stone-900">
+      <div className="rounded-2xl p-5 mb-6 text-stone-900 bg-[hsl(var(--accent))]">
         <div className="flex items-center gap-2 text-sm mb-2 text-[hsl(var(--foreground))]">
           <Wallet className="w-4 h-4" /> Total Penghasilan Admin
         </div>
