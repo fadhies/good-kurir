@@ -6,6 +6,17 @@ import PullToRefresh from "@/components/PullToRefresh";
 import S from "@/lib/supabaseEntities";
 import { Loader2, MessageCircle, ChevronRight } from "lucide-react";
 
+// Judul kartu: jenis layanan + nama toko/resto (makanan) atau tujuan antar.
+function titleFor(orderId, ordersById) {
+  const o = ordersById[orderId];
+  if (!o) return "Pesanan";
+  const typeLabel =
+    o.type === "food" ? "Beli Makanan" : o.type === "person" ? "Antar Orang" : "Antar Barang";
+  const subject =
+    o.type === "food" ? o.store_name : (o.destination_address || "").split(",")[0];
+  return subject ? `${typeLabel} · ${subject}` : typeLabel;
+}
+
 function timeLabel(iso) {
   const d = new Date(iso);
   if (isNaN(d)) return "";
@@ -23,6 +34,7 @@ export default function Chat() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [conversations, setConversations] = useState(null);
+  const [ordersById, setOrdersById] = useState({});
 
   async function load() {
     try {
@@ -31,7 +43,12 @@ export default function Chat() {
       for (const m of msgs) {
         if (m.order_id && !map.has(m.order_id)) map.set(m.order_id, m);
       }
-      setConversations(Array.from(map.values()));
+      const convs = Array.from(map.values());
+      setConversations(convs);
+      const orders = await Promise.all(
+        convs.map((c) => S.Order.get(c.order_id).catch(() => null))
+      );
+      setOrdersById(Object.fromEntries(orders.filter(Boolean).map((o) => [o.id, o])));
     } catch {
       setConversations([]);
     }
@@ -77,7 +94,7 @@ export default function Chat() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-bold text-foreground truncate">
-                      Pesanan #{String(m.order_id).slice(0, 8)}
+                      {titleFor(m.order_id, ordersById)}
                     </p>
                     <span className="text-[10px] text-muted-foreground shrink-0">
                       {timeLabel(m.created_date)}
