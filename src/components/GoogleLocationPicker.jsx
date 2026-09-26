@@ -262,7 +262,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         type="button"
         onClick={() => { setMapOpen(true); onExpandChange?.(true); }}
         className="flex items-center gap-1 text-xs font-semibold text-primary justify-start text-left w-full">
-        <MapPin className="w-5 h-5" /> buka peta atau tambahkan detil alamat
+        <MapPin className="w-5 h-5 shrink-0"/> buka peta atau tambahkan detil alamat
       </button>
       }
       {mapOpen &&
