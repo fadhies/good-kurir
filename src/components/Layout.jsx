@@ -118,7 +118,7 @@ export default function Layout({ children }) {
                 title="Kembali">
                   <ArrowLeft className="w-5 h-5" />
                 </button>
-                <span className="font-bold tracking-tight [font-family:'Poppins',_sans-serif] text-lg hidden">Kembali ke Beranda</span>
+                
               </div> :
             <Link to="/" className="flex items-center -ml-2">
                 <div className="h-[50px] w-[140px]">
