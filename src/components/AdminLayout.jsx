@@ -1,9 +1,9 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, LogOut, ShieldCheck, Home, Power, Tag, Banknote, Lock } from "lucide-react";
+import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, ShieldCheck, Home, Tag, Banknote, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { exitApp } from "@/lib/exitApp";
+import ProfileMenu from "@/components/ProfileMenu";
 
 const NAV = [
 { to: "/admin", label: "Ringkasan", icon: LayoutDashboard },
@@ -16,14 +16,9 @@ const NAV = [
 
 
 export default function AdminLayout({ children }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
-  const handleExit = async () => {
-    const ok = await exitApp();
-    if (!ok) alert("Tekan tombol Back pada ponsel untuk keluar dari aplikasi.");
-  };
 
   return (
     <div className="min-h-[100dvh] bg-background flex">
@@ -64,18 +59,10 @@ export default function AdminLayout({ children }) {
             
             <Home className="w-4 h-4" /> Kembali ke App
           </button>
-          <button
-            onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
-            
-            <LogOut className="w-4 h-4" /> Keluar Akun
-          </button>
-          <button
-            onClick={handleExit}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
-            
-            <Power className="w-4 h-4" /> Keluar Aplikasi
-          </button>
+          <div className="flex items-center gap-2 px-2 py-1">
+            <ProfileMenu />
+            <span className="text-xs text-muted-foreground truncate">{user?.full_name || user?.email}</span>
+          </div>
         </div>
       </aside>
 
@@ -90,12 +77,7 @@ export default function AdminLayout({ children }) {
             <button onClick={() => navigate("/")} className="p-2 text-muted-foreground" title="Kembali ke App">
               <Home className="w-5 h-5" />
             </button>
-            <button onClick={handleExit} className="p-2 text-muted-foreground" title="Keluar Aplikasi">
-              <Power className="w-5 h-5" />
-            </button>
-            <button onClick={logout} className="p-2 text-muted-foreground" title="Keluar Akun">
-              <LogOut className="w-5 h-5" />
-            </button>
+            <ProfileMenu />
           </div>
         </div>
       </div>
