@@ -8,7 +8,7 @@ export default function HomeTopBar() {
   return (
     <div className="h-[76px] flex items-center justify-between shrink-0 -ml-2">
       <Link to="/" aria-label="OjekTa Beranda" className="flex items-center">
-        <div className="h-[64px] w-[180px]">
+        <div className="h-[50px] w-[140px]">
           <Image
             src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/bad1deb81_LogoSosmed2.png"
             alt="Logo OjekTa Bulukumba"
