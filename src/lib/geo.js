@@ -41,22 +41,29 @@ export function calcFees(deliveryFee) {
   return { app_fee: appFee, admin_fee: adminFee, driver_earning: driverEarning };
 }
 
-// Ringkas alamat: buang kelurahan, kecamatan, kabupaten, negara, dan kode pos.
+// Ringkas alamat: hanya jalan + nomor dan kota.
+// Buang kelurahan, kecamatan, kabupaten, provinsi, negara, dan kode pos
+// (termasuk kode pos yang menempel di nama wilayah, mis. "Bali 80234").
 export function shortAddress(address) {
   if (!address) return "";
-  const DROP = [
-    /^kel(urahan)?\b/i,
-    /^kec(amatan)?\b/i,
-    /^kab(upaten)?\b/i,
-    /^prov(insi)?\b/i,
-    /^indonesia$/i,
-    /^\d{4,5}$/,
-  ];
-  return address
+  const DROP = /kelurahan|kecamatan|kabupaten|provinsi|indonesia/i;
+  const parts = address
     .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s && !DROP.some((re) => re.test(s)))
-    .join(", ");
+    .map((s) => s.trim().replace(/\s*\d{4,5}$/, "").trim())
+    .filter((s) => s && !DROP.test(s) && !/^\d{4,5}$/.test(s));
+  if (!parts.length) return address;
+  const street = parts[0];
+  let city = null;
+  // Utama: segmen berawalan "Kota ...", jika tidak ada pakai segmen
+  // sebelum provinsi (posisi kedua dari belakang).
+  for (const p of parts.slice(1)) {
+    if (/^kota\b/i.test(p)) {
+      city = p.replace(/^kota\s+/i, "");
+      break;
+    }
+  }
+  if (!city && parts.length >= 3) city = parts[parts.length - 2];
+  return city ? `${street}, ${city}` : street;
 }
 
 export function formatRupiah(amount) {
