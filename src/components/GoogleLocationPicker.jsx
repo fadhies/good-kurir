@@ -23,66 +23,66 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
 
   useEffect(() => {
     let active = true;
-    loadGoogleMaps().
-    then((gmaps) => {
-      if (!active || !mapElRef.current) return;
-      const center =
-      value?.lat != null && value?.lng != null ?
-      { lat: value.lat, lng: value.lng } :
-      biasCenter?.lat != null && biasCenter?.lng != null ?
-      { lat: biasCenter.lat, lng: biasCenter.lng } :
-      DEFAULT_CENTER;
-      mapRef.current = new gmaps.Map(mapElRef.current, {
-        center,
-        zoom: 14,
-        streetViewControl: false,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        gestureHandling: "greedy"
-      });
-      geocoderRef.current = new gmaps.Geocoder();
-      acServiceRef.current = new gmaps.places.AutocompleteService();
-      placesRef.current = new gmaps.places.PlacesService(mapRef.current);
-      sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
+    loadGoogleMaps()
+      .then((gmaps) => {
+        if (!active || !mapElRef.current) return;
+        const center =
+          value?.lat != null && value?.lng != null
+            ? { lat: value.lat, lng: value.lng }
+            : biasCenter?.lat != null && biasCenter?.lng != null
+            ? { lat: biasCenter.lat, lng: biasCenter.lng }
+            : DEFAULT_CENTER;
+        mapRef.current = new gmaps.Map(mapElRef.current, {
+          center,
+          zoom: 14,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false,
+          gestureHandling: "greedy",
+        });
+        geocoderRef.current = new gmaps.Geocoder();
+        acServiceRef.current = new gmaps.places.AutocompleteService();
+        placesRef.current = new gmaps.places.PlacesService(mapRef.current);
+        sessionTokenRef.current = new gmaps.places.AutocompleteSessionToken();
 
-      const pinSvg =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="48" viewBox="0 0 28 48">' +
-      '<path d="M11 20 L17 20 L14 46 Z" fill="#F5F5F5" stroke="#333333" stroke-width="1.5" stroke-linejoin="round"/>' +
-      '<circle cx="14" cy="13" r="11" fill="#FF4500" stroke="#333333" stroke-width="1.5"/>' +
-      "</svg>";
-      const pinUrl = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(pinSvg);
-      markerRef.current = new gmaps.Marker({
-        map: mapRef.current,
-        position: center,
-        icon: {
-          url: pinUrl,
-          scaledSize: new gmaps.Size(28, 48),
-          anchor: new gmaps.Point(14, 46)
-        },
-        visible: value?.lat != null
-      });
-
-      mapRef.current.addListener("click", (e) => {
-        pickFromMap(e.latLng.lat(), e.latLng.lng());
-      });
-
-      setReady(true);
-
-      // Default ke lokasi pengguna bila tidak ada value/biasCenter (mis. halaman Daftar Driver)
-      if (value?.lat == null && !(biasCenter?.lat != null) && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            if (!active || !mapRef.current) return;
-            const uLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            userCenterRef.current = uLoc;
-            mapRef.current.panTo(uLoc);
+        const pinSvg =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="48" viewBox="0 0 28 48">' +
+          '<path d="M11 20 L17 20 L14 46 Z" fill="#F5F5F5" stroke="#333333" stroke-width="1.5" stroke-linejoin="round"/>' +
+          '<circle cx="14" cy="13" r="11" fill="#FF4500" stroke="#333333" stroke-width="1.5"/>' +
+          "</svg>";
+        const pinUrl = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(pinSvg);
+        markerRef.current = new gmaps.Marker({
+          map: mapRef.current,
+          position: center,
+          icon: {
+            url: pinUrl,
+            scaledSize: new gmaps.Size(28, 48),
+            anchor: new gmaps.Point(14, 46),
           },
-          () => {},
-          { enableHighAccuracy: true, timeout: 10000 }
-        );
-      }
-    }).
-    catch(() => {});
+          visible: value?.lat != null,
+        });
+
+        mapRef.current.addListener("click", (e) => {
+          pickFromMap(e.latLng.lat(), e.latLng.lng());
+        });
+
+        setReady(true);
+
+        // Default ke lokasi pengguna bila tidak ada value/biasCenter (mis. halaman Daftar Driver)
+        if (value?.lat == null && !(biasCenter?.lat != null) && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              if (!active || !mapRef.current) return;
+              const uLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              userCenterRef.current = uLoc;
+              mapRef.current.panTo(uLoc);
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        }
+      })
+      .catch(() => {});
     return () => {
       active = false;
     };
@@ -167,7 +167,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
             lat: loc.lat(),
             lng: loc.lng(),
             address: r.formatted_address || p.description,
-            name
+            name,
           });
         } else {
           onChange({ address: p.description, name: fallbackName });
@@ -192,7 +192,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         if (status === "OK" && res?.[0]) {
           resolve({
             address: res[0].formatted_address,
-            name: extractPoiName(res[0].address_components)
+            name: extractPoiName(res[0].address_components),
           });
         } else {
           resolve({ address: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, name: "" });
@@ -211,7 +211,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
     <div className="space-y-2">
       <label className="text-sm font-semibold text-foreground/80">{label}</label>
       <div className="relative">
-        <div className="flex items-center gap-2 rounded-xl border-2 border-input px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring bg-[hsl(var(--background))]">
+        <div className="flex items-center gap-2 rounded-xl border-4 border-input bg-card px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input
             value={query}
@@ -219,37 +219,37 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
             onFocus={() => predictions.length && setShowResults(true)}
             onBlur={() => setShowResults(false)}
             placeholder="Cari toko, restoran, atau alamat..."
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
-          
+            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          />
           {searching && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
         </div>
-        {showResults && predictions.length > 0 &&
-        <div className="absolute z-[1000] mt-1 w-full rounded-xl border border-border bg-popover shadow-lg overflow-hidden max-h-64 overflow-y-auto">
-            {predictions.map((p) =>
-          <button
-            key={p.place_id}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => pickPrediction(p)}
-            className="flex items-start gap-2 w-full text-left px-3 py-2.5 hover:bg-accent/10 border-b border-border/50 last:border-0">
-            
+        {showResults && predictions.length > 0 && (
+          <div className="absolute z-[1000] mt-1 w-full rounded-xl border border-border bg-popover shadow-lg overflow-hidden max-h-64 overflow-y-auto">
+            {predictions.map((p) => (
+              <button
+                key={p.place_id}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pickPrediction(p)}
+                className="flex items-start gap-2 w-full text-left px-3 py-2.5 hover:bg-accent/10 border-b border-border/50 last:border-0"
+              >
                 <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                 <span className="text-sm text-foreground/80 line-clamp-2">{p.description}</span>
               </button>
-          )}
+            ))}
           </div>
-        }
+        )}
       </div>
       <div className="rounded-xl overflow-hidden border border-border h-56 bg-muted/30">
-        {!ready &&
-        <div className="h-full flex items-center justify-center">
+        {!ready && (
+          <div className="h-full flex items-center justify-center">
             <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
           </div>
-        }
+        )}
         <div ref={mapElRef} style={{ height: "100%", width: "100%" }} />
       </div>
       <p className="text-xs text-muted-foreground">
         Klik peta untuk pin atau cari lewat kotak pencarian.
       </p>
-    </div>);
-
+    </div>
+  );
 }
