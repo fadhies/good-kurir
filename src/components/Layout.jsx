@@ -109,7 +109,7 @@ export default function Layout({ children }) {
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top bar (mobile only) */}
         <header className="md:hidden sticky top-0 z-40 bg-white" style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}>
-          <div className="px-4 h-[76px] flex items-center justify-between">
+          <div className="px-4 h-[56px] flex items-center justify-between">
             {isDetail ?
             <div className="flex items-center gap-1">
                 <button
