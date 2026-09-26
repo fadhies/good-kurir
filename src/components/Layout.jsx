@@ -66,15 +66,15 @@ export default function Layout({ children }) {
               <Image
                 src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png"
                 alt="OjekTa"
-                className="w-full h-full"
-              />
+                className="w-full h-full" />
+              
               
 
 
               
               
             </div>
-            <span className="tracking-tight [font-family:'Alegreya',_serif] font-medium text-xl">
+            <span className="tracking-tight font-medium text-xl [font-family:'Poppins',_sans-serif]">
               Ojek<span className="text-primary">Ta</span>
             </span>
           </Link>
