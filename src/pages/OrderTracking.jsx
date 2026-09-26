@@ -820,8 +820,27 @@ export default function OrderTracking() {
               Maaf, tidak ada driver yang menerima pesanan Anda dalam batas waktu (4 menit).
             </p>
             <button
-            onClick={() => navigate("/pesan")}
-            className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90">
+              onClick={() => {
+                try {
+                  localStorage.setItem("ojekta_reorder_draft", JSON.stringify({
+                    type: order.type,
+                    mode: order.mode,
+                    payment_method: order.payment_method,
+                    store_name: order.store_name,
+                    store_address: order.store_address,
+                    store_detail: order.store_detail,
+                    store_lat: order.store_lat,
+                    store_lng: order.store_lng,
+                    destination_address: order.destination_address,
+                    destination_lat: order.destination_lat,
+                    destination_lng: order.destination_lng,
+                    destination_detail: order.destination_detail,
+                    notes: order.notes,
+                  }));
+                } catch {}
+                navigate(`/pesan?type=${order.type}`);
+              }}
+              className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90">
               Buat Pesanan Baru
             </button>
           </div>

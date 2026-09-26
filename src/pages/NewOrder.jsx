@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import LocationPicker from "@/components/GoogleLocationPicker";
@@ -32,6 +32,45 @@ export default function NewOrder() {
     if (t && TYPES[t]) setType(t);
   }, [params]);
 
+  // Pesanan gagal dicarikan driver: tombol "Buat Pesanan Baru" di halaman
+  // pelacakan menyimpan draft di localStorage. Isi ulang form dari draft itu
+  // agar user tidak perlu menginput ulang. (Tab Pesan tetap ter-mount,
+  // jadi efek ini bereaksi pada perpindahan lokasi, bukan hanya saat mount.)
+  useEffect(() => {
+    if (location.pathname !== "/pesan") return;
+    let draft = null;
+    try {
+      const raw = localStorage.getItem("ojekta_reorder_draft");
+      if (raw) {
+        localStorage.removeItem("ojekta_reorder_draft");
+        draft = JSON.parse(raw);
+      }
+    } catch {}
+    if (!draft) return;
+    draftAppliedRef.current = true;
+    if (draft.type && TYPES[draft.type]) setType(draft.type);
+    if (draft.mode) setMode(draft.mode);
+    if (draft.payment_method) setPaymentMethod(draft.payment_method);
+    if (draft.store_address) {
+      setStore({
+        name: draft.store_name || draft.store_address.split(",")[0],
+        address: draft.store_address,
+        lat: draft.store_lat,
+        lng: draft.store_lng,
+      });
+    }
+    if (draft.destination_address) {
+      setDestination({
+        address: draft.destination_address,
+        lat: draft.destination_lat,
+        lng: draft.destination_lng,
+      });
+    }
+    if (draft.store_detail) setStoreDetail(draft.store_detail);
+    if (draft.destination_detail) setDestDetail(draft.destination_detail);
+    if (draft.notes) setNotes(draft.notes);
+  }, [location]);
+
   const [mode, setMode] = useState("hemat");
   const [store, setStore] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -43,6 +82,8 @@ export default function NewOrder() {
   const [submitting, setSubmitting] = useState(false);
   const [userLoc, setUserLoc] = useState(null);
   const [tariffs, setTariffs] = useState(DEFAULT_TARIFFS);
+  const draftAppliedRef = useRef(false);
+  const location = useLocation();
 
   useEffect(() => {
     getTariffs().then(setTariffs).catch(() => {});
@@ -87,6 +128,13 @@ export default function NewOrder() {
   // - food: tujuan = lokasi user
   // - goods/person: lokasi jemput = lokasi user
   useEffect(() => {
+    // Saat pertama mount, form bisa sudah terisi dari draft pesanan gagal —
+    // jangan timpa dengan lokasi GPS. Jalur GPS tetap normal saat
+    // tipe layanan diganti.
+    if (draftAppliedRef.current) {
+      draftAppliedRef.current = false;
+      return;
+    }
     let active = true;
     setStore(null);
     setDestination(null);
