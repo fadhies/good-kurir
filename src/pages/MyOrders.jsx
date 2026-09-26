@@ -123,7 +123,7 @@ export default function MyOrders() {
           <button
             key={o.id}
             onClick={() => navigate(`/pesanan/${o.id}`)}
-            className="w-full text-left bg-card rounded-2xl border border-border p-4 hover:border-primary/40 hover:shadow-sm transition-all flex items-center gap-4">
+            className="w-full text-left bg-card rounded-2xl border border-border px-4 py-2 hover:border-primary/40 hover:shadow-sm transition-all flex items-center gap-4">
             
               <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 {activeTab === "pemesan" ? <ShoppingBag className="w-5 h-5 text-primary" /> : <Bike className="w-5 h-5 text-primary" />}
