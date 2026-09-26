@@ -196,18 +196,18 @@ export default function NewOrder() {
                 {type === "food" ? "Resto/Toko" : "Lokasi Jemput"}
               </label>
               <LocationPicker
-                label={type === "food" ? "cari Restoran/Toko" : "cari atau pin lokasi jemput"}
-                value={store}
-                onChange={setStore}
-                accent={currentType.accent}
-                biasCenter={userLoc} />
+                  label={type === "food" ? "cari Restoran/Toko" : "cari atau pin lokasi jemput"}
+                  value={store}
+                  onChange={setStore}
+                  accent={currentType.accent}
+                  biasCenter={userLoc} />
 
               <div className="mt-2">
                 <input
-                  value={storeDetail}
-                  onChange={(e) => setStoreDetail(e.target.value)}
-                  placeholder={`Detil ${type === "food" ? "resto/toko" : "lokasi jemput"} (opsional)`}
-                  className={detailInputCls} />
+                    value={storeDetail}
+                    onChange={(e) => setStoreDetail(e.target.value)}
+                    placeholder={`Detil ${type === "food" ? "resto/toko" : "lokasi jemput"} (opsional)`}
+                    className={detailInputCls} />
 
               </div>
             </div>
@@ -228,18 +228,18 @@ export default function NewOrder() {
             <div className="flex-1 min-w-0">
               <label className="block text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1.5">Lokasi Tujuan</label>
               <LocationPicker
-                label="Tujuan pengantaran"
-                value={destination}
-                onChange={setDestination}
-                accent="158 64% 45%"
-                biasCenter={userLoc} />
+                  label="Tujuan pengantaran"
+                  value={destination}
+                  onChange={setDestination}
+                  accent="158 64% 45%"
+                  biasCenter={userLoc} />
 
               <div className="mt-2">
                 <input
-                  value={destDetail}
-                  onChange={(e) => setDestDetail(e.target.value)}
-                  placeholder="Detil alamat (opsional)"
-                  className={detailInputCls} />
+                    value={destDetail}
+                    onChange={(e) => setDestDetail(e.target.value)}
+                    placeholder="Detil alamat (opsional)"
+                    className={detailInputCls} />
 
               </div>
             </div>
@@ -252,46 +252,46 @@ export default function NewOrder() {
             {type === "food" ? "Rincian pesanan (opsional)" : "Catatan untuk Driver (opsional)"}
           </label>
           <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            placeholder={
-            type === "food" ?
-            "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
-            type === "goods" ?
-            "Mis: Paket berupa dokumen, tolong hati-hati" :
-            "Mis: Penumpang 1 orang, bawa tas kecil"
-            }
-            className={`${detailInputCls} resize-none`} />
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              placeholder={
+              type === "food" ?
+              "Mis: Nasi goreng ayam 1 porsi, level pedas, pakai telur" :
+              type === "goods" ?
+              "Mis: Paket berupa dokumen, tolong hati-hati" :
+              "Mis: Penumpang 1 orang, bawa tas kecil"
+              }
+              className={`${detailInputCls} resize-none`} />
 
         </div>
 
         {/* Ongkos Kirim: mode pengantaran + keterangan tarif */}
         <div className="bg-card p-4 rounded-3xl border border-border shadow-sm">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm hidden">
               <Tags className="w-4 h-4" />
             </div>
             <h3 className="text-xs font-bold text-foreground">Ongkos Kirim</h3>
           </div>
-          {type === "food" && (
-          <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1 mb-3">
+          {type === "food" &&
+            <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1 mb-3">
             {[
               { v: "hemat", l: "Hemat" },
-              { v: "cepat", l: "Cepat" }
-            ].map((o) => (
+              { v: "cepat", l: "Cepat" }].
+              map((o) =>
               <button
                 key={o.v}
                 onClick={() => setMode(o.v)}
                 className={`flex-1 py-2.5 px-2 rounded-xl transition-all flex items-center justify-center ${
-                  mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
+                mode === o.v ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "text-slate-600 hover:text-slate-900"}`
+                }>
+                
                 <span className="text-xs font-bold leading-tight">{o.l}</span>
               </button>
-            ))}
+              )}
           </div>
-          )}
+            }
           <p className="text-[11px] text-emerald-700">
             <span className="font-bold">Rp{(activeTariff?.base ?? 0).toLocaleString("id-ID")}</span> ({activeTariff?.base_km ?? 0} km pertama), +Rp{(activeTariff?.per_km ?? 0).toLocaleString("id-ID")}/km berikutnya.
           </p>
@@ -302,20 +302,20 @@ export default function NewOrder() {
           <label className="block text-xs font-bold text-foreground mb-2">Metode Pembayaran</label>
           <div className="grid grid-cols-2 gap-2">
             {[
-            { v: "cash", l: "Tunai", sub: "Bayar ke driver", Icon: Banknote },
-            { v: "qris", l: "Non Tunai", Icon: Wallet }].
-            map((o) => {
-              const active = paymentMethod === o.v;
-              const disabled = o.v === "cash" && !cashAvailable || o.v === "qris" && type !== "food";
-              const Icon = o.Icon;
-              return (
-                <button
-                  key={o.v}
-                  disabled={disabled}
-                  onClick={() => setPaymentMethod(o.v)}
-                  className={`p-3 rounded-2xl flex items-center justify-between text-left transition-all ${
-                  active ? "border-2 border-emerald-600 bg-emerald-50/50" : "border border-slate-200 bg-background hover:border-slate-300"} ${
-                  disabled ? "opacity-40 cursor-not-allowed" : ""}`}>
+              { v: "cash", l: "Tunai", sub: "Bayar ke driver", Icon: Banknote },
+              { v: "qris", l: "Non Tunai", Icon: Wallet }].
+              map((o) => {
+                const active = paymentMethod === o.v;
+                const disabled = o.v === "cash" && !cashAvailable || o.v === "qris" && type !== "food";
+                const Icon = o.Icon;
+                return (
+                  <button
+                    key={o.v}
+                    disabled={disabled}
+                    onClick={() => setPaymentMethod(o.v)}
+                    className={`p-3 rounded-2xl flex items-center justify-between text-left transition-all ${
+                    active ? "border-2 border-emerald-600 bg-emerald-50/50" : "border border-slate-200 bg-background hover:border-slate-300"} ${
+                    disabled ? "opacity-40 cursor-not-allowed" : ""}`}>
 
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon className={`w-4 h-4 shrink-0 ${active ? "text-emerald-600" : "text-muted-foreground"}`} />
@@ -327,28 +327,28 @@ export default function NewOrder() {
                   {active && <CircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />}
                 </button>);
 
-            })}
+              })}
           </div>
           {paymentMethod === "cash" &&
-          <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Pelanggan membayar ke driver setelah pesanan selesai.
             </p>
-          }
+            }
           {paymentMethod === "qris" &&
-          <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Pelanggan bayar langsung ke toko/resto atau transfer ke driver.
             </p>
-          }
+            }
           {!cashAvailable &&
-          <p className="text-xs text-destructive mt-2">
+            <p className="text-xs text-destructive mt-2">
               Pembayaran tunai tidak tersedia (tidak ada driver online saat ini).
             </p>
-          }
+            }
         </div>
 
         {/* 6. Ringkasan */}
         {distance != null &&
-        <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl border border-primary/20 p-5">
+          <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl border border-primary/20 p-5">
             <div className="flex items-center gap-2 mb-3">
               <Route className="w-4 h-4 text-primary" />
               <h3 className="font-bold text-primary">Ringkasan</h3>
@@ -358,11 +358,11 @@ export default function NewOrder() {
               <span className="font-semibold">{(Math.round(distance * 10) / 10).toFixed(1)} km</span>
             </div>
             {type === "food" &&
-          <div className="flex justify-between text-sm py-1">
+            <div className="flex justify-between text-sm py-1">
                 <span className="text-muted-foreground">Mode</span>
                 <span className="font-semibold">{mode === "cepat" ? "Cepat" : "Hemat"}</span>
               </div>
-          }
+            }
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">Pembayaran</span>
               <span className="font-semibold">
@@ -378,12 +378,12 @@ export default function NewOrder() {
               <span className="font-semibold">{formatRupiah(serviceFee)}</span>
             </div>
             {type === "food" &&
-          <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
                 *Harga barang dibayar terpisah setelah driver beli di toko
               </p>
-          }
+            }
           </div>
-        }
+          }
 
         {/* 7. Bar estimasi biaya & tombol pesan */}
         <div className="bg-slate-900 text-white rounded-3xl p-4 flex items-center justify-between gap-4 shadow-xl shadow-slate-900/10">
@@ -393,22 +393,22 @@ export default function NewOrder() {
               {distance != null ? formatRupiah(deliveryFee + serviceFee) : "—"}
             </p>
             {distance != null &&
-            <p className="text-[10px] text-slate-400">Ongkir + fee layanan</p>}
+              <p className="text-[10px] text-slate-400">Ongkir + fee layanan</p>}
           </div>
           <button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-3 rounded-2xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 text-sm active:scale-95 disabled:opacity-60 whitespace-nowrap">
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-3 rounded-2xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 text-sm active:scale-95 disabled:opacity-60 whitespace-nowrap">
 
             {submitting ?
-            <>
+              <>
                 <Loader2 className="w-4 h-4 animate-spin" /> Mencari driver...
               </> :
 
-            <>
+              <>
                 Pesan Sekarang <ArrowRight className="w-4 h-4" />
               </>
-            }
+              }
           </button>
         </div>
       </div>
