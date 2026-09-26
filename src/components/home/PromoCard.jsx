@@ -23,7 +23,7 @@ export default function PromoCard() {
         className="absolute right-6 top-7 text-[#159a3c] flex items-center gap-1 pointer-events-none"
         style={{ transform: "rotate(-9deg)" }}>
         
-        <TicketPercent className="w-[58px] h-[58px] text-[#38b83f]" />
+        <TicketPercent className="w-[58px] h-[58px] text-white" />
         <b className="text-[10px] leading-tight">
           Lebih Hemat<br />Lebih Dekat
         </b>
