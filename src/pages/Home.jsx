@@ -39,7 +39,7 @@ export default function Home() {
           <HomeTopBar />
         </div>
         <PullToRefresh onRefresh={loadDriver}>
-          <HomeHero firstName={user?.full_name?.split(" ")[0] || "Sobat"} />
+          <HomeHero firstName={user?.full_name?.split(" ")[0] || "Sobat"} userId={user?.id} />
           <ServiceGrid />
           <PromoCard />
           <CourierCta driverProfile={driverProfile} />

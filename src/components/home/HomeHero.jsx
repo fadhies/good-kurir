@@ -1,14 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Search, Home as HouseIcon, Briefcase, Plus } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
+import FavoritePlacesChips from "@/components/home/FavoritePlacesChips";
 
-const QUICK_LOCATIONS = [
-{ label: "Rumah", icon: HouseIcon },
-{ label: "Kantor", icon: Briefcase },
-{ label: "Tambah Lokasi", icon: Plus }];
-
-
-export default function HomeHero({ firstName }) {
+export default function HomeHero({ firstName, userId }) {
   const navigate = useNavigate();
   const startOrder = () => navigate("/pesan?type=person");
 
@@ -31,21 +26,9 @@ export default function HomeHero({ firstName }) {
         <Search className="w-[18px] h-[18px] text-[#086b5d]" />
       </button>
 
-      <div className="absolute z-20 left-5 right-5 bottom-[19px] flex gap-2">
-        {QUICK_LOCATIONS.map((q) => {
-          const Icon = q.icon;
-          return (
-            <button
-              key={q.label}
-              onClick={startOrder}
-              className="rounded-[22px] px-[13px] py-2.5 bg-white/90 backdrop-blur text-[#174539] flex items-center gap-1.5 text-[11px] font-medium whitespace-nowrap">
-              
-              <Icon className="w-4 h-4 text-[#087c61]" />
-              {q.label}
-            </button>);
-
-        })}
+      <div className="absolute z-20 left-5 right-5 bottom-[19px] overflow-x-auto scrollbar-hide">
+        <FavoritePlacesChips userId={userId} />
       </div>
-    </section>);
-
+    </section>
+  );
 }

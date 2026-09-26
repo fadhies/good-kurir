@@ -30,6 +30,14 @@ export default function NewOrder() {
   useEffect(() => {
     const t = params.get("type");
     if (t && TYPES[t]) setType(t);
+    // Tujuan favorit dari chip di Beranda (layanan antar orang): praisi tujuan.
+    const lat = parseFloat(params.get("dest_lat"));
+    const lng = parseFloat(params.get("dest_lng"));
+    const addr = params.get("dest_addr");
+    if (addr && Number.isFinite(lat) && Number.isFinite(lng)) {
+      destAppliedRef.current = true;
+      setDestination({ address: addr, lat, lng });
+    }
   }, [params]);
 
   // Pesanan gagal dicarikan driver: tombol "Buat Pesanan Baru" di halaman
@@ -83,6 +91,7 @@ export default function NewOrder() {
   const [userLoc, setUserLoc] = useState(null);
   const [tariffs, setTariffs] = useState(DEFAULT_TARIFFS);
   const draftAppliedRef = useRef(false);
+  const destAppliedRef = useRef(false);
 
   useEffect(() => {
     getTariffs().then(setTariffs).catch(() => {});
@@ -135,8 +144,12 @@ export default function NewOrder() {
       return;
     }
     let active = true;
+    // Tujuan sudah terisi dari alamat favorit (chip Beranda) — pertahankan;
+    // GPS tetap mengisi lokasi jemput secara otomatis.
+    const keepDest = destAppliedRef.current;
+    if (keepDest) destAppliedRef.current = false;
     setStore(null);
-    setDestination(null);
+    if (!keepDest) setDestination(null);
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
