@@ -130,7 +130,7 @@ export default function Layout({ children }) {
                 </div>
               </Link>
             }
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <NotificationBell />
               <ProfileMenu />
             </div>
