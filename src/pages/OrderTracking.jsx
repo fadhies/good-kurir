@@ -6,7 +6,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { subscribeOrder } from "@/lib/realtime";
-import { formatRupiah } from "@/lib/geo";
+import { formatRupiah, shortAddress } from "@/lib/geo";
 import { Loader2, Store, MapPin, FileText, Bike, CreditCard, CheckCircle2, Phone, Navigation, X } from "lucide-react";
 
 function mapsUrl(lat, lng, address) {
@@ -465,7 +465,7 @@ export default function OrderTracking() {
                 rel="noopener noreferrer"
                 className="text-sm underline selectable inline-flex items-center gap-1 break-all text-[hsl(var(--popover-foreground))]">
                 
-                <Navigation className="w-3.5 h-3.5 shrink-0" /> {order.store_address}
+                <Navigation className="w-3.5 h-3.5 shrink-0" /> {shortAddress(order.store_address)}
               </a>
               {order.store_detail &&
               <p className="text-sm text-muted-foreground mt-1 selectable">📍 {order.store_detail}</p>
@@ -483,7 +483,7 @@ export default function OrderTracking() {
                 rel="noopener noreferrer"
                 className="font-semibold text-sm underline selectable inline-flex items-center gap-1 break-all text-[hsl(var(--popover-foreground))]">
                 
-                <Navigation className="w-3.5 h-3.5 shrink-0" /> {order.destination_address}
+                <Navigation className="w-3.5 h-3.5 shrink-0" /> {shortAddress(order.destination_address)}
               </a>
               {order.destination_detail &&
               <p className="text-sm text-muted-foreground mt-1 selectable">{order.destination_detail}</p>

@@ -41,6 +41,23 @@ export function calcFees(deliveryFee) {
   return { app_fee: appFee, admin_fee: adminFee, driver_earning: driverEarning };
 }
 
+// Ringkas alamat: buang kelurahan, kecamatan, kabupaten, negara, dan kode pos.
+export function shortAddress(address) {
+  if (!address) return "";
+  const DROP = [
+    /^kel(urahan)?\b/i,
+    /^kec(amatan)?\b/i,
+    /^kab(upaten)?\b/i,
+    /^indonesia$/i,
+    /^\d{4,5}$/,
+  ];
+  return address
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s && !DROP.some((re) => re.test(s)))
+    .join(", ");
+}
+
 export function formatRupiah(amount) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
