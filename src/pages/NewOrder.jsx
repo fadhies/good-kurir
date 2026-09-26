@@ -181,28 +181,6 @@ export default function NewOrder() {
       <p className="text-[11px] text-muted-foreground font-medium mb-4">Lengkapi rincian perjalanan Anda</p>
 
       <div className="space-y-4">
-        {/* 1. Pilihan layanan */}
-        <div class="bg-slate-200/70 p-1 rounded-2xl grid grid-cols-3 gap-1">
-          {Object.entries(TYPES).map(([key, t]) => {
-            const Icon = t.icon;
-            const active = type === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setType(key)}
-                className={`py-2 px-1 rounded-xl text-[11px] font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
-                  active
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span class="truncate text-center">{t.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
         {/* 2. Mode pengantaran (khusus makanan) */}
         {type === "food" && (
         <div className="bg-slate-200/70 p-1 rounded-2xl flex items-center gap-1">
