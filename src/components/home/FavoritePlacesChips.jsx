@@ -80,7 +80,19 @@ export default function FavoritePlacesChips({ userId }) {
             <button key={b.id} onClick={() => chipClick(b)} className={chipCls}>
               <Icon className={`w-4 h-4 ${saved ? "text-[#079447]" : "text-[#087c61]"}`} />
               {b.label}
-              {saved && <span className="text-[#079447] font-bold">✓</span>}
+              {saved && (
+                <span
+                  role="button"
+                  aria-label={`Hapus ${b.label}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    persist(favorites.filter((f) => f.id !== b.id));
+                  }}
+                  className="text-[#98a2b3] hover:text-[#d92d20] font-bold leading-none"
+                >
+                  ×
+                </span>
+              )}
             </button>
           );
         })}
