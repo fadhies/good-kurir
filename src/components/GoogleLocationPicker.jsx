@@ -211,7 +211,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
     <div className="space-y-2">
       <label className="text-sm font-semibold text-foreground/80">{label}</label>
       <div className="relative">
-        <div className="flex items-center gap-2 rounded-xl border border-input bg-card px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring">
+        <div className="flex items-center gap-2 rounded-xl border-2 border-input bg-card px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input
             value={query}
