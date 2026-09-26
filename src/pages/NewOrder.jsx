@@ -177,7 +177,7 @@ export default function NewOrder() {
   return (
     <Layout>
       <PullToRefresh onRefresh={refresh}>
-      <h1 className="text-base font-extrabold text-foreground tracking-tight leading-tight">Buat Pesanan</h1>
+      <h1 className="text-base text-foreground tracking-tight leading-tight [font-family:'Poppins',_sans-serif] font-semibold">Buat Pesanan</h1>
       <p className="text-[11px] text-muted-foreground font-medium mb-4">Lengkapi rincian perjalanan Anda</p>
 
       <div className="space-y-4">
