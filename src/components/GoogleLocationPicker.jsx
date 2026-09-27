@@ -4,9 +4,12 @@ import { Search, Loader2, MapPin } from "lucide-react";
 
 const DEFAULT_CENTER = { lat: -6.2, lng: 106.816666 };
 
-export default function GoogleLocationPicker({ label, value, onChange, biasCenter, onExpandChange }) {
+export default function GoogleLocationPicker({ label, value, onChange, biasCenter, expanded, onExpandChange }) {
   const [query, setQuery] = useState(value?.address || "");
-  const [mapOpen, setMapOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  // Bisa dikontrol dari parent (expanded) agar peta ikut tertutup saat user
+  // pindah halaman; tanpa prop ini perilaku internal seperti sebelumnya.
+  const mapOpen = expanded !== undefined ? expanded : internalOpen;
   const [predictions, setPredictions] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -219,6 +222,22 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
     });
   }
 
+  function openMap() {
+    if (expanded === undefined) setInternalOpen(true);
+    onExpandChange?.(true);
+  }
+
+  // Tutup peta & lepas instance Google Maps agar peta dibuat ulang bersih
+  // saat dibuka kembali (elemen peta ikut ter-unmount saat mapOpen false).
+  function closeMap() {
+    if (expanded === undefined) setInternalOpen(false);
+    onExpandChange?.(false);
+    mapInitRef.current = false;
+    mapRef.current = null;
+    markerRef.current = null;
+    setReady(false);
+  }
+
   async function pickFromMap(lat, lng) {
     const { address, name } = await reverseGeocode(lat, lng);
     setQuery(name || address);
@@ -260,7 +279,7 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
       {!mapOpen &&
       <button
         type="button"
-        onClick={() => {setMapOpen(true);onExpandChange?.(true);}}
+        onClick={openMap}
         className="flex items-center gap-1 text-xs text-primary justify-start text-left w-full [font-family:'Poppins',_sans-serif] font-medium">
         <MapPin className="w-5 h-5 shrink-0" /> buka peta atau tambahkan detil alamat
       </button>
@@ -274,6 +293,14 @@ export default function GoogleLocationPicker({ label, value, onChange, biasCente
         }
         <div ref={mapElRef} style={{ height: "100%", width: "100%" }} />
       </div>
+      }
+      {mapOpen &&
+      <button
+        type="button"
+        onClick={closeMap}
+        className="flex items-center gap-1 text-xs text-muted-foreground justify-start text-left w-full [font-family:'Poppins',_sans-serif] font-medium hover:text-foreground transition-colors">
+        <MapPin className="w-5 h-5 shrink-0" /> tutup peta
+      </button>
       }
     </div>);
 

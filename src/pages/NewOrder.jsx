@@ -21,6 +21,7 @@ export default function NewOrder() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const location = useLocation();
   const { toast } = useToast();
 
   const [type, setType] = useState(params.get("type") || "food");
@@ -44,6 +45,15 @@ export default function NewOrder() {
   // pelacakan menyimpan draft di localStorage. Isi ulang form dari draft itu
   // agar user tidak perlu menginput ulang. (Tab Pesan tetap ter-mount,
   // jadi efek ini bereaksi pada perpindahan lokasi, bukan hanya saat mount.)
+  // Saat user meninggalkan halaman pesanan, kartu peta kembali tertutup
+  // secara default (tab tetap ter-mount, jadi harus di-reset eksplisit).
+  useEffect(() => {
+    if (location.pathname !== "/pesan") {
+      setStoreMapOpen(false);
+      setDestMapOpen(false);
+    }
+  }, [location]);
+
   useEffect(() => {
     if (location.pathname !== "/pesan") return;
     let draft = null;
@@ -263,6 +273,7 @@ export default function NewOrder() {
                   onChange={setStore}
                   accent={currentType.accent}
                   biasCenter={userLoc}
+                  expanded={storeMapOpen}
                   onExpandChange={setStoreMapOpen} />
 
               {storeMapOpen &&
@@ -298,6 +309,7 @@ export default function NewOrder() {
                   onChange={setDestination}
                   accent="158 64% 45%"
                   biasCenter={userLoc}
+                  expanded={destMapOpen}
                   onExpandChange={setDestMapOpen} />
 
               {destMapOpen &&
