@@ -493,7 +493,7 @@ export default function NewOrder() {
         </div>
       </div>
       {/* Ruang ekstra agar bar estimasi biaya tidak tertutup navigasi bawah */}
-      <div className="h-20" />
+      <div className="h-8" />
       </PullToRefresh>
     </Layout>);
 
