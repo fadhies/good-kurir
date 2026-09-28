@@ -22,9 +22,12 @@ export default function CourierCta({ driverProfile }) {
         <small className="text-[#667085] text-xs block leading-tight mt-3">Yuk, mulai perjalanan bersama OjekTa.</small>
       </div>
       {driverProfile ?
-      <span className="bg-[#f1f5f3] text-[#667085] rounded-[17px] px-3 py-2.5 text-[9px] font-semibold whitespace-nowrap">
+      <Link
+        to="/jadi-driver"
+        className="bg-[#f1f5f3] text-[#667085] rounded-[17px] px-3 py-2.5 text-[9px] font-semibold whitespace-nowrap flex items-center gap-1 active:scale-95 transition-transform">
           {status === "pending" ? "Menunggu Verifikasi" : status === "approved" ? "Sudah Terdaftar" : "Ditolak"}
-        </span> :
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Link> :
 
       <Link
         to="/jadi-driver"
