@@ -21,6 +21,8 @@ export default function AdminDrivers() {
   const [tab, setTab] = useState("pending");
   const [search, setSearch] = useState("");
   const [acting, setActing] = useState(null);
+  const [rejectTarget, setRejectTarget] = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   async function load() {
     setLoading(true);
@@ -58,10 +60,32 @@ export default function AdminDrivers() {
     });
   }, [drivers, tab, search, userMap]);
 
+  async function confirmReject() {
+    const reason = rejectReason.trim();
+    if (!reason) {
+      toast({ title: "Isi alasan penolakan dulu", variant: "destructive" });
+      return;
+    }
+    setActing(rejectTarget.id);
+    try {
+      await S.DriverProfile.update(rejectTarget.id, {
+        verification_status: "rejected",
+        rejection_reason: reason
+      });
+      toast({ title: "Driver ditolak", description: "Alasan dikirim ke driver untuk diperbaiki." });
+      setRejectTarget(null);
+      load();
+    } catch (e) {
+      toast({ title: "Gagal", description: e.message, variant: "destructive" });
+    } finally {
+      setActing(null);
+    }
+  }
+
   async function setVerification(driver, status) {
     setActing(driver.id);
     try {
-      await S.DriverProfile.update(driver.id, { verification_status: status });
+      await S.DriverProfile.update(driver.id, { verification_status: status, rejection_reason: null });
       toast({ title: status === "approved" ? "Driver disetujui" : "Driver ditolak" });
       load();
     } catch (e) {
@@ -161,7 +185,7 @@ export default function AdminDrivers() {
                       <CheckCircle2 className="w-4 h-4" /> Setujui
                     </button>
                     <button
-                  onClick={() => setVerification(d, "rejected")}
+                  onClick={() => {setRejectTarget(d); setRejectReason("");}}
                   disabled={acting === d.id}
                   className="flex-1 inline-flex items-center justify-center gap-1.5 bg-red-500 text-white font-semibold py-2.5 rounded-xl text-sm hover:opacity-90 disabled:opacity-60">
                   
@@ -191,6 +215,38 @@ export default function AdminDrivers() {
 
         })}
         </div>
+      }
+
+      {rejectTarget &&
+      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setRejectTarget(null)}>
+        <div className="bg-card w-full max-w-md rounded-2xl border border-border p-5" onClick={(e) => e.stopPropagation()}>
+          <h3 className="font-semibold mb-1">Tolak Pendaftaran</h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Tulis alasan penolakan agar driver tahu apa yang harus diperbaiki.
+          </p>
+          <textarea
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            rows={3}
+            autoFocus
+            placeholder="Mis: Foto selfie tidak jelas, ambil ulang sambil memegang KTP"
+            className="w-full border border-input rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring/50 bg-background resize-none" />
+
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => setRejectTarget(null)}
+              className="flex-1 bg-secondary text-secondary-foreground font-semibold py-2.5 rounded-xl text-sm hover:opacity-90">
+              Batal
+            </button>
+            <button
+              onClick={confirmReject}
+              disabled={acting === rejectTarget.id}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 bg-red-500 text-white font-semibold py-2.5 rounded-xl text-sm hover:opacity-90 disabled:opacity-60">
+              <XCircle className="w-4 h-4" /> Tolak
+            </button>
+          </div>
+        </div>
+      </div>
       }
     </AdminLayout>);
 
