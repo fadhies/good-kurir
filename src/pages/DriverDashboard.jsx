@@ -352,7 +352,7 @@ export default function DriverDashboard() {
         className="w-full bg-card rounded-2xl border border-border p-4 mb-4 flex items-center gap-3 hover:border-primary/40 transition-colors"
       >
         <MapPin className="w-5 h-5 text-primary" />
-        <div className="flex-1 text-left">
+        <div className="flex-1 min-w-0 text-left">
           <p className="text-xs text-muted-foreground">Lokasi saat ini</p>
           <p className="text-sm font-medium truncate">{profile.current_address || "Belum diatur"}</p>
         </div>
