@@ -56,7 +56,7 @@ export default function DriverStepDataDiri({ data, onChange, email }) {
             className={`${inputCls} ${data.danaSame ? "bg-slate-50 text-slate-500" : ""}`}
           />
         </label>
-        <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 -mt-1">
+        <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 mt-2">
           <input
             type="checkbox"
             checked={data.danaSame}
