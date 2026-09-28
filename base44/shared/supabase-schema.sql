@@ -57,6 +57,9 @@ create table if not exists driver_profiles (
   updated_date timestamptz,
   created_by_id text,
   user_id text,
+  full_name text,
+  birth_date text,
+  dana_number text,
   vehicle_type text,
   license_plate text,
   ktp_photo text,
@@ -73,6 +76,13 @@ create table if not exists driver_profiles (
 );
 create index if not exists driver_profiles_user_idx on driver_profiles (user_id);
 create index if not exists driver_profiles_status_idx on driver_profiles (verification_status);
+
+-- Kolom tambahan pendaftaran driver (v2). Jalankan di SQL Editor bila tabel
+-- sudah dibuat sebelumnya, lalu muat ulang cache PostgREST.
+alter table driver_profiles add column if not exists full_name text;
+alter table driver_profiles add column if not exists birth_date text;
+alter table driver_profiles add column if not exists dana_number text;
+notify pgrst, 'reload schema';
 
 -- Driver remittances
 create table if not exists driver_remittances (

@@ -5,6 +5,16 @@
     "user_id": {
       "type": "string"
     },
+    "full_name": {
+      "type": "string"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "dana_number": {
+      "type": "string"
+    },
     "vehicle_type": {
       "type": "string",
       "enum": [
