@@ -8,7 +8,7 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
-    --card: 210 40% 98%;
+    --card: 0 0% 100%;
     --card-foreground: 128 60% 53%;
     --popover: 0 0% 100%;
     --popover-foreground: 21 92% 14%;
@@ -92,7 +92,19 @@
   }
 }
 
+/* Kartu (bg-card + border): putih, border #eef3f0, bayangan lembut.
+   Ditulis di layer components agar kelas shadow Tailwind eksplisit
+   (shadow-sm, hover:shadow-md, dll.) tetap menang bila dipakai elemen. */
+@layer components {
+  html:not(.dark) .bg-card.border {
+    box-shadow: 0 8px 20px rgba(34, 83, 62, 0.08);
+  }
+}
+
 @layer utilities {
+  html:not(.dark) .bg-card.border {
+    border-color: #eef3f0;
+  }
   .glass-card {
     background: hsl(var(--card) / 0.85);
     backdrop-filter: blur(12px);
