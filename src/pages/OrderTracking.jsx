@@ -108,8 +108,15 @@ export default function OrderTracking() {
         notifyDriverStatus("on_the_way");
         toast({ title: "Mulai mengantar ke tujuan" });
       } else {
-        if (!user?.phone) {
-          toast({ title: "Nomor HP/Dana belum diatur", description: "Lengkapi nomor HP Anda agar pelanggan bisa transfer ke akun Dana Anda.", variant: "destructive" });
+        // Gunakan nomor DANA yang diisi saat pendaftaran driver;
+        // jika belum ada, jatuh back ke nomor HP.
+        let dana = user?.phone || "";
+        try {
+          const prof = await S.DriverProfile.filter({ user_id: user.id });
+          if (prof[0]?.dana_number) dana = prof[0].dana_number;
+        } catch {}
+        if (!dana) {
+          toast({ title: "Nomor DANA belum diatur", description: "Lengkapi nomor DANA Anda di pendaftaran driver agar pelanggan bisa transfer.", variant: "destructive" });
           setBillConfirm(null);
           return;
         }
@@ -117,7 +124,7 @@ export default function OrderTracking() {
           status: "awaiting_payment",
           item_cost: cost,
           store_bill_note: billNote,
-          driver_dana_number: user.phone
+          driver_dana_number: dana
         });
         notifyDriverStatus("awaiting_payment");
         toast({ title: "Tagihan dikirim", description: "Pelanggan akan transfer ke akun Dana Anda." });
