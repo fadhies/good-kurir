@@ -7,5 +7,5 @@ export const base44 = createClient({
   appId,
   token,
   functionsVersion,
-  appBaseUrl: 'https://ojek-kita.base44.app'
+  appBaseUrl: 'https://ojol-kita.base44.app'
 });
