@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import HomeTopBar from "@/components/home/HomeTopBar";
+import HomeNav from "@/components/home/HomeNav";
 import HomeHero from "@/components/home/HomeHero";
 import ServiceGrid from "@/components/home/ServiceGrid";
 import PromoCard from "@/components/home/PromoCard";
@@ -12,7 +13,10 @@ export default function HomeDesktop({ user, driverProfile }) {
   return (
     <div className="max-w-6xl mx-auto px-8 py-8 [font-family:'Poppins',_sans-serif] text-[#10243a]">
       <div className="bg-white rounded-[30px] border border-[#eef3f0] shadow-[0_20px_70px_rgba(0,83,56,0.16)] p-8">
-        <HomeTopBar />
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <HomeTopBar />
+          <HomeNav />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 mt-6 items-stretch">
           <HomeHero
