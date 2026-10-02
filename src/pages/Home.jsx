@@ -8,6 +8,7 @@ import HomeHero from "@/components/home/HomeHero";
 import ServiceGrid from "@/components/home/ServiceGrid";
 import PromoCard from "@/components/home/PromoCard";
 import CourierCta from "@/components/home/CourierCta";
+import HomeDesktop from "@/components/home/HomeDesktop";
 
 export default function Home() {
   const { user } = useAuth();
@@ -29,8 +30,13 @@ export default function Home() {
 
   return (
     <div className="min-h-[100dvh] bg-[#eef8f2]">
+      {/* Tablet & desktop (landscape) */}
+      <div className="hidden md:block">
+        <HomeDesktop user={user} driverProfile={driverProfile} />
+      </div>
+      {/* Mobile */}
       <div
-        className="max-w-[430px] mx-auto bg-white min-h-[100dvh] md:my-6 md:min-h-0 md:rounded-[30px] md:shadow-[0_20px_70px_rgba(0,83,56,0.16)] px-[18px] pb-28 [font-family:'Poppins',_sans-serif] text-[#10243a]"
+        className="md:hidden max-w-[430px] mx-auto bg-white min-h-[100dvh] px-[18px] pb-28 [font-family:'Poppins',_sans-serif] text-[#10243a]"
       >
         <div
           className="sticky top-0 z-40 -mx-[18px] px-[18px] bg-white md:rounded-t-[30px]"

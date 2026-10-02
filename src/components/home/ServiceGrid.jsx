@@ -26,26 +26,27 @@ const SERVICES = [
   }
 ];
 
-export default function ServiceGrid() {
+export default function ServiceGrid({ variant = "mobile" }) {
   const navigate = useNavigate();
+  const desktop = variant === "desktop";
   return (
-    <section aria-label="Layanan utama" className="grid grid-cols-3 gap-1 px-2 pt-6 pb-4">
+    <section aria-label="Layanan utama" className={desktop ? "grid grid-cols-3 gap-2 px-0" : "grid grid-cols-3 gap-1 px-2 pt-6 pb-4"}>
       {SERVICES.map((s, i) => {
         const Icon = s.icon;
         return (
           <button
             key={s.key}
             onClick={() => navigate(`/pesan?type=${s.key}`)}
-            className={`flex flex-col items-center text-center text-[#10243a] px-1 py-2 ${i < SERVICES.length - 1 ? "border-r border-[#d8e3de]" : ""}`}
+            className={`flex flex-col items-center text-center text-[#10243a] ${desktop ? "px-2 py-5 rounded-[20px] hover:bg-[#f4faf6] transition-colors" : "px-1 py-2"} ${i < SERVICES.length - 1 ? "border-r border-[#d8e3de]" : ""}`}
           >
             <span
-              className="w-[70px] h-[70px] rounded-full grid place-items-center text-white shadow-[0_10px_16px_rgba(10,106,79,0.16)]"
+              className={`${desktop ? "w-[84px] h-[84px]" : "w-[70px] h-[70px]"} rounded-full grid place-items-center text-white shadow-[0_10px_16px_rgba(10,106,79,0.16)]`}
               style={{ background: s.gradient }}
             >
-              <Icon className="w-[35px] h-[35px]" />
+              <Icon className={desktop ? "w-[42px] h-[42px]" : "w-[35px] h-[35px]"} />
             </span>
-            <b className="text-base font-bold mt-2">{s.name}</b>
-            <small className="text-[9px] leading-[1.25] text-[#26384b]">{s.desc}</small>
+            <b className={`${desktop ? "text-lg font-bold mt-3" : "text-base font-bold mt-2"}`}>{s.name}</b>
+            <small className={desktop ? "text-[11px] leading-[1.35] text-[#26384b]" : "text-[9px] leading-[1.25] text-[#26384b]"}>{s.desc}</small>
           </button>
         );
       })}
