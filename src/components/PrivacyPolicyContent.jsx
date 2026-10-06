@@ -1,13 +1,24 @@
 import React from "react";
-import { Database, Search, Target, ShieldCheck, Share2, Cookie, UserCheck, FileText, Mail, Phone } from "lucide-react";
+import { Database, Search, Target, ShieldCheck, Share2, Cookie, UserCheck, FileText, Mail, Phone, KeyRound } from "lucide-react";
 
 const SECTIONS = [
   {
     icon: Database,
     title: "Informasi yang Dikumpulkan",
     body: [
-      "Kami mengumpulkan data pribadi berupa: nama lengkap, alamat email, nomor telepon, alamat IP, data lokasi (GPS) saat Anda menggunakan layanan pesanan/antar, serta informasi pembayaran (mis. bukti transfer dan nomor akun Dana) yang diperlukan untuk memproses transaksi.",
+      "Kami mengumpulkan data pribadi berupa: nama lengkap, alamat email, nomor telepon, alamat IP, data lokasi (GPS) saat Anda menggunakan layanan pesanan/antar, riwayat pesanan (titik jemput, titik tujuan, waktu pesanan, nilai transaksi, metode pembayaran, dan status pesanan), serta informasi pembayaran (mis. bukti transfer dan nomor akun Dana) yang diperlukan untuk memproses transaksi.",
       "Untuk driver, kami juga mengumpulkan data kendaraan, nomor plat, foto KTP, dan foto selfie bersama KTP sebagai syarat verifikasi."
+    ]
+  },
+  {
+    icon: KeyRound,
+    title: "Data Google yang Diakses Saat Login",
+    body: [
+      "Saat Anda masuk atau mendaftar menggunakan akun Google, aplikasi hanya menerima tiga informasi dasar yang diberikan Google: nama lengkap, alamat email, dan foto profil Anda. OjekTa tidak pernah melihat atau menyimpan sandi Google Anda, tidak membaca isi surel (email) Gmail Anda, dan tidak mengakses file Google Drive atau layanan Google lainnya.",
+      "Data Google tersebut kami gunakan untuk: membuat dan mengenali akun OjekTa Anda, menampilkan nama serta foto profil Anda di dalam aplikasi (misalnya di beranda, profil, pesanan, dan percakapan), serta menghubungi Anda terkait layanan melalui alamat email tersebut.",
+      "Data Google tersebut disimpan secara aman di server aplikasi dan hanya dapat diakses oleh sistem OjekTa sesuai peran masing-masing pengguna. Data ini tidak pernah dijual, disewakan, atau dibagikan kepada pihak ketiga untuk keperluan periklanan maupun tujuan komersial lainnya.",
+      "Anda dapat meminta penghapusan data Google (nama, email, dan foto profil) yang tersimpan pada aplikasi kapan saja, dengan cara menghapus akun melalui menu pengaturan akun di aplikasi atau menghubungi kami melalui kontak di bagian bawah kebijakan ini. Setelah akun dihapus, data tersebut akan dihapus dari sistem kami.",
+      "Untuk informasi lebih lanjut mengenai bagaimana Google menangani data Anda, silakan baca Kebijakan Privasi Google di https://policies.google.com/privacy"
     ]
   },
   {

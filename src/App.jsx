@@ -112,6 +112,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/privacy" element={<Privacy />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/" element={<TabKeepAlive active="home" />} />
         <Route path="/pesan" element={<TabKeepAlive active="pesan" />} />
@@ -122,7 +123,6 @@ const AuthenticatedApp = () => {
         <Route path="/driver" element={<TabKeepAlive active="driver" />} />
         <Route path="/driver/dompet" element={<TabKeepAlive active="driver-dompet" />} />
         <Route path="/jadi-driver" element={<BecomeDriver />} />
-        <Route path="/privacy" element={<Privacy />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/driver" element={<AdminDrivers />} />
