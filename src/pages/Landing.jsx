@@ -102,8 +102,8 @@ export default function Landing() {
           </div>
           <div className="rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,83,56,0.16)] bg-white">
             <Image
-              src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/63b0e34ef_generated_image.png"
-              alt="Kurir OjekTa"
+              src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/2ce2050d9_image.png"
+              alt="OjekTa Bulukumba"
               className="w-full aspect-[4/3]"
               fittingType="fill" />
           </div>
