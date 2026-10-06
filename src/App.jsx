@@ -19,6 +19,8 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 // Add page imports here
 import AdminRoute from '@/components/AdminRoute';
+const Landing = lazy(() => import('@/pages/Landing'));
+const Terms = lazy(() => import('@/pages/Terms'));
 const OrderTracking = lazy(() => import('@/pages/OrderTracking'));
 const ChatDetail = lazy(() => import('@/pages/ChatDetail'));
 const BecomeDriver = lazy(() => import('@/pages/BecomeDriver'));
@@ -113,7 +115,9 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/privacy" element={<Privacy />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/landing" element={<Landing />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/landing" replace />} />}>
         <Route path="/" element={<TabKeepAlive active="home" />} />
         <Route path="/pesan" element={<TabKeepAlive active="pesan" />} />
         <Route path="/chat" element={<TabKeepAlive active="chat" />} />
