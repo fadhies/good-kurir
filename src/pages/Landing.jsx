@@ -50,7 +50,9 @@ export default function Landing() {
     <div className="min-h-[100dvh] bg-[#eef8f2] [font-family:'Poppins',_sans-serif] text-[#10243a]">
       <div className="max-w-5xl mx-auto px-5 pb-10">
         {/* Header */}
-        <header className="flex items-center justify-between py-6">
+        <header
+          className="flex items-center justify-between pb-6 pt-10"
+          style={{ paddingTop: "max(40px, calc(env(safe-area-inset-top) + 24px))" }}>
           <div className="flex items-center gap-2">
             <span className="tracking-tight font-bold text-2xl [font-family:'Poppins',_sans-serif]">
               Ojek<span className="text-[#07935b]">Ta</span>
