@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Bike,
@@ -37,7 +37,7 @@ const LAYANAN = [
 ];
 
 const FITUR = [
-  { icon: MapPin, title: "Tarif Transparan", desc: "Rp12.000 untuk 4 km pertama, hanya Rp2.000/km berikutnya." },
+  { icon: MapPin, title: "Tarif Transparan", desc: "Perhitungan tarif berdasarkan jarak. Untuk 4 km pertama tarif flat, tambahan tarif dikenakan untuk km berikutnya." },
   { icon: BadgeCheck, title: "Driver Terverifikasi", desc: "Setiap driver diverifikasi admin sebelum menerima pesanan." },
   { icon: MessageCircle, title: "Chat dengan Driver", desc: "Berkoordinasi langsung dengan driver saat pesanan berjalan." },
   { icon: Wallet, title: "Pembayaran Fleksibel", desc: "Bayar tunai atau QRIS, sesukamu." },
@@ -45,6 +45,7 @@ const FITUR = [
 ];
 
 export default function Landing() {
+  const [googleExpanded, setGoogleExpanded] = useState(false);
   return (
     <div className="min-h-[100dvh] bg-[#eef8f2] [font-family:'Poppins',_sans-serif] text-[#10243a]">
       <div className="max-w-5xl mx-auto px-5 pb-10">
@@ -166,12 +167,21 @@ export default function Landing() {
             <div>
               <h2 className="text-lg font-bold">Login dengan Google</h2>
               <p className="text-sm text-[#475467] leading-relaxed mt-2">
-                OjekTa menggunakan login Google untuk membuat akun dan mengamankan
-                data pengguna. Saat masuk dengan Google, aplikasi hanya menerima
-                nama, alamat email, dan foto profil Anda. Tidak ada sandi Google
-                maupun data lain dari akun Google yang diakses, dan data tersebut
-                tidak pernah dijual atau dibagikan ke pihak ketiga.
+                OjekTa menggunakan login Google untuk membuat akun dan mengamankan data pengguna.
+                {googleExpanded && (
+                  <>
+                    {" "}Saat masuk dengan Google, aplikasi hanya menerima
+                    nama, alamat email, dan foto profil Anda. Tidak ada sandi Google
+                    maupun data lain dari akun Google yang diakses, dan data tersebut
+                    tidak pernah dijual atau dibagikan ke pihak ketiga.
+                  </>
+                )}
               </p>
+              <button
+                onClick={() => setGoogleExpanded(!googleExpanded)}
+                className="mt-2 text-sm font-semibold text-[#07935b] hover:text-[#06854f]">
+                {googleExpanded ? "Sembunyikan" : "Pelajari Lebih Lanjut"}
+              </button>
             </div>
           </div>
         </section>
