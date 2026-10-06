@@ -12,6 +12,7 @@ import {
   LogIn,
   UserPlus,
   Lock,
+  Play,
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
@@ -102,10 +103,17 @@ export default function Landing() {
                 <UserPlus className="w-4 h-4" /> Daftar
               </Link>
             </div>
+            <a
+              href="https://play.google.com/store/search?q=OjekTa"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-4 px-5 py-3 rounded-full bg-[#10243a] text-white font-semibold hover:bg-[#1b3350] transition-colors">
+              <Play className="w-4 h-4" /> Unduh di Play Store
+            </a>
           </div>
           <div className="rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,83,56,0.16)] bg-white">
             <Image
-              src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/2ce2050d9_image.png"
+              src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/e88782c9a_Screenshot_20261006_234045_Instagram.jpg"
               alt="OjekTa Bulukumba"
               className="w-full aspect-[4/3]"
               fittingType="fill" />
