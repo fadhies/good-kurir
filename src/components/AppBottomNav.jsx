@@ -47,7 +47,9 @@ export default function AppBottomNav() {
 
   // Admin pages use their own AdminLayout navigation; don't render the user
   // bottom nav there or it covers the admin sub-menu (Ringkasan/Tarif/Setoran).
+  // Auth and landing pages also have their own navigation.
   if (location.pathname.startsWith("/admin")) return null;
+  if (["/landing", "/login", "/register", "/forgot-password", "/reset-password"].includes(location.pathname)) return null;
 
   function handleTap(item) {
     // Already at this tab's root — do nothing (don't push a duplicate entry).
