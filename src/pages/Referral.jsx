@@ -91,7 +91,9 @@ export default function Referral() {
             </div>
             <p className="text-[10px] text-muted-foreground leading-relaxed mt-2 mb-3">
               Minta temanmu membuka tautan ini, lalu klik tombol Unduh di Play
-              Store di halaman utama untuk menginstal dan mulai menggunakan OjekTa
+              Store di halaman utama untuk menginstal dan mulai menggunakan OjekTa.
+              Untuk pengguna non-Android dapat langsung mendaftar dari halaman web
+              tersebut dan tidak perlu mengunduh aplikasi.
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
