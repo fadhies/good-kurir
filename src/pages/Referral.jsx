@@ -25,7 +25,7 @@ export default function Referral() {
     load();
   }, []);
 
-  const link = data?.code ? `${window.location.origin}/?ref=${data.code}` : "";
+  const link = data?.code ? `https://ojekta.com/?ref=${data.code}` : "";
 
   async function copyLink() {
     try {
