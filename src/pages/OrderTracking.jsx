@@ -524,7 +524,7 @@ export default function OrderTracking() {
               <span className="font-medium">{formatRupiah(order.delivery_fee)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Fee Layanan (10%)</span>
+              <span className="text-muted-foreground">{order.promo_free_service ? "Fee Layanan (Promo Gratis)" : "Fee Layanan (10%)"}</span>
               <span className="font-medium">{formatRupiah(order.service_fee)}</span>
             </div>
             {order.item_cost != null &&

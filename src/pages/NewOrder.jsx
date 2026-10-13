@@ -8,6 +8,7 @@ import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { haversineKm, formatRupiah } from "@/lib/geo";
 import { getTariffs, computeDeliveryFee, computeServiceFee, DEFAULT_TARIFFS } from "@/lib/tariffs";
+import { getDeviceId } from "@/lib/deviceId";
 import { Bike, Package, Utensils, Loader2, MapPin, FileText, Route, Tags, Banknote, Wallet, CircleCheck, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -100,6 +101,8 @@ export default function NewOrder() {
   const [submitting, setSubmitting] = useState(false);
   const [userLoc, setUserLoc] = useState(null);
   const [tariffs, setTariffs] = useState(DEFAULT_TARIFFS);
+  const [promoEligible, setPromoEligible] = useState(false);
+  const [promoRemaining, setPromoRemaining] = useState(null);
   const draftAppliedRef = useRef(false);
   const destAppliedRef = useRef(false);
   const [storeMapOpen, setStoreMapOpen] = useState(false);
@@ -107,6 +110,17 @@ export default function NewOrder() {
 
   useEffect(() => {
     getTariffs().then(setTariffs).catch(() => {});
+  }, []);
+
+  // Cek kelayakan promo "gratis fee layanan 3 order pertama" per perangkat.
+  useEffect(() => {
+    base44.functions.
+    invoke("promoStatus", { deviceId: getDeviceId() }).
+    then((res) => {
+      setPromoEligible(!!res.data?.eligible);
+      setPromoRemaining(res.data?.remaining ?? 0);
+    }).
+    catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -140,7 +154,9 @@ export default function NewOrder() {
   }, [store, destination]);
 
   const deliveryFee = distance != null ? computeDeliveryFee(tariffs, distance, mode, type) : 0;
-  const serviceFee = computeServiceFee(tariffs, deliveryFee);
+  // Promo 3 order pertama per perangkat: fee layanan dibuat gratis.
+  const baseServiceFee = computeServiceFee(tariffs, deliveryFee);
+  const serviceFee = promoEligible ? 0 : baseServiceFee;
   const driverRemitFee = Number(tariffs.driver_remit_per_txn ?? 0);
   const activeTariff = type === "food" ? tariffs.food[mode] : tariffs[type];
 
@@ -209,6 +225,16 @@ export default function NewOrder() {
         return;
       }
 
+      // Kuota promo dicek ulang di server tepat sebelum simpan agar dua order
+      // yang dibuat nyaris bersamaan tidak sama-sama memakai kuota promo.
+      let promoOk = promoEligible;
+      try {
+        const ps = await base44.functions.
+        invoke("promoStatus", { deviceId: getDeviceId() });
+        promoOk = !!ps.data?.eligible;
+        if (promoOk !== promoEligible) setPromoEligible(promoOk);
+      } catch {}
+
       const order = await S.Order.create({
         user_id: user.id,
         type,
@@ -226,8 +252,10 @@ export default function NewOrder() {
         notes,
         status: "pending_match",
         delivery_fee: deliveryFee,
-        service_fee: serviceFee,
+        service_fee: promoOk ? 0 : serviceFee,
         driver_remit_fee: driverRemitFee,
+        device_id: getDeviceId(),
+        promo_free_service: promoOk,
         distance_km: distance ? Math.round(distance * 100) / 100 : 0
       });
 
@@ -454,9 +482,16 @@ export default function NewOrder() {
               <span className="font-semibold">{formatRupiah(deliveryFee)}</span>
             </div>
             <div className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">Fee Layanan ({tariffs.service_fee_percent}%)</span>
+              <span className="text-muted-foreground">
+                {promoEligible ? `Fee Layanan (Promo Gratis)` : `Fee Layanan (${tariffs.service_fee_percent}%)`}
+              </span>
               <span className="font-semibold">{formatRupiah(serviceFee)}</span>
             </div>
+            {promoEligible &&
+            <p className="text-xs text-primary mt-1">
+                🎉 Promo 3 order pertama di perangkat ini: gratis fee layanan. Sisa {promoRemaining}x lagi.
+              </p>
+            }
             {type === "food" &&
             <p className="text-xs text-muted-foreground mt-2">
                 *Harga barang dibayar terpisah setelah driver beli di toko

@@ -122,6 +122,13 @@
     "user_rating": {
       "type": "number"
     },
+    "device_id": {
+      "type": "string"
+    },
+    "promo_free_service": {
+      "type": "boolean",
+      "default": false
+    },
     "midtrans_paid": {
       "type": "boolean",
       "default": false

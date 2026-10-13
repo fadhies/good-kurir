@@ -185,3 +185,8 @@ alter table notifications enable row level security;
 alter table withdrawal_requests enable row level security;
 alter table app_settings enable row level security;
 -- No policies are defined; anon/authenticated roles get nothing.
+
+-- Promo: gratis fee layanan untuk 3 order pertama per perangkat.
+alter table orders add column if not exists device_id text;
+alter table orders add column if not exists promo_free_service boolean;
+create index if not exists orders_device_status_idx on orders (device_id, status);
