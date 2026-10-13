@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { createNotification } from '../../shared/notify.ts';
 import { getById, updateById, insertOne } from '../../shared/supabase.ts';
+import { awardReferralCoupon } from '../../shared/referral.ts';
 
 export default async function(req) {
   try {
@@ -36,6 +37,10 @@ export default async function(req) {
       driver_earning: total,
       total_amount: total,
     });
+
+    // Program referal: order pertama penerima referal selesai
+    // -> terbitkan kupon potongan ongkir ke pemberi referal.
+    await awardReferralCoupon(order);
 
     if (order.driver_id) {
       const wtId = crypto.randomUUID();

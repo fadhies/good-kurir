@@ -129,6 +129,12 @@
       "type": "boolean",
       "default": false
     },
+    "coupon_id": {
+      "type": "string"
+    },
+    "coupon_discount": {
+      "type": "number"
+    },
     "midtrans_paid": {
       "type": "boolean",
       "default": false

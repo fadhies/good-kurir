@@ -33,6 +33,8 @@ const AdminTariffs = lazy(() => import('@/pages/AdminTariffs'));
 const AdminRemittance = lazy(() => import('@/pages/AdminRemittance'));
 const AdminPrivacy = lazy(() => import('@/pages/AdminPrivacy'));
 const Privacy = lazy(() => import('@/pages/Privacy'));
+const Referral = lazy(() => import('@/pages/Referral'));
+import ReferralCapture from '@/components/ReferralCapture';
 import ChatNotificationListener from '@/components/ChatNotificationListener';
 
 const TAB_PATHS = new Set(["/", "/pesan", "/chat", "/pesanan-saya", "/driver", "/driver/dompet"]);
@@ -91,6 +93,7 @@ const AuthenticatedApp = () => {
   return (
     <>
     <ChatNotificationListener />
+    <ReferralCapture />
     <div className="overflow-hidden">
     <AnimatePresence mode="wait" custom={direction}>
     <motion.div
@@ -127,6 +130,7 @@ const AuthenticatedApp = () => {
         <Route path="/driver" element={<TabKeepAlive active="driver" />} />
         <Route path="/driver/dompet" element={<TabKeepAlive active="driver-dompet" />} />
         <Route path="/jadi-driver" element={<BecomeDriver />} />
+        <Route path="/referal" element={<Referral />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/driver" element={<AdminDrivers />} />

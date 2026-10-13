@@ -190,3 +190,54 @@ alter table app_settings enable row level security;
 alter table orders add column if not exists device_id text;
 alter table orders add column if not exists promo_free_service boolean;
 create index if not exists orders_device_status_idx on orders (device_id, status);
+
+-- Program referal: kode referal, atribusi, dan kupon potongan ongkir Rp4.000.
+create table if not exists referral_codes (
+  id text primary key,
+  created_date timestamptz,
+  updated_date timestamptz,
+  created_by_id text,
+  user_id text,
+  code text
+);
+create unique index if not exists referral_codes_code_idx on referral_codes (code);
+create index if not exists referral_codes_user_idx on referral_codes (user_id);
+
+create table if not exists referrals (
+  id text primary key,
+  created_date timestamptz,
+  updated_date timestamptz,
+  created_by_id text,
+  referrer_user_id text,
+  referee_user_id text,
+  status text,
+  rewarded_at timestamptz,
+  order_id text
+);
+create unique index if not exists referrals_referee_idx on referrals (referee_user_id);
+create index if not exists referrals_referrer_idx on referrals (referrer_user_id);
+
+create table if not exists coupons (
+  id text primary key,
+  created_date timestamptz,
+  updated_date timestamptz,
+  created_by_id text,
+  user_id text,
+  type text,
+  amount numeric,
+  status text,
+  source text,
+  referee_user_id text,
+  order_id text,
+  used_at timestamptz
+);
+create index if not exists coupons_user_idx on coupons (user_id);
+create index if not exists coupons_status_idx on coupons (status);
+
+alter table orders add column if not exists coupon_id text;
+alter table orders add column if not exists coupon_discount numeric;
+create index if not exists orders_coupon_idx on orders (coupon_id);
+
+alter table referral_codes enable row level security;
+alter table referrals enable row level security;
+alter table coupons enable row level security;

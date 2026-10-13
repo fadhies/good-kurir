@@ -7,6 +7,7 @@ import HomeTopBar from "@/components/home/HomeTopBar";
 import HomeHero from "@/components/home/HomeHero";
 import ServiceGrid from "@/components/home/ServiceGrid";
 import PromoCard from "@/components/home/PromoCard";
+import ReferralCard from "@/components/home/ReferralCard";
 import CourierCta from "@/components/home/CourierCta";
 import HomeDesktop from "@/components/home/HomeDesktop";
 
@@ -48,6 +49,7 @@ export default function Home() {
           <HomeHero firstName={user?.full_name?.split(" ")[0] || "Sobat"} userId={user?.id} />
           <ServiceGrid />
           <PromoCard />
+          <ReferralCard />
           <CourierCta driverProfile={driverProfile} />
           <div className="mt-10 text-center">
             <Link

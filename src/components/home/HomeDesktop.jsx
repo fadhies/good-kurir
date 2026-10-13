@@ -5,6 +5,7 @@ import HomeNav from "@/components/home/HomeNav";
 import HomeHero from "@/components/home/HomeHero";
 import ServiceGrid from "@/components/home/ServiceGrid";
 import PromoCard from "@/components/home/PromoCard";
+import ReferralCard from "@/components/home/ReferralCard";
 import CourierCta from "@/components/home/CourierCta";
 
 // Tata letak beranda untuk tablet (landscape) dan desktop:
@@ -29,6 +30,7 @@ export default function HomeDesktop({ user, driverProfile }) {
               <ServiceGrid variant="desktop" />
             </div>
             <PromoCard />
+            <ReferralCard />
             <CourierCta driverProfile={driverProfile} />
           </div>
         </div>

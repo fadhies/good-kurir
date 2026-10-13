@@ -107,6 +107,8 @@ export default function NewOrder() {
   const destAppliedRef = useRef(false);
   const [storeMapOpen, setStoreMapOpen] = useState(false);
   const [destMapOpen, setDestMapOpen] = useState(false);
+  const [coupon, setCoupon] = useState(null);
+  const [applyCoupon, setApplyCoupon] = useState(false);
 
   useEffect(() => {
     getTariffs().then(setTariffs).catch(() => {});
@@ -122,6 +124,19 @@ export default function NewOrder() {
     }).
     catch(() => {});
   }, []);
+
+  // Kupon referal yang belum terpakai otomatis disiapkan untuk dipakai.
+  useEffect(() => {
+    if (!user?.id) return;
+    S.Coupon.filter({ user_id: user.id, status: "unused" }).
+    then((list) => {
+      if (list[0]) {
+        setCoupon(list[0]);
+        setApplyCoupon(true);
+      }
+    }).
+    catch(() => {});
+  }, [user?.id]);
 
   useEffect(() => {
     base44.functions.
@@ -157,6 +172,9 @@ export default function NewOrder() {
   // Promo 3 order pertama per perangkat: fee layanan dibuat gratis.
   const baseServiceFee = computeServiceFee(tariffs, deliveryFee);
   const serviceFee = promoEligible ? 0 : baseServiceFee;
+  // Kupon referal: potongan ongkir, maksimal sebesar nilai ongkirnya.
+  const couponDiscount = coupon && applyCoupon ? Math.min(coupon.amount || 0, deliveryFee) : 0;
+  const effectiveDeliveryFee = deliveryFee - couponDiscount;
   const driverRemitFee = Number(tariffs.driver_remit_per_txn ?? 0);
   const activeTariff = type === "food" ? tariffs.food[mode] : tariffs[type];
 
@@ -251,13 +269,23 @@ export default function NewOrder() {
         destination_detail: destDetail,
         notes,
         status: "pending_match",
-        delivery_fee: deliveryFee,
+        delivery_fee: effectiveDeliveryFee,
+        coupon_id: couponDiscount > 0 ? coupon.id : null,
+        coupon_discount: couponDiscount,
         service_fee: promoOk ? 0 : serviceFee,
         driver_remit_fee: driverRemitFee,
         device_id: getDeviceId(),
         promo_free_service: promoOk,
         distance_km: distance ? Math.round(distance * 100) / 100 : 0
       });
+
+      if (couponDiscount > 0 && coupon) {
+        S.Coupon.update(coupon.id, {
+          status: "used",
+          order_id: order.id,
+          used_at: new Date().toISOString(),
+        }).catch(() => {});
+      }
 
       toast({ title: "Pesanan dibuat", description: "Menunggu driver menerima pesanan Anda..." });
       navigate(`/pesanan/${order.id}`);
@@ -481,6 +509,22 @@ export default function NewOrder() {
               <span className="text-muted-foreground">Ongkir</span>
               <span className="font-semibold">{formatRupiah(deliveryFee)}</span>
             </div>
+            {coupon &&
+            <button
+                onClick={() => setApplyCoupon(!applyCoupon)}
+                className={`w-full my-2 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-between transition-all ${
+                applyCoupon ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" : "bg-white text-emerald-700 border border-emerald-200"}`}>
+
+                <span>Kupon Referal: potongan {formatRupiah(coupon.amount)}</span>
+                <span>{applyCoupon ? "Dipakai ✓" : "Pakai"}</span>
+              </button>
+            }
+            {couponDiscount > 0 &&
+            <div className="flex justify-between text-sm py-1">
+                <span className="text-muted-foreground">Potongan Kupon</span>
+                <span className="font-semibold text-primary">-{formatRupiah(couponDiscount)}</span>
+              </div>
+            }
             <div className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">
                 {promoEligible ? `Fee Layanan (Promo Gratis)` : `Fee Layanan (${tariffs.service_fee_percent}%)`}
@@ -505,7 +549,7 @@ export default function NewOrder() {
           <div className="min-w-0">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estimasi Biaya</p>
             <p className="text-xl font-extrabold leading-tight">
-              {distance != null ? formatRupiah(deliveryFee + serviceFee) : "—"}
+              {distance != null ? formatRupiah(effectiveDeliveryFee + serviceFee) : "—"}
             </p>
             {distance != null &&
               <p className="text-[10px] text-slate-400">Ongkir + fee layanan</p>}

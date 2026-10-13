@@ -33,6 +33,10 @@ function canRead(table, user, row) {
       return row.user_id === user.id;
     case 'chat_messages':
       return isParticipant(row, user.id);
+    case 'coupons':
+      return row.user_id === user.id;
+    case 'referrals':
+      return row.referrer_user_id === user.id || row.referee_user_id === user.id;
     case 'app_settings':
       return true; // public read (tariffs, dana number, etc.)
     default:
@@ -53,6 +57,8 @@ function canWrite(table, user, row) {
       return row.user_id === user.id;
     case 'chat_messages':
       return row.created_by_id === user.id;
+    case 'coupons':
+      return row.user_id === user.id; // pemilik boleh menandai kuponnya terpakai
     case 'wallet_transactions':
     case 'driver_remittances':
     case 'withdrawal_requests':
@@ -114,6 +120,12 @@ function scopeFilter(table, user, filter) {
   switch (table) {
     case 'driver_profiles':
       f.created_by_id = user.id; // force own profile
+      return f;
+    case 'coupons':
+      f.user_id = user.id; // force own coupons
+      return f;
+    case 'referrals':
+      f.referrer_user_id = user.id; // force referrals yang saya bagikan
       return f;
     case 'notifications':
     case 'wallet_transactions':

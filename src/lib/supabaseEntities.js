@@ -48,5 +48,7 @@ const WalletTransaction = makeEntity("wallet_transactions");
 const WithdrawalRequest = makeEntity("withdrawal_requests");
 const DriverRemittance = makeEntity("driver_remittances");
 const AppSetting = makeEntity("app_settings");
+const Coupon = makeEntity("coupons");
+const Referral = makeEntity("referrals");
 
-export default { Order, DriverProfile, Notification, ChatMessage, WalletTransaction, WithdrawalRequest, DriverRemittance, AppSetting };
+export default { Order, DriverProfile, Notification, ChatMessage, WalletTransaction, WithdrawalRequest, DriverRemittance, AppSetting, Coupon, Referral };
