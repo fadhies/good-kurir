@@ -1,8 +1,8 @@
 import { selectQuery, insertOne, updateWhere } from './supabase.ts';
 
 // Logika program referal OjekTa, dipakai bersama oleh beberapa backend function.
-// - Kupon hadiah: potongan ongkos kirim Rp4.000 untuk pemberi referal.
-export const REFERRAL_COUPON_AMOUNT = 4000;
+// - Kupon hadiah: potongan ongkos kirim Rp2.000 untuk pemberi referal.
+export const REFERRAL_COUPON_AMOUNT = 2000;
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -36,7 +36,7 @@ export async function ensureReferralCode(userId) {
   throw new Error('Gagal membuat kode referal');
 }
 
-// Terbitkan kupon Rp4.000 ke pemberi referal ketika order pertama penerima
+// Terbitkan kupon Rp2.000 ke pemberi referal ketika order pertama penerima
 // referal selesai. Idempoten: hanya SATU pemanggil yang berhasil mengubah
 // status referral dari 'pending' ke 'rewarded' (update kondisional).
 export async function awardReferralCoupon(order) {

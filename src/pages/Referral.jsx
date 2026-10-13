@@ -66,7 +66,7 @@ export default function Referral() {
       </h1>
       <p className="text-[11px] text-muted-foreground font-medium mb-4">
         Bagikan tautanmu. Saat temanmu menyelesaikan order pertamanya, kamu
-        mendapat kupon potongan ongkir {formatRupiah(4000)}.
+        mendapat kupon potongan ongkir {formatRupiah(2000)}.
       </p>
 
       {loading ? (

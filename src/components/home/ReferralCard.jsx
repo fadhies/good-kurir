@@ -1,24 +1,38 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Gift, ChevronRight } from "lucide-react";
+import { ChevronRight, Gift } from "lucide-react";
 
 // Kartu ajakan program referal di Beranda -> halaman /referal.
+// Mengikuti gaya kartu promo gratis fee layanan.
 export default function ReferralCard() {
   return (
     <Link
       to="/referal"
-      className="mt-4 bg-white rounded-[23px] border border-[#eef3f0] p-5 shadow-[0_8px_20px_rgba(34,83,62,0.08)] flex items-center gap-3 active:scale-[0.98] transition-transform"
+      className="relative rounded-[23px] p-4 min-h-[132px] flex items-center overflow-hidden mb-3.5 bg-[linear-gradient(105deg,#ebffe8,#dfffd5)] active:scale-[0.98] transition-transform"
     >
-      <span className="w-11 h-11 rounded-2xl bg-[#dbf8dc] grid place-items-center shrink-0">
-        <Gift className="w-5 h-5 text-[#07884a]" />
-      </span>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-[#10243a]">Ajak Teman, Dapat Kupon</p>
-        <p className="text-xs text-[#667085]">
-          Bagikan tautan referal, dapat potongan ongkir Rp4.000
+      <div className="max-w-[65%]">
+        <span className="uppercase bg-[#0b9c54] text-white rounded-[12px] px-2.5 py-1 text-[9px] font-bold tracking-wide">
+          Program Referal
+        </span>
+        <h2 className="leading-[1.15] font-bold text-[#10243a] mt-2 mb-1 text-base">
+          Ajak Teman, Dapat
+          Potongan Ongkir Rp2.000!
+        </h2>
+        <p className="text-[11px] text-[#10243a] m-0">
+          Berlaku saat temanmu menyelesaikan order pertamanya.
         </p>
       </div>
-      <ChevronRight className="w-5 h-5 text-[#667085] shrink-0" />
+      <div
+        className="absolute right-6 top-7 text-[#159a3c] flex items-center gap-1 pointer-events-none"
+        style={{ transform: "rotate(-9deg)" }}>
+        <Gift className="w-[58px] h-[58px] text-white" />
+        <b className="text-[10px] leading-tight">
+          Bagikan<br />Dapat Kupon
+        </b>
+      </div>
+      <span className="absolute right-4 bottom-3 w-[29px] h-[29px] rounded-full bg-[#07935b] text-white grid place-items-center">
+        <ChevronRight className="w-4 h-4" />
+      </span>
     </Link>
   );
 }
