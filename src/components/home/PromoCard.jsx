@@ -14,8 +14,8 @@ export default function PromoCard() {
           Gratis Fee Layanan
           3 Pesanan Pertama!
         </h2>
-        <p className="text-[11px] text-[#10243a] m-0">
-          Berlaku per perangkat, pesanan selesai. Batal atau gagal tidak mengurangi jatah.
+        <p className="text-[11px] text-[#10243a] m-0">Berlaku untuk semua jenis layanan.
+
         </p>
       </div>
       <div
