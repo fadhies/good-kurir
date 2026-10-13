@@ -90,10 +90,8 @@ export default function Referral() {
               {link}
             </div>
             <p className="text-[10px] text-muted-foreground leading-relaxed mt-2 mb-3">
-              Minta temanmu membuka tautan ini, lalu mengunduh aplikasi lewat
-              tombol Play Store di halaman utamanya agar kode referalmu ikut
-              terbawa. Mendaftar di web saja tidak menghubungkan kode ke akun
-              aplikasinya secara otomatis.
+              Minta temanmu membuka tautan ini, lalu klik tombol Unduh di Play
+              Store di halaman utama untuk menginstal dan mulai menggunakan OjekTa
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
