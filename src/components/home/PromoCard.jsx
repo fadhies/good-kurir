@@ -11,12 +11,11 @@ export default function PromoCard() {
           Promo Spesial
         </span>
         <h2 className="leading-[1.15] font-bold text-[#10243a] mt-2 mb-1 text-base">
-          Diskon 50% 
-          Naik Ojek Pertama!
+          Gratis Fee Layanan
+          3 Pesanan Pertama!
         </h2>
         <p className="text-[11px] text-[#10243a] m-0">
-          Gunakan kode{" "}
-          <b className="border border-[#78d56b] rounded-[13px] px-2 py-0.5 text-[#087b42]">OJEKTANEW</b>
+          Berlaku per perangkat, pesanan selesai. Batal atau gagal tidak mengurangi jatah.
         </p>
       </div>
       <div
@@ -30,7 +29,7 @@ export default function PromoCard() {
       </div>
       <button
         aria-label="Lihat promo"
-        onClick={() => toast({ title: "Kode promo: OJEKTANEW" })}
+        onClick={() => toast({ title: "Promo: gratis fee layanan 3 pesanan pertama" })}
         className="absolute right-4 bottom-3 w-[29px] h-[29px] rounded-full bg-[#07935b] text-white grid place-items-center active:scale-90 transition-transform">
         
         <ChevronRight className="w-4 h-4" />
