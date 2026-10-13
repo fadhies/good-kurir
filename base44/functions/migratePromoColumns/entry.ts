@@ -7,7 +7,7 @@ import { selectQuery } from '../../shared/supabase.ts';
 // workflow pemicunya di-archive.
 export default async function(req) {
   try {
-    const token = secrets.get('SUPABASE_ACCESS_TOKEN');
+    const token = (secrets.get('SUPABASE_ACCESS_TOKEN') || '').trim();
     const url = (secrets.get('SUPABASE_URL') || '').replace(/\/+$/, '');
     if (!token || !url) {
       return Response.json({ error: 'SUPABASE_ACCESS_TOKEN / SUPABASE_URL belum diatur' }, { status: 500 });
