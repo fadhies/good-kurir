@@ -4,12 +4,14 @@ import Layout from "@/components/Layout";
 import { formatRupiah } from "@/lib/geo";
 import { useToast } from "@/components/ui/use-toast";
 import { Gift, Copy, Share2, Loader2, Ticket, UserPlus, BadgeCheck } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Referral() {
   const { toast } = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   async function load() {
     try {
@@ -44,10 +46,13 @@ export default function Referral() {
           text: "Yuk pakai OjekTa! Daftar lewat tautan ini:",
           url: link,
         });
-      } catch {}
-    } else {
-      copyLink();
+        return;
+      } catch (e) {
+        if (e?.name === "AbortError") return;
+      }
     }
+    // navigator.share tidak tersedia (mis. WebView Android) -> tampilkan dialog.
+    setShareOpen(true);
   }
 
   const referrals = data?.referrals || [];
@@ -173,6 +178,24 @@ export default function Referral() {
         </div>
       )}
       <div className="h-4" />
+
+      {/* Dialog bagikan (fallback bila Web Share API tidak tersedia) */}
+      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+        <DialogContent className="max-w-xs rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-bold">Bagikan Tautan Referal</DialogTitle>
+          </DialogHeader>
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 break-all selectable">
+            {link}
+          </div>
+          <button
+            onClick={copyLink}
+            className={`${btnCls} bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700`}
+          >
+            <Copy className="w-3.5 h-3.5" /> {copied ? "Tersalin!" : "Salin Tautan"}
+          </button>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
