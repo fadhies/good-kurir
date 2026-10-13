@@ -45,8 +45,24 @@ const FITUR = [
   { icon: ShieldCheck, title: "Data Terlindungi", desc: "Keamanan data dijaga dengan enkripsi dan pembatasan akses." },
 ];
 
+const PLAY_BASE = "https://play.google.com/store/apps/details?id=com.base6a88f0c161e7b497808d40e0.app";
+
+// Sertakan kode referal ke tautan Play Store (parameter `referrer`) agar
+// atribusi instalasi bisa terbaca di aplikasi setelah diunduh.
+function buildPlayUrl() {
+  let code = new URLSearchParams(window.location.search).get("ref");
+  if (!code) {
+    try {
+      code = localStorage.getItem("ojekta_ref_code");
+    } catch {}
+  }
+  if (!code) return PLAY_BASE;
+  return `${PLAY_BASE}&referrer=utm_source%3Dreferral%26ref%3D${encodeURIComponent(code.trim().toUpperCase())}`;
+}
+
 export default function Landing() {
   const [googleExpanded, setGoogleExpanded] = useState(false);
+  const [playUrl] = useState(buildPlayUrl);
   return (
     <div className="min-h-[100dvh] bg-[#eef8f2] [font-family:'Poppins',_sans-serif] text-[#10243a]">
       <div className="max-w-5xl mx-auto px-5 pb-10">
@@ -104,7 +120,7 @@ export default function Landing() {
               </Link>
             </div>
             <a
-              href="https://play.google.com/store/apps/details?id=com.base6a88f0c161e7b497808d40e0.app"
+              href={playUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 mt-4 px-5 py-3 rounded-full bg-[#10243a] text-white font-semibold hover:bg-[#1b3350] transition-colors">

@@ -10,7 +10,14 @@ export default function ReferralCapture() {
   const { user } = useAuth();
 
   useEffect(() => {
-    const ref = new URLSearchParams(window.location.search).get("ref");
+    const params = new URLSearchParams(window.location.search);
+    let ref = params.get("ref");
+    if (!ref) {
+      // Bila peluncuran dari Play Store membawa parameter atribusi
+      // (referrer=utm_source%3Dreferral%26ref%3DKODE), ambil kodenya dari sana.
+      const referrer = params.get("referrer");
+      if (referrer) ref = new URLSearchParams(referrer).get("ref");
+    }
     if (ref && ref.trim()) {
       try {
         localStorage.setItem(KEY, ref.trim().toUpperCase());
