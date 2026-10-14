@@ -25,9 +25,7 @@ export default function ReferralCard() {
       <div
         className="absolute right-6 top-5 text-[#159a3c] flex flex-col items-center gap-1 pointer-events-none"
         style={{ transform: "rotate(-9deg)" }}>
-        <span className="grid place-items-center w-14 h-14 rounded-xl border-2 border-slate-400 bg-white">
-          <Gift className="w-10 h-10 text-[#159a3c]" />
-        </span>
+        <Gift className="w-14 h-14 text-[#159a3c]" />
         <b className="text-[10px] leading-tight text-center text-[#10243a]">
           Bagikan<br />Dapat Kupon
         </b>
