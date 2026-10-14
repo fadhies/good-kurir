@@ -7,11 +7,11 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           {logo ? (
-            <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
+            <div className="inline-flex items-center justify-center w-[5.25rem] h-[5.25rem] mb-4">
               <Image
                 src={logo}
                 alt="OjekTa"
-                className="w-14 h-14 rounded-2xl"
+                className="w-[5.25rem] h-[5.25rem]"
                 fittingType="fit" />
             </div>
           ) : (
