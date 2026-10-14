@@ -128,6 +128,7 @@ export default function Register() {
   return (
     <AuthLayout
       icon={UserPlus}
+      logo="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/622adcb21_LogoAplikasi.png"
       title="Create your account"
       subtitle="Sign up to get started"
       footer={
