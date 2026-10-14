@@ -19,11 +19,12 @@ export default function PromoCard() {
         </p>
       </div>
       <div
-        className="absolute right-6 top-7 text-[#159a3c] flex items-center gap-1 pointer-events-none"
+        className="absolute right-6 top-5 text-[#159a3c] flex flex-col items-center gap-1 pointer-events-none"
         style={{ transform: "rotate(-9deg)" }}>
-        
-        <TicketPercent className="w-[58px] h-[58px] text-white" />
-        <b className="text-[10px] leading-tight">
+        <span className="grid place-items-center w-14 h-14 rounded-xl border-2 border-slate-400 bg-white">
+          <TicketPercent className="w-10 h-10 text-[#159a3c]" />
+        </span>
+        <b className="text-[10px] leading-tight text-center text-[#10243a]">
           Lebih Hemat<br />Lebih Dekat
         </b>
       </div>
