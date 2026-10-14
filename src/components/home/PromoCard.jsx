@@ -28,7 +28,7 @@ export default function PromoCard() {
       </div>
       <button
         aria-label="Lihat promo"
-        onClick={() => toast({ title: "Promo: gratis fee layanan 3 pesanan pertama" })}
+        onClick={() => toast({ title: "Promo gratis fee otomatis untuk 3 pesanan pertama" })}
         className="absolute right-4 bottom-3 w-[29px] h-[29px] rounded-full bg-[#07935b] text-white grid place-items-center active:scale-90 transition-transform">
         
         <ChevronRight className="w-4 h-4" />
