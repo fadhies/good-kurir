@@ -42,6 +42,8 @@ export default async function(req) {
     // -> terbitkan kupon potongan ongkir ke pemberi referal.
     await awardReferralCoupon(order);
 
+    const remitDue = (order.driver_remit_fee || 0) + (order.service_fee || 0);
+
     if (order.driver_id) {
       const wtId = crypto.randomUUID();
       const wtNow = new Date().toISOString();
@@ -70,7 +72,9 @@ export default async function(req) {
         user_id: order.driver_id,
         type: 'order_completed',
         title: 'Pesanan selesai',
-        body: `Pendapatan Rp${total.toLocaleString('id-ID')} masuk ke dompet. Jangan lupa setor fee layanan + Rp1.000/transaksi ke admin via QRIS di menu Dompet.`,
+        body: remitDue > 0
+          ? `Pendapatan Rp${total.toLocaleString('id-ID')} masuk ke dompet. Jangan lupa setor fee layanan${(order.driver_remit_fee || 0) > 0 ? ` + Rp${(order.driver_remit_fee || 0).toLocaleString('id-ID')}/transaksi` : ''} ke admin via QRIS di menu Dompet.`
+          : `Pendapatan Rp${total.toLocaleString('id-ID')} masuk ke dompet.`,
         order_id: orderId,
       });
     }

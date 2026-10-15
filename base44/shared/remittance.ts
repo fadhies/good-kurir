@@ -28,12 +28,18 @@ export async function getUnsettledDates(base44, userId) {
   ]);
   const completedAt = buildCompletedAt(wts);
   const settled = new Set(remittances.filter((r) => r.status !== 'rejected').map((r) => r.date));
-  const dates = new Set();
+  // Akumulasi total setor per tanggal: hari dengan total Rp0 (mis. masa promo
+  // fee layanan 0%) tidak perlu disetor dan tidak dianggap tunggakan.
+  const dueByDate = {};
   for (const o of completed) {
     const d = makassarDateKey(new Date(completedAt[o.id] || o.updated_date));
-    if (d < today) dates.add(d);
+    if (d >= today) continue;
+    dueByDate[d] = (dueByDate[d] || 0) + (o.service_fee || 0) + (o.driver_remit_fee || 0);
   }
-  return [...dates].filter((d) => !settled.has(d)).sort();
+  return Object.entries(dueByDate)
+    .filter(([d, due]) => due > 0 && !settled.has(d))
+    .map(([d]) => d)
+    .sort();
 }
 
 // Kembalikan Set berisi user_id driver yang sedang diblokir (ada hari lampau belum disetor).
@@ -54,22 +60,25 @@ export async function getBlockedDriverIds(base44, userIds) {
     if (!settledByUser[r.user_id]) settledByUser[r.user_id] = new Set();
     settledByUser[r.user_id].add(r.date);
   }
-  const datesByUser = {};
+  // Tanggal dengan total setor Rp0 (mis. masa promo fee layanan 0%) tidak
+  // wajib disetor dan tidak memblokir driver.
+  const dueByUserDate = {};
   for (const o of completed) {
     if (!o.driver_id || !idSet.has(o.driver_id)) continue;
     const d = makassarDateKey(new Date(completedAt[o.id] || o.updated_date));
     if (d < today) {
-      if (!datesByUser[o.driver_id]) datesByUser[o.driver_id] = new Set();
-      datesByUser[o.driver_id].add(d);
+      const key = o.driver_id;
+      if (!dueByUserDate[key]) dueByUserDate[key] = {};
+      dueByUserDate[key][d] = (dueByUserDate[key][d] || 0) + (o.service_fee || 0) + (o.driver_remit_fee || 0);
     }
   }
   const blocked = new Set();
   for (const uid of userIds) {
-    const dates = datesByUser[uid];
+    const dates = dueByUserDate[uid];
     if (!dates) continue;
     const settled = settledByUser[uid] || new Set();
-    for (const d of dates) {
-      if (!settled.has(d)) { blocked.add(uid); break; }
+    for (const [d, due] of Object.entries(dates)) {
+      if (due > 0 && !settled.has(d)) { blocked.add(uid); break; }
     }
   }
   return blocked;

@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
+import { getTariffs } from "@/lib/tariffs";
 import { Loader2, Banknote, Wallet, Receipt, AlertTriangle, Calendar } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,6 +18,7 @@ export default function AdminRemittance() {
   // Filter periode: default hari ini (zona Makassar)
   const [filterMonth, setFilterMonth] = useState(() => makassarToday().slice(0, 7));
   const [filterDate, setFilterDate] = useState(() => makassarToday());
+  const [remitPerTxn, setRemitPerTxn] = useState(0);
   const { toast } = useToast();
 
   async function load() {
@@ -38,6 +40,7 @@ export default function AdminRemittance() {
     const at = {};
     for (const w of wts.status === "fulfilled" ? wts.value : []) {if (w.order_id) at[w.order_id] = w.created_date;}
     setCompletedAt(at);
+    getTariffs().then((t) => setRemitPerTxn(Number(t.driver_remit_per_txn ?? 0))).catch(() => {});
   }
 
   useEffect(() => {
@@ -134,7 +137,11 @@ export default function AdminRemittance() {
       <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg flex items-center gap-2">
         <Banknote className="w-6 h-6 text-primary" /> Penghasilan Admin
       </h1>
-      <p className="text-muted-foreground text-sm mb-4">Akumulasi fee admin (Rp1.000/order) + fee layanan dari semua order selesai.</p>
+      <p className="text-muted-foreground text-sm mb-4">
+        {remitPerTxn > 0 ?
+        `Akumulasi fee admin (${formatRupiah(remitPerTxn)}/order) + fee layanan dari semua order selesai.` :
+        "Akumulasi fee layanan dari semua order selesai."}
+      </p>
 
       {/* Filter periode */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -183,7 +190,9 @@ export default function AdminRemittance() {
         <p className="text-4xl font-extrabold mb-3 [font-family:'Poppins',_sans-serif]">{formatRupiah(totals.total)}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-xl bg-white/15 px-3 py-2">
-            <p className="text-xs text-[hsl(var(--foreground))]">Fee Admin (Rp1.000 × {filteredOrders.length})</p>
+            <p className="text-xs text-[hsl(var(--foreground))]">
+              {remitPerTxn > 0 ? `Fee Admin (${formatRupiah(remitPerTxn)} × ${filteredOrders.length})` : "Fee Admin"}
+            </p>
             <p className="font-bold">{formatRupiah(totals.adminFee)}</p>
           </div>
           <div className="rounded-xl bg-white/15 px-3 py-2">

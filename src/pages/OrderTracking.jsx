@@ -364,7 +364,9 @@ export default function OrderTracking() {
       if (res.data?.success) {
         toast({
           title: "Pesanan selesai",
-          description: "Pendapatan masuk ke dompet driver. Setor fee layanan + Rp1.000 ke admin via QRIS di menu Dompet."
+          description: (order.driver_remit_fee || 0) + (order.service_fee || 0) > 0
+            ? `Pendapatan masuk ke dompet driver. Setor fee layanan${(order.driver_remit_fee || 0) > 0 ? ` + ${formatRupiah(order.driver_remit_fee)}/transaksi` : ""} ke admin via QRIS di menu Dompet.`
+            : "Pendapatan penuh masuk ke dompet driver."
         });
         loadOrder();
       } else {
@@ -709,7 +711,9 @@ export default function OrderTracking() {
           }
             {order.status === "completed" &&
           <p className="text-sm text-emerald-600 text-center py-2 font-semibold">
-                Pesanan selesai. Pendapatan penuh masuk ke dompet Anda. Jangan lupa setor fee layanan + Rp1.000 ke admin.
+                {(order.driver_remit_fee || 0) + (order.service_fee || 0) > 0
+                  ? `Pesanan selesai. Pendapatan masuk ke dompet Anda. Jangan lupa setor fee layanan${(order.driver_remit_fee || 0) > 0 ? ` + ${formatRupiah(order.driver_remit_fee)}/transaksi` : ""} ke admin.`
+                  : "Pesanan selesai. Pendapatan penuh masuk ke dompet Anda."}
               </p>
           }
           </div>

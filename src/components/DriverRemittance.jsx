@@ -15,17 +15,23 @@ export default function DriverRemittance() {
   const [groups, setGroups] = useState(null);
   const [proofs, setProofs] = useState({});
   const [submitting, setSubmitting] = useState(null);
+  const [remitPerTxn, setRemitPerTxn] = useState(0);
 
   async function load() {
     setLoading(true);
     try {
-      const [completed, remits, qrisRows, wts] = await Promise.all([
+      const [completed, remits, qrisRows, wts, tariffRows] = await Promise.all([
       S.Order.filter({ driver_id: user.id, status: "completed" }, "-updated_date", 500),
       S.DriverRemittance.filter({ user_id: user.id }, "-created_date", 200),
       S.AppSetting.filter({ key: "admin_dana_number" }, "-created_date", 1),
-      S.WalletTransaction.filter({ user_id: user.id, type: "credit" }, "-created_date", 500)]
+      S.WalletTransaction.filter({ user_id: user.id, type: "credit" }, "-created_date", 500),
+      S.AppSetting.filter({ key: "tariffs" }, "-created_date", 1)]
       );
       setAdminDana(qrisRows[0]?.value || "");
+      try {
+        const t = tariffRows[0]?.value ? JSON.parse(tariffRows[0].value) : {};
+        setRemitPerTxn(Number(t.driver_remit_per_txn ?? 0));
+      } catch {}
 
       // Tanggal selesai pakai created_date wallet_transaction credit — dibuat
       // sekali saat order selesai (completeOrderPayment) dan tidak pernah diubah,
@@ -52,6 +58,7 @@ export default function DriverRemittance() {
         }
       }
       const list = Object.entries(byDate).
+      filter(([, v]) => v.due > 0). // order tanpa fee (mis. masa promo) tidak perlu disetor
       map(([date, v]) => ({
         date,
         due: v.due,
@@ -115,8 +122,10 @@ export default function DriverRemittance() {
       <h2 className="font-bold mb-1 flex items-center gap-2">
         <Banknote className="w-5 h-5 text-primary" /> Setor Fee ke Admin
       </h2>
-      <p className="text-sm text-muted-foreground mb-3">Setiap hari wajib setor Rp1.000/order + fee layanan ke admin. Jika belum setor, Anda tidak bisa menerima pesanan baru besok.
-
+      <p className="text-sm text-muted-foreground mb-3">
+        {remitPerTxn > 0 ?
+        `Setiap hari wajib setor ${formatRupiah(remitPerTxn)}/order + fee layanan ke admin. Jika belum setor, Anda tidak bisa menerima pesanan baru besok.` :
+        "Setiap hari wajib setor fee layanan ke admin. Jika belum setor, Anda tidak bisa menerima pesanan baru besok."}
       </p>
 
       <div className="flex items-center justify-between rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 mb-3">
