@@ -127,9 +127,13 @@ export default function AdminRemittance() {
       row.adminFee += o.driver_remit_fee || 0;
       row.serviceFee += o.service_fee || 0;
     }
-    return Object.values(agg).sort((a, b) =>
-    a.date < b.date ? -1 : a.date > b.date ? 1 : a.driverId.localeCompare(b.driverId)
-    );
+    // Hari dengan total setoran Rp0 (fee admin & fee layanan 0) bukan kewajiban
+    // setor — jangan ditampilkan sebagai tunggakan.
+    return Object.values(agg)
+      .filter((row) => row.adminFee + row.serviceFee > 0)
+      .sort((a, b) =>
+        a.date < b.date ? -1 : a.date > b.date ? 1 : a.driverId.localeCompare(b.driverId)
+      );
   }, [filteredOrders, orderDay, list]);
 
   return (
