@@ -32,6 +32,7 @@ const AdminWithdrawals = lazy(() => import('@/pages/AdminWithdrawals'));
 const AdminTariffs = lazy(() => import('@/pages/AdminTariffs'));
 const AdminRemittance = lazy(() => import('@/pages/AdminRemittance'));
 const AdminPrivacy = lazy(() => import('@/pages/AdminPrivacy'));
+const AdminBroadcast = lazy(() => import('@/pages/AdminBroadcast'));
 const Privacy = lazy(() => import('@/pages/Privacy'));
 const Referral = lazy(() => import('@/pages/Referral'));
 import ReferralCapture from '@/components/ReferralCapture';
@@ -140,6 +141,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/tarif" element={<AdminTariffs />} />
           <Route path="/admin/setoran" element={<AdminRemittance />} />
           <Route path="/admin/privacy" element={<AdminPrivacy />} />
+          <Route path="/admin/broadcast" element={<AdminBroadcast />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

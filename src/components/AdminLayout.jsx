@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, ShieldCheck, Home, Tag, Banknote, Lock } from "lucide-react";
+import { Bike, LayoutDashboard, Users, Bike as BikeIcon, ListOrdered, ShieldCheck, Home, Tag, Banknote, Lock, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileMenu from "@/components/ProfileMenu";
 
@@ -12,7 +12,8 @@ const NAV = [
 { to: "/admin/orders", label: "Pesanan", icon: ListOrdered },
 { to: "/admin/tarif", label: "Tarif", icon: Tag },
 { to: "/admin/setoran", label: "Setoran", icon: Banknote },
-{ to: "/admin/privacy", label: "Privasi", icon: Lock }];
+{ to: "/admin/privacy", label: "Privasi", icon: Lock },
+{ to: "/admin/broadcast", label: "Broadcast", icon: Megaphone }];
 
 
 export default function AdminLayout({ children }) {
