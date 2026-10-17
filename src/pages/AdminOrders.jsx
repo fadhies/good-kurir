@@ -6,6 +6,7 @@ import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
 import { Loader2, ListOrdered, Search, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,6 +27,7 @@ export default function AdminOrders() {
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
   const [date, setDate] = useState(makassarToday());
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -138,7 +140,10 @@ export default function AdminOrders() {
           const buyer = userMap[o.created_by_id];
           const driver = userMap[o.driver_id];
           return (
-            <div key={o.id} className="bg-card rounded-2xl border border-border p-4">
+            <div
+              key={o.id}
+              onClick={() => navigate(`/pesanan/${o.id}`)}
+              className="bg-card rounded-2xl border border-border p-4 cursor-pointer hover:border-primary/40 transition-colors">
                 <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
