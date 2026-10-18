@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import S from "@/lib/supabaseEntities";
-import { Clock, Loader2, TrendingUp, AlertCircle, XCircle, Wallet } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { Clock, Loader2, TrendingUp, AlertCircle, XCircle, Users, ListOrdered } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { formatRupiah } from "@/lib/geo";
@@ -18,10 +19,11 @@ export default function AdminDashboard() {
     setError(null);
     try {
       // Ambil data secara paralel agar loading lebih cepat
-      const [drivers, orders, adminTxs] = await Promise.all([
+      const [drivers, orders, adminTxs, users] = await Promise.all([
       S.DriverProfile.list(),
-      S.Order.list("-created_date", 100),
-      S.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20)]
+      S.Order.list("-created_date", 1000),
+      S.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20),
+      base44.entities.User.list()]
       );
 
       const pending = drivers.filter((d) => d.verification_status === "pending");
@@ -40,6 +42,8 @@ export default function AdminDashboard() {
         pending: pending.length,
         rejected: rejected.length,
         activeOrders: active.length,
+        totalOrders: orders.length,
+        totalUsers: users.length,
         feeRevenue
       });
 
@@ -83,10 +87,12 @@ export default function AdminDashboard() {
   }
 
   const cards = [
-  { label: "Driver Ditolak", value: stats.rejected, icon: XCircle, color: "from-red-500 to-rose-500", to: "/admin/driver" },
+  { label: "Total Pesanan", value: stats.totalOrders, icon: ListOrdered, color: "from-cyan-500 to-blue-500", to: "/admin/orders" },
+  { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-sky-500 to-indigo-500", to: "/admin/orders" },
+  { label: "Total Pengguna", value: stats.totalUsers, icon: Users, color: "from-emerald-500 to-teal-500", to: "/admin/users" },
+  { label: "Pendapatan Biaya Layanan", value: formatRupiah(stats.feeRevenue), icon: TrendingUp, color: "from-rose-500 to-pink-500", to: "/admin/setoran" },
   { label: "Menunggu Verifikasi", value: stats.pending, icon: AlertCircle, color: "from-amber-500 to-orange-500", to: "/admin/driver" },
-  { label: "Pesanan Aktif", value: stats.activeOrders, icon: Clock, color: "from-cyan-500 to-blue-500", to: "/admin/orders" },
-  { label: "Pendapatan Biaya Layanan", value: formatRupiah(stats.feeRevenue), icon: TrendingUp, color: "from-rose-500 to-pink-500", to: "/admin/setoran" }];
+  { label: "Driver Ditolak", value: stats.rejected, icon: XCircle, color: "from-red-500 to-rose-500", to: "/admin/driver" }];
 
 
   return (
