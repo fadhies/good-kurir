@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
 import { base44 } from "@/api/base44Client";
+import { subscribeAdminChat } from "@/lib/realtime";
 import { Loader2, Send, Clock, LifeBuoy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
@@ -28,9 +29,14 @@ export default function AdminDriverChat({ driverId, driverName, viewerRole, clas
 
   useEffect(() => {
     load();
-    // Jaring pengaman: sinyal realtime belum ada untuk tabel ini, jadi polling.
-    const poll = setInterval(load, 10000);
-    return () => clearInterval(poll);
+    // Realtime: trigger database mengirim sinyal ke topik admin_chat:<driver_id>.
+    const unsubP = subscribeAdminChat(driverId, () => load());
+    // Jaring pengaman bila sinyal realtime belum aktif di database.
+    const poll = setInterval(load, 30000);
+    return () => {
+      clearInterval(poll);
+      Promise.resolve(unsubP).then((u) => u && u());
+    };
   }, [driverId]);
 
   useEffect(() => {

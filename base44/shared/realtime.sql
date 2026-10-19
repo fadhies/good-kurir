@@ -196,3 +196,35 @@ drop trigger if exists broadcast_withdrawal_changes_trigger on public.withdrawal
 create trigger broadcast_withdrawal_changes_trigger
 after insert or update or delete on public.withdrawal_requests
 for each row execute function public.broadcast_withdrawal_changes();
+
+-- ============================================================
+-- 6) admin_chat_messages -> admin_chat:<driver_id>
+--    (chat langsung admin-driver; sudah dipasang via migrateAdminChatRealtime)
+-- ============================================================
+create or replace function public.broadcast_admin_chat_changes()
+returns trigger
+security definer
+set search_path = ''
+as $$
+declare
+  r record;
+begin
+  r := case when tg_op = 'DELETE' then old else new end;
+  begin
+    perform realtime.send(
+      jsonb_build_object('driver_id', r.driver_id),
+      tg_op,
+      'admin_chat:' || r.driver_id,
+      false
+    );
+  exception when others then
+    null;
+  end;
+  return null;
+end;
+$$ language plpgsql;
+
+drop trigger if exists broadcast_admin_chat_changes_trigger on public.admin_chat_messages;
+create trigger broadcast_admin_chat_changes_trigger
+after insert or update or delete on public.admin_chat_messages
+for each row execute function public.broadcast_admin_chat_changes();

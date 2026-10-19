@@ -56,3 +56,6 @@ export const subscribeOrders = (cb) => subscribeTopic("orders:all", cb);
 
 export const subscribeWithdrawals = (cb) =>
   subscribeTopic("withdrawals:all", cb);
+
+export const subscribeAdminChat = (driverId, cb) =>
+  subscribeTopic(`admin_chat:${driverId}`, cb);
