@@ -43,6 +43,9 @@ export default async function(req) {
           type: 'new_message',
           title: '💬 Pesan dari Driver',
           body: preview,
+          // Ketukan notifikasi admin membuka langsung chat dengan driver ini.
+          driver_id: user.id,
+          action_url: `https://goodkurir.online/admin/driver?chat=${user.id}`,
         })
       )
     );

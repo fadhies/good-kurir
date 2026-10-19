@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
@@ -41,6 +41,24 @@ export default function AdminDrivers() {
   }
 
   useEffect(() => {load();}, []);
+
+  // Notifikasi chat driver: /admin/driver?chat=<user_id> membuka langsung
+  // percakapan dengan driver tersebut.
+  const chatParamRef = useRef(new URLSearchParams(window.location.search).get("chat"));
+  useEffect(() => {
+    if (loading || !chatParamRef.current) return;
+    const d = drivers.find((x) => x.user_id === chatParamRef.current);
+    if (d) {
+      setChatTarget(d);
+      chatParamRef.current = null;
+      window.history.replaceState({}, "", "/admin/driver");
+    }
+  }, [loading, drivers]);
+
+  function closeChat() {
+    setChatTarget(null);
+    window.history.replaceState({}, "", "/admin/driver");
+  }
 
   const userMap = useMemo(() => {
     const m = {};
@@ -250,7 +268,7 @@ export default function AdminDrivers() {
       <div className="fixed inset-0 z-50 bg-background flex flex-col">
         <div className="h-14 shrink-0 flex items-center gap-2 px-3 border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <button
-            onClick={() => setChatTarget(null)}
+            onClick={closeChat}
             className="p-2 rounded-xl text-foreground hover:bg-secondary"
             aria-label="Tutup chat">
             <ChevronLeft className="w-5 h-5" />

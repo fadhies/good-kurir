@@ -142,9 +142,13 @@ create table if not exists notifications (
   title text,
   body text,
   order_id text,
+  driver_id text,
   is_read boolean
 );
 create index if not exists notifications_user_idx on notifications (user_id);
+-- Kolom tambahan: chat admin-driver menyimpan driver pengirim agar notifikasi
+-- admin bisa membuka langsung percakapan dengan driver tersebut.
+alter table notifications add column if not exists driver_id text;
 
 -- Withdrawal requests
 create table if not exists withdrawal_requests (

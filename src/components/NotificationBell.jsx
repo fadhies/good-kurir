@@ -78,10 +78,16 @@ export default function NotificationBell() {
       navigate(`/pesanan/${item.order_id}`);
       return;
     }
-    // Chat admin-driver tidak terikat pesanan: buka menu Bantuan driver
-    // (admin diarahkan ke daftar driver untuk membuka chatnya).
+    // Chat admin-driver tidak terikat pesanan: driver membuka menu Bantuan,
+    // admin membuka langsung chat driver pengirim bila id-nya tersimpan.
     if (item.type === "new_message") {
-      navigate(user?.role === "admin" ? "/admin/driver" : "/driver/bantuan");
+      navigate(
+        user?.role === "admin"
+          ? item.driver_id
+            ? `/admin/driver?chat=${item.driver_id}`
+            : "/admin/driver"
+          : "/driver/bantuan"
+      );
     }
   }
 
