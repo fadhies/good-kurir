@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { Image } from "@/components/ui/image";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -23,6 +23,7 @@ export default function AdminDrivers() {
   const [acting, setActing] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [zoomPhoto, setZoomPhoto] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -156,7 +157,9 @@ export default function AdminDrivers() {
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground mb-1.5">Foto KTP</p>
                     {d.ktp_photo ?
-                  <Image src={d.ktp_photo} alt="KTP" className="w-full h-28 rounded-lg border border-border" fittingType="fill" /> :
+                  <button type="button" onClick={() => setZoomPhoto({ src: d.ktp_photo, alt: "KTP" })} className="block w-full cursor-zoom-in">
+                    <Image src={d.ktp_photo} alt="KTP" className="w-full h-28 rounded-lg border border-border" fittingType="fill" />
+                  </button> :
 
                   <div className="w-full h-28 rounded-lg bg-secondary flex items-center justify-center text-xs text-muted-foreground">Belum ada</div>
                   }
@@ -164,7 +167,9 @@ export default function AdminDrivers() {
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground mb-1.5">Selfie + KTP</p>
                     {d.selfie_with_ktp ?
-                  <Image src={d.selfie_with_ktp} alt="Selfie KTP" className="w-full h-28 rounded-lg border border-border" fittingType="fill" /> :
+                  <button type="button" onClick={() => setZoomPhoto({ src: d.selfie_with_ktp, alt: "Selfie KTP" })} className="block w-full cursor-zoom-in">
+                    <Image src={d.selfie_with_ktp} alt="Selfie KTP" className="w-full h-28 rounded-lg border border-border" fittingType="fill" />
+                  </button> :
 
                   <div className="w-full h-28 rounded-lg bg-secondary flex items-center justify-center text-xs text-muted-foreground">Belum ada</div>
                   }
@@ -215,6 +220,21 @@ export default function AdminDrivers() {
 
         })}
         </div>
+      }
+
+      {zoomPhoto &&
+      <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4" onClick={() => setZoomPhoto(null)}>
+        <button
+          onClick={() => setZoomPhoto(null)}
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/15 text-white flex items-center justify-center hover:bg-white/25 transition-colors"
+          aria-label="Tutup">
+          <X className="w-5 h-5" />
+        </button>
+        <div className="max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
+          <Image src={zoomPhoto.src} alt={zoomPhoto.alt} className="w-full max-h-[80vh] rounded-xl" fittingType="fit" />
+          <p className="text-center text-sm text-white/70 mt-3">{zoomPhoto.alt}</p>
+        </div>
+      </div>
       }
 
       {rejectTarget &&
