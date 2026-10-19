@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { Image } from "@/components/ui/image";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search, X, MessageCircle, ChevronLeft } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search, X, MessageCircle, ChevronLeft, Eye } from "lucide-react";
 import AdminDriverChat from "@/components/AdminDriverChat";
 import { cn } from "@/lib/utils";
 import { listAdminUsers } from "@/lib/adminUsers";
@@ -26,6 +26,7 @@ export default function AdminDrivers() {
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [zoomPhoto, setZoomPhoto] = useState(null);
+  const [detailTarget, setDetailTarget] = useState(null);
   const [chatTarget, setChatTarget] = useState(null);
 
   async function load() {
@@ -208,6 +209,12 @@ export default function AdminDrivers() {
               <p className="text-xs text-red-600 mb-3">Alasan: {d.rejection_reason}</p>
               }
 
+                <button
+                  onClick={() => setDetailTarget(d)}
+                  className="w-full inline-flex items-center justify-center gap-1.5 border border-border bg-background text-foreground font-semibold py-2.5 rounded-xl text-sm hover:bg-secondary transition-colors mb-2">
+                  
+                    <Eye className="w-4 h-4" /> Lihat Detail
+                  </button>
                 {tab === "pending" &&
               <div className="flex gap-2">
                     <button
@@ -317,6 +324,43 @@ export default function AdminDrivers() {
               <XCircle className="w-4 h-4" /> Tolak
             </button>
           </div>
+        </div>
+      </div>
+      }
+
+      {detailTarget &&
+      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setDetailTarget(null)}>
+        <div className="bg-card w-full max-w-md rounded-2xl border border-border p-5" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold">Detail Pendaftar</h3>
+            <button
+              onClick={() => setDetailTarget(null)}
+              className="p-1.5 rounded-xl text-muted-foreground hover:bg-secondary"
+              aria-label="Tutup detail">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          {(() => {
+            const du = userMap[detailTarget.user_id];
+            const rows = [
+              ["Nama", du?.full_name || detailTarget.full_name || "-"],
+              ["Tanggal Lahir", detailTarget.birth_date ? new Date(detailTarget.birth_date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "-"],
+              ["Nomor HP", du?.phone || "-"],
+              ["Email", du?.email || "-"]];
+            return (
+              <div className="space-y-2">
+                {rows.map(([label, value]) =>
+                <div key={label} className="flex justify-between gap-4 py-1.5 border-b border-border last:border-0">
+                    <span className="text-xs font-semibold text-muted-foreground shrink-0">{label}</span>
+                    <span className="text-sm font-medium text-right break-words selectable">{value}</span>
+                  </div>)}
+              </div>);
+          })()}
+          <button
+            onClick={() => setDetailTarget(null)}
+            className="w-full bg-secondary text-secondary-foreground font-semibold py-2.5 rounded-xl text-sm hover:opacity-90 mt-4">
+            Tutup
+          </button>
         </div>
       </div>
       }
