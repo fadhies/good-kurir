@@ -383,6 +383,7 @@ export default function DriverDashboard() {
                     <OrderStatusBadge status={o.status} />
                   </div>
                   <p className="text-xs text-muted-foreground truncate">Dari: {o.store_name}</p>
+                  <p className="text-sm text-muted-foreground truncate">Pemesan: {o.customer_name || "Pemesan"}</p>
                   <p className="text-sm text-muted-foreground truncate">→ {o.destination_address}</p>
                   {o.store_detail && <p className="text-xs text-muted-foreground truncate mt-0.5">📍 {o.store_detail}</p>}
                   {o.destination_detail && <p className="text-xs text-muted-foreground truncate">📝 {o.destination_detail}</p>}
@@ -453,6 +454,7 @@ export default function DriverDashboard() {
               {acceptTarget ? (
                 <div className="space-y-1 text-sm">
                   <p>{acceptTarget.store_name} → {acceptTarget.destination_address}</p>
+                  <p>Pemesan: {acceptTarget.customer_name || "Pemesan"}</p>
                   <p className="font-semibold text-primary">Ongkir {formatRupiah((acceptTarget.delivery_fee || 0) + (acceptTarget.service_fee || 0))}</p>
                   {acceptTarget.store_detail && <p>📍 {acceptTarget.store_detail}</p>}
                   {acceptTarget.destination_detail && <p>📝 {acceptTarget.destination_detail}</p>}

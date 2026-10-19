@@ -91,7 +91,7 @@ export default function OrderChat({ order }) {
   return (
     <div className="bg-card rounded-2xl border border-border p-4">
       <h3 className="font-bold mb-3 flex items-center gap-2">
-        <Send className="w-4 h-4 text-primary" /> Chat {meIsDriver ? "dengan Pemesan" : "dengan Driver"}
+        <Send className="w-4 h-4 text-primary" /> Chat {meIsDriver ? `dengan ${order.customer_name || "Pemesan"}` : "dengan Driver"}
       </h3>
 
       <div ref={scrollRef} className="h-25 overflow-y-auto space-y-2 mb-3 pr-1 scrollbar-hide">

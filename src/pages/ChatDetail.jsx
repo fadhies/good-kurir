@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import OrderChat from "@/components/OrderChat";
 import S from "@/lib/supabaseEntities";
+import { useAuth } from "@/lib/AuthContext";
 import { Loader2, MessageCircle } from "lucide-react";
 
 // Judul halaman: jenis layanan + nama toko/resto (makanan) atau tujuan antar.
@@ -19,6 +20,7 @@ function titleFor(order) {
 // halaman pelacakan pesanan.
 export default function ChatDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [order, setOrder] = useState(undefined);
 
   useEffect(() => {
@@ -55,7 +57,9 @@ export default function ChatDetail() {
         {titleFor(order)}
       </h1>
       <p className="text-[11px] text-muted-foreground font-medium mb-4">
-        Percakapan driver/pemesan untuk pesanan ini
+        {order && order.driver_id && order.driver_id === user?.id
+          ? `Pemesan: ${order.customer_name || "Pemesan"}`
+          : "Percakapan driver/pemesan untuk pesanan ini"}
       </p>
 
       {chatReady ? (

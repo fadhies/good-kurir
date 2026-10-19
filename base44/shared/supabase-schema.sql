@@ -18,6 +18,7 @@ create table if not exists orders (
   type text,
   mode text,
   payment_method text,
+  customer_name text,
   store_name text,
   store_address text,
   store_detail text,

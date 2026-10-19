@@ -255,6 +255,7 @@ export default function NewOrder() {
 
       const order = await S.Order.create({
         user_id: user.id,
+        customer_name: user.full_name || user.email,
         type,
         mode,
         payment_method: paymentMethod,
