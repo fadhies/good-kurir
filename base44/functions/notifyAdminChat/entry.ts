@@ -25,6 +25,8 @@ export default async function(req) {
         type: 'new_message',
         title: '💬 Pesan dari Admin',
         body: preview,
+        // Ketukan push tray HP membuka menu Bantuan driver (chat admin).
+        action_url: 'https://goodkurir.online/driver/bantuan',
       });
       return Response.json({ success: true, notified: 1 });
     }

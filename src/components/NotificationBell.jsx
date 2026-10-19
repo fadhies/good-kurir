@@ -74,7 +74,15 @@ export default function NotificationBell() {
       navigate("/driver");
       return;
     }
-    if (item.order_id) navigate(`/pesanan/${item.order_id}`);
+    if (item.order_id) {
+      navigate(`/pesanan/${item.order_id}`);
+      return;
+    }
+    // Chat admin-driver tidak terikat pesanan: buka menu Bantuan driver
+    // (admin diarahkan ke daftar driver untuk membuka chatnya).
+    if (item.type === "new_message") {
+      navigate(user?.role === "admin" ? "/admin/driver" : "/driver/bantuan");
+    }
   }
 
   // Native back button closes the open panel instead of navigating away.

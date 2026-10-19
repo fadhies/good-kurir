@@ -3,7 +3,7 @@ import { insertOne } from './supabase.ts';
 // Creates a notification row directly in Supabase (service_role bypasses RLS),
 // then sends a native mobile push (FCM/APNs) to the recipient's device.
 // Best-effort: never throws, so it can't fail the calling operation.
-export async function createNotification(base44, { user_id, type, title, body, order_id }) {
+export async function createNotification(base44, { user_id, type, title, body, order_id, action_url }) {
   if (!user_id || !type || !title) return;
   try {
     const id = crypto.randomUUID();
@@ -29,8 +29,8 @@ export async function createNotification(base44, { user_id, type, title, body, o
       user_id,
       title,
       content: body || title,
-      action_label: order_id ? 'Lihat' : undefined,
-      action_url: order_id ? `https://goodkurir.online/pesanan/${order_id}` : undefined,
+      action_label: action_url || order_id ? 'Lihat' : undefined,
+      action_url: action_url || (order_id ? `https://goodkurir.online/pesanan/${order_id}` : undefined),
     });
   } catch {
     // push gagal (mis. belum ada native build / device) — jangan gagalkan
