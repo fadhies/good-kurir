@@ -2,6 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 
 // Broadcast push ke semua pengguna aplikasi. Hanya admin yang boleh mengirim.
 // Pengiriman memakai SendPushNotification (service role, server-side).
+// Laporan: hanya hasil berstatus "sent" yang dihitung terkirim; kegagalan
+// dicatat per pengguna beserta alasannya agar bisa ditelusuri admin.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -26,6 +28,7 @@ export default async function(req) {
     // Kirim per batch 6 secara paralel, catat hasil tiap pengguna.
     let sent = 0;
     let failed = 0;
+    const failures = [];
     for (let i = 0; i < targets.length; i += 6) {
       const batch = targets.slice(i, i + 6);
       const results = await Promise.allSettled(
@@ -37,16 +40,29 @@ export default async function(req) {
           })
         )
       );
-      for (const r of results) {
-        if (r.status === 'fulfilled') sent++;
-        else {
+      for (let j = 0; j < results.length; j++) {
+        const u = batch[j];
+        const r = results[j];
+        if (r.status === 'fulfilled') {
+          const val = r.value || {};
+          if (val.status === 'sent') {
+            sent++;
+          } else {
+            failed++;
+            const reason = `status: ${val.status || 'unknown'}${Array.isArray(val.failed_channels) && val.failed_channels.length ? ` (${val.failed_channels.join(', ')})` : ''}`;
+            failures.push({ user_id: u.id, email: u.email, reason });
+            console.error(`push tidak terkirim untuk ${u.email}: ${reason}`);
+          }
+        } else {
           failed++;
-          console.error('push gagal:', r.reason?.message || r.reason);
+          const reason = r.reason?.message || String(r.reason || 'unknown error');
+          failures.push({ user_id: u.id, email: u.email, reason });
+          console.error(`push gagal untuk ${u.email}: ${reason}`);
         }
       }
     }
 
-    return Response.json({ ok: true, total: targets.length, sent, failed });
+    return Response.json({ ok: true, total: targets.length, sent, failed, failures });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

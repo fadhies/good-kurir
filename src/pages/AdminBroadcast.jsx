@@ -108,6 +108,20 @@ export default function AdminBroadcast() {
                 <span>{result.failed} gagal</span>
               </div>
             )}
+            {result.failures?.length > 0 && (
+              <details className="mt-2">
+                <summary className="text-xs font-semibold text-destructive cursor-pointer select-none">
+                  Lihat rincian gagal ({result.failures.length})
+                </summary>
+                <div className="mt-2 max-h-40 overflow-y-auto space-y-1 pr-1 scrollbar-hide">
+                  {result.failures.map((f, i) => (
+                    <p key={i} className="text-[11px] text-muted-foreground break-words">
+                      <span className="font-medium">{f.email || f.user_id}</span>: {f.reason}
+                    </p>
+                  ))}
+                </div>
+              </details>
+            )}
             <p className="text-[10px] text-muted-foreground">
               Notifikasi hanya sampai pada pengguna yang menginstal aplikasi native.
             </p>
