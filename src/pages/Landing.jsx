@@ -126,7 +126,7 @@ export default function Landing() {
               <Image
                 src="https://media.base44.com/images/public/6a88f0c161e7b497808d40e0/0590c6ae4_googleplay.png"
                 alt="Dapatkan di Google Play"
-                className="h-12 mt-4"
+                className="w-44 h-12 mt-4"
                 fittingType="fit" />
             </a>
           </div>
