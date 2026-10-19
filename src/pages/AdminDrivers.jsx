@@ -177,6 +177,12 @@ export default function AdminDrivers() {
                     aria-label="Chat dengan driver">
                     <MessageCircle className="w-4 h-4 text-primary" />
                   </button>
+                  {d.verification_status === "approved" && (
+                    <span className={cn("text-xs px-2 py-1 rounded-full font-medium shrink-0",
+                      d.is_online ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground")}>
+                      {d.is_online ? "● Aktif" : "○ Offline"}
+                    </span>
+                  )}
                   <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground font-medium">
                     {d.vehicle_type === "motorcycle" ? "Motor" : "Mobil"} • {d.license_plate}
                   </span>
