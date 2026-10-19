@@ -25,6 +25,7 @@ const ADMIN_ITEMS = [
 function activeTabFor(pathname) {
   if (pathname.startsWith("/pesanan/")) return "/pesanan-saya";
   if (pathname.startsWith("/driver/dompet")) return "/driver/dompet";
+  if (pathname.startsWith("/driver/bantuan")) return "/driver";
   if (pathname.startsWith("/driver")) return "/driver";
   if (pathname.startsWith("/admin")) return "/admin";
   return pathname;

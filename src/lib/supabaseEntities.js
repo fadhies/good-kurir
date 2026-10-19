@@ -44,6 +44,7 @@ const Order = makeEntity("orders");
 const DriverProfile = makeEntity("driver_profiles");
 const Notification = makeEntity("notifications");
 const ChatMessage = makeEntity("chat_messages");
+const AdminChatMessage = makeEntity("admin_chat_messages");
 const WalletTransaction = makeEntity("wallet_transactions");
 const WithdrawalRequest = makeEntity("withdrawal_requests");
 const DriverRemittance = makeEntity("driver_remittances");
@@ -51,4 +52,4 @@ const AppSetting = makeEntity("app_settings");
 const Coupon = makeEntity("coupons");
 const Referral = makeEntity("referrals");
 
-export default { Order, DriverProfile, Notification, ChatMessage, WalletTransaction, WithdrawalRequest, DriverRemittance, AppSetting, Coupon, Referral };
+export default { Order, DriverProfile, Notification, ChatMessage, AdminChatMessage, WalletTransaction, WithdrawalRequest, DriverRemittance, AppSetting, Coupon, Referral };

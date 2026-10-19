@@ -24,6 +24,7 @@ const Terms = lazy(() => import('@/pages/Terms'));
 const OrderTracking = lazy(() => import('@/pages/OrderTracking'));
 const ChatDetail = lazy(() => import('@/pages/ChatDetail'));
 const BecomeDriver = lazy(() => import('@/pages/BecomeDriver'));
+const DriverSupport = lazy(() => import('@/pages/DriverSupport'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 const AdminDrivers = lazy(() => import('@/pages/AdminDrivers'));
 const AdminUsers = lazy(() => import('@/pages/AdminUsers'));
@@ -130,6 +131,7 @@ const AuthenticatedApp = () => {
         <Route path="/pesanan/:id" element={<OrderTracking />} />
         <Route path="/driver" element={<TabKeepAlive active="driver" />} />
         <Route path="/driver/dompet" element={<TabKeepAlive active="driver-dompet" />} />
+        <Route path="/driver/bantuan" element={<DriverSupport />} />
         <Route path="/jadi-driver" element={<BecomeDriver />} />
         <Route path="/referal" element={<Referral />} />
         <Route element={<AdminRoute />}>

@@ -4,7 +4,8 @@ import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { Image } from "@/components/ui/image";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search, X } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search, X, MessageCircle, ChevronLeft } from "lucide-react";
+import AdminDriverChat from "@/components/AdminDriverChat";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -24,6 +25,7 @@ export default function AdminDrivers() {
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [zoomPhoto, setZoomPhoto] = useState(null);
+  const [chatTarget, setChatTarget] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -148,6 +150,13 @@ export default function AdminDrivers() {
                     <p className="font-semibold truncate">{u?.full_name || "Tanpa nama"}</p>
                     <p className="text-sm text-muted-foreground truncate">{u?.email}</p>
                   </div>
+                  <button
+                    onClick={() => setChatTarget(d)}
+                    className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors shrink-0"
+                    title="Chat dengan driver"
+                    aria-label="Chat dengan driver">
+                    <MessageCircle className="w-4 h-4 text-primary" />
+                  </button>
                   <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground font-medium">
                     {d.vehicle_type === "motorcycle" ? "Motor" : "Mobil"} • {d.license_plate}
                   </span>
@@ -233,6 +242,30 @@ export default function AdminDrivers() {
         <div className="max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
           <Image src={zoomPhoto.src} alt={zoomPhoto.alt} className="w-full max-h-[80vh] rounded-xl" fittingType="fit" />
           <p className="text-center text-sm text-white/70 mt-3">{zoomPhoto.alt}</p>
+        </div>
+      </div>
+      }
+
+      {chatTarget &&
+      <div className="fixed inset-0 z-50 bg-background flex flex-col">
+        <div className="h-14 shrink-0 flex items-center gap-2 px-3 border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <button
+            onClick={() => setChatTarget(null)}
+            className="p-2 rounded-xl text-foreground hover:bg-secondary"
+            aria-label="Tutup chat">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div className="min-w-0">
+            <p className="font-semibold leading-tight truncate">{userMap[chatTarget.user_id]?.full_name || chatTarget.full_name || "Driver"}</p>
+            <p className="text-xs text-muted-foreground">Chat Admin</p>
+          </div>
+        </div>
+        <div className="flex-1 min-h-0 p-4">
+          <AdminDriverChat
+            driverId={chatTarget.user_id}
+            driverName={userMap[chatTarget.user_id]?.full_name || chatTarget.full_name}
+            viewerRole="admin"
+            className="h-full" />
         </div>
       </div>
       }

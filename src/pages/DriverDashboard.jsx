@@ -13,7 +13,7 @@ import { enrichOrdersStoreName } from "@/lib/orderEnrich";
 import { fireNewOrderAlert } from "@/lib/newOrderAlert";
 import { useRef } from "react";
 import { useBackHandler } from "@/hooks/useBackHandler";
-import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package } from "lucide-react";
+import { Loader2, Bike, Power, Crosshair, MapPin, ChevronRight, Star, Package, LifeBuoy } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -279,6 +279,19 @@ export default function DriverDashboard() {
             : "Akun Anda sedang menunggu verifikasi admin. Anda belum bisa menerima pesanan."}
         </div>
       )}
+
+      {/* Bantuan: chat langsung dengan admin */}
+      <button
+        onClick={() => navigate("/driver/bantuan")}
+        className="w-full bg-card rounded-2xl border border-border p-4 mb-4 flex items-center gap-3 hover:border-primary/40 transition-colors"
+      >
+        <LifeBuoy className="w-5 h-5 text-primary" />
+        <div className="flex-1 min-w-0 text-left">
+          <p className="text-xs text-muted-foreground">Butuh bantuan?</p>
+          <p className="text-sm font-medium">Chat langsung dengan admin</p>
+        </div>
+        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+      </button>
 
       {/* Status card */}
       <div className="relative overflow-hidden rounded-3xl p-5 mb-4 text-white shadow-xl shadow-slate-900/10 bg-slate-900">

@@ -33,6 +33,8 @@ function canRead(table, user, row) {
       return row.user_id === user.id;
     case 'chat_messages':
       return isParticipant(row, user.id);
+    case 'admin_chat_messages':
+      return row.driver_id === user.id;
     case 'coupons':
       return row.user_id === user.id;
     case 'referrals':
@@ -75,6 +77,8 @@ function canCreate(table, user, data) {
     case 'orders':
     case 'chat_messages':
       return true; // created_by_id is forced to user.id
+    case 'admin_chat_messages':
+      return data?.driver_id === user.id; // driver menulis di chatnya sendiri
     case 'notifications':
       return data?.user_id === user.id;
     case 'driver_profiles':
@@ -115,6 +119,10 @@ function scopeFilter(table, user, filter) {
     if (!isAdmin(user)) {
       f.participants = { $cs: [user.id] };
     }
+  }
+  if (table === 'admin_chat_messages' && !isAdmin(user)) {
+    f.driver_id = user.id; // driver hanya melihat chatnya sendiri
+    return f;
   }
   if (isAdmin(user)) return f;
   switch (table) {
