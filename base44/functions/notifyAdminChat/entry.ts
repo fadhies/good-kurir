@@ -26,7 +26,7 @@ export default async function(req) {
         title: '💬 Pesan dari Admin',
         body: preview,
         // Ketukan push tray HP membuka menu Bantuan driver (chat admin).
-        action_url: 'https://goodkurir.online/driver/bantuan',
+        action_url: 'https://app.ojekta.com/driver/bantuan',
       });
       return Response.json({ success: true, notified: 1 });
     }
@@ -45,7 +45,7 @@ export default async function(req) {
           body: preview,
           // Ketukan notifikasi admin membuka langsung chat dengan driver ini.
           driver_id: user.id,
-          action_url: `https://goodkurir.online/admin/driver?chat=${user.id}`,
+          action_url: `https://app.ojekta.com/admin/driver?chat=${user.id}`,
         })
       )
     );

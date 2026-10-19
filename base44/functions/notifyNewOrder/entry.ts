@@ -64,7 +64,7 @@ export default async function(req) {
           body: order.store_name ? `Dari ${order.store_name}` : 'Pesanan baru masuk',
           order_id: orderId,
           // Tap notifikasi langsung membuka dashboard driver.
-          action_url: 'https://goodkurir.online/driver',
+          action_url: 'https://app.ojekta.com/driver',
         })
       )
     );
