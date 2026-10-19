@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Clock, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, Eye, ChevronDown } from "lucide-react";
+import { useAuth } from "@/lib/AuthContext";
 
 const btnPrimary =
   "w-full min-h-[52px] rounded-2xl bg-gradient-to-r from-teal-700 to-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition-transform";
@@ -9,6 +10,8 @@ const btnSecondary =
 
 export default function DriverStatus({ profile, onRetry }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [showDetail, setShowDetail] = useState(false);
   const status = profile?.verification_status || "pending";
 
   const cfg =
@@ -44,6 +47,38 @@ export default function DriverStatus({ profile, onRetry }) {
       </div>
       <h1 className="text-2xl font-extrabold text-slate-900">{cfg.title}</h1>
       <p className="text-sm text-slate-500 mt-2 max-w-xs break-words">{cfg.desc}</p>
+
+      <button
+        onClick={() => setShowDetail((v) => !v)}
+        className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-emerald-700 font-bold text-xs active:scale-[0.98] transition-transform"
+      >
+        {showDetail ? <ChevronDown className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+        {showDetail ? "Sembunyikan Detail" : "Lihat Detail"}
+      </button>
+      {showDetail && (
+        <div className="w-full max-w-xs bg-white border border-slate-200 rounded-3xl p-4 mt-3 text-left space-y-2">
+          <div className="flex justify-between gap-3 text-sm">
+            <span className="text-slate-400 shrink-0">Nama</span>
+            <span className="font-semibold text-slate-800 text-right break-words">
+              {profile?.full_name || user?.full_name || "-"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-3 text-sm">
+            <span className="text-slate-400 shrink-0">Tgl Lahir</span>
+            <span className="font-semibold text-slate-800 text-right">
+              {profile?.birth_date || "-"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-3 text-sm">
+            <span className="text-slate-400 shrink-0">No. HP</span>
+            <span className="font-semibold text-slate-800 text-right">{user?.phone || "-"}</span>
+          </div>
+          <div className="flex justify-between gap-3 text-sm">
+            <span className="text-slate-400 shrink-0">Email</span>
+            <span className="font-semibold text-slate-800 text-right break-words">{user?.email || "-"}</span>
+          </div>
+        </div>
+      )}
 
       {status === "pending" && (
         <div className="w-full max-w-xs border border-slate-200 rounded-3xl p-4 mt-6 bg-white text-left space-y-3">
