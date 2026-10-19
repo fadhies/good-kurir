@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { Clock, Loader2, TrendingUp, AlertCircle, XCircle, Users, ListOrdered } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
+import { listAdminUsers } from "@/lib/adminUsers";
 import { formatRupiah } from "@/lib/geo";
 
 export default function AdminDashboard() {
@@ -23,7 +24,7 @@ export default function AdminDashboard() {
       S.DriverProfile.list(),
       S.Order.list("-created_date", 1000),
       S.WalletTransaction.filter({ user_id: user.id }, "-created_date", 20),
-      base44.entities.User.list()]
+      listAdminUsers()]
       );
 
       const pending = drivers.filter((d) => d.verification_status === "pending");

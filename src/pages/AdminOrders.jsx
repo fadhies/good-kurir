@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { makassarDateKey, makassarToday } from "@/lib/dateKey";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { listAdminUsers } from "@/lib/adminUsers";
 
 const STATUS_FILTERS = [
 { key: "all", label: "Semua" },
@@ -34,7 +35,7 @@ export default function AdminOrders() {
     async function load() {
       const [o, u] = await Promise.allSettled([
         S.Order.list("-created_date", 200),
-        base44.entities.User.list(),
+        listAdminUsers(),
       ]);
       if (o.status === "fulfilled") setOrders(o.value);
       else toast({ title: "Gagal memuat pesanan", description: String(o.reason?.message || o.reason), variant: "destructive" });

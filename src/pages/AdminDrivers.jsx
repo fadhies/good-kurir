@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, CheckCircle2, XCircle, Bike, BadgeCheck, Search, X, MessageCircle, ChevronLeft } from "lucide-react";
 import AdminDriverChat from "@/components/AdminDriverChat";
 import { cn } from "@/lib/utils";
+import { listAdminUsers } from "@/lib/adminUsers";
 
 const TABS = [
 { key: "pending", label: "Menunggu" },
@@ -31,7 +32,7 @@ export default function AdminDrivers() {
     setLoading(true);
     const [d, u] = await Promise.allSettled([
       S.DriverProfile.list("-created_date", 200),
-      base44.entities.User.list(),
+      listAdminUsers(),
     ]);
     if (d.status === "fulfilled") setDrivers(d.value);
     else toast({ title: "Gagal memuat driver", description: String(d.reason?.message || d.reason), variant: "destructive" });

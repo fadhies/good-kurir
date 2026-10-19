@@ -9,6 +9,7 @@ import { Loader2, Banknote, Wallet, Receipt, AlertTriangle, Calendar } from "luc
 import { Image } from "@/components/ui/image";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { listAdminUsers } from "@/lib/adminUsers";
 
 export default function AdminRemittance() {
   const [list, setList] = useState(null);
@@ -24,7 +25,7 @@ export default function AdminRemittance() {
   async function load() {
     const [r, u, o, wts] = await Promise.allSettled([
     S.DriverRemittance.filter({}, "-created_date", 200),
-    base44.entities.User.list(),
+    listAdminUsers(),
     S.Order.filter({ status: "completed" }, "-updated_date", 500),
     S.WalletTransaction.filter({ type: "credit" }, "-created_date", 1000)]
     );

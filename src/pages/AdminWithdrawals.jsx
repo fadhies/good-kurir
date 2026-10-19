@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { listAdminUsers } from "@/lib/adminUsers";
 
 const STATUS = {
   pending: { label: "Menunggu", cls: "bg-amber-100 text-amber-700" },
@@ -38,7 +39,7 @@ export default function AdminWithdrawals() {
     try {
       const [reqs, us] = await Promise.all([
         S.WithdrawalRequest.list("-created_date", 100),
-        base44.entities.User.list(),
+        listAdminUsers(),
       ]);
       setList(reqs);
       setUsers(us);

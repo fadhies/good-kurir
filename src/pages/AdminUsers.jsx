@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { listAdminUsers } from "@/lib/adminUsers";
 
 export default function AdminUsers() {
   const { toast } = useToast();
@@ -30,7 +31,7 @@ export default function AdminUsers() {
   useEffect(() => {
     async function load() {
       const [u, d] = await Promise.allSettled([
-        base44.entities.User.list(),
+        listAdminUsers(),
         S.DriverProfile.list(),
       ]);
       if (u.status === "fulfilled") setUsers(u.value);
