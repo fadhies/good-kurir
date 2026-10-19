@@ -108,7 +108,12 @@ export default function AdminDrivers() {
   async function setVerification(driver, status) {
     setActing(driver.id);
     try {
-      await S.DriverProfile.update(driver.id, { verification_status: status, rejection_reason: null });
+      await S.DriverProfile.update(driver.id, {
+        verification_status: status,
+        rejection_reason: null,
+        // Driver yang baru disetujui langsung aktif (online).
+        ...(status === "approved" ? { is_online: true } : {})
+      });
       toast({ title: status === "approved" ? "Driver disetujui" : "Driver ditolak" });
       load();
     } catch (e) {
