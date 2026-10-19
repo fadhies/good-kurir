@@ -63,6 +63,8 @@ export default async function(req) {
           title: `Orderan baru: ${typeLabel}`,
           body: order.store_name ? `Dari ${order.store_name}` : 'Pesanan baru masuk',
           order_id: orderId,
+          // Tap notifikasi langsung membuka dashboard driver.
+          action_url: 'https://goodkurir.online/driver',
         })
       )
     );
