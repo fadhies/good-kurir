@@ -106,15 +106,18 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
                       <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Buka Blokir
                     </Button>
                   ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={busy || !deviceId || deviceId !== id || !reason.trim()}
-                      onClick={() => blockDevice(id)}
-                      className={cn(deviceId !== id && "opacity-50")}
+                    <button
+                      type="button"
+                      onClick={() => setDeviceId(id)}
+                      className={cn(
+                        "shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+                        deviceId === id
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "text-muted-foreground hover:text-foreground border-border"
+                      )}
                     >
-                      <Ban className="w-3.5 h-3.5 mr-1" /> Blokir
-                    </Button>
+                      {deviceId === id ? "Dipilih" : "Pilih"}
+                    </button>
                   )}
                 </div>
               );
@@ -135,6 +138,12 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={busy}>Tutup</Button>
+          {!loading && devices.length > 0 && deviceId && (
+            <Button onClick={() => blockDevice(deviceId)} disabled={busy || !reason.trim()}>
+              {busy ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : <Ban className="w-4 h-4 mr-1.5" />}
+              Simpan
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
