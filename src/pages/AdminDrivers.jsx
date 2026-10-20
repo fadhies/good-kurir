@@ -126,7 +126,7 @@ export default function AdminDrivers() {
   return (
     <AdminLayout>
       <h1 className="mb-1 font-medium [font-family:'Poppins',_sans-serif] text-lg">Verifikasi Driver</h1>
-      <p className="text-muted-foreground text-sm mb-6">Periksa KTP & selfie, lalu setujui atau tolak pendaftar.</p>
+      <p className="text-muted-foreground text-sm mb-6">Setujui atau tolak pendaftar.</p>
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="flex bg-card border border-border rounded-xl p-1">
