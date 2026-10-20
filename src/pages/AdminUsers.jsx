@@ -117,24 +117,27 @@ export default function AdminUsers() {
       ) : (
         <div className="bg-card rounded-2xl border border-border overflow-hidden">
           <div className="grid grid-cols-12 px-4 py-3 bg-secondary/50 text-xs font-semibold text-muted-foreground">
-            <div className="col-span-5">Nama</div>
-            <div className="col-span-5 hidden sm:block">Email</div>
-            <div className="col-span-2 text-right">Peran</div>
+            <div className="col-span-5 sm:col-span-4">Nama</div>
+            <div className="col-span-4 hidden sm:block">Email</div>
+            <div className="col-span-4 sm:col-span-2 text-right">Peran</div>
+            <div className="col-span-3 sm:col-span-2 text-right">Blokir</div>
           </div>
           {filtered.map((u) => (
             <div key={u.id} className="grid grid-cols-12 px-4 py-3 border-t border-border items-center text-sm">
-              <div className="col-span-5 font-medium truncate">{u.full_name || "Tanpa nama"}</div>
-              <div className="col-span-5 hidden sm:block text-muted-foreground truncate">{u.email}</div>
-              <div className="col-span-2 text-right">
+              <div className="col-span-5 sm:col-span-4 font-medium truncate">{u.full_name || "Tanpa nama"}</div>
+              <div className="col-span-4 hidden sm:block text-muted-foreground truncate">{u.email}</div>
+              <div className="col-span-4 sm:col-span-2 text-right">
                 <span className={cn("inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize", roleBadge(u.role))}>
                   {u.role}
                 </span>
                 {driverIds.has(u.id) && (
                   <span className="ml-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Driver</span>
                 )}
+              </div>
+              <div className="col-span-3 sm:col-span-2 text-right">
                 <button
                   onClick={() => setBlockTarget(u)}
-                  className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
                 >
                   <Ban className="w-3 h-3" /> Perangkat
                 </button>
