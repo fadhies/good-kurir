@@ -139,7 +139,7 @@ export default function AdminUsers() {
                   onClick={() => setBlockTarget(u)}
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
                 >
-                  <Ban className="w-3 h-3" /> Perangkat
+                  <Ban className="w-3 h-3" /> Blokir Perangkat
                 </button>
               </div>
             </div>
