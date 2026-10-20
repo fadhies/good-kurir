@@ -33,7 +33,7 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
         base44.functions.invoke("deviceBlock", { op: "list" }),
       ]);
       const orders = ordersRes.status === "fulfilled" ? ordersRes.value : [];
-      const allBlocked = listRes.status === "fulfilled" ? (listRes.data?.data || []) : [];
+      const allBlocked = listRes.status === "fulfilled" ? (listRes.value?.data?.data || []) : [];
       const ids = [...new Set(orders.map((o) => o.device_id).filter(Boolean))];
       setDevices(ids);
       setBlocked(allBlocked.filter((b) => ids.includes(b.device_id)));
