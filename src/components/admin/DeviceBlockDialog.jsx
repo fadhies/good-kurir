@@ -78,7 +78,7 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
         <DialogHeader>
           <DialogTitle>Blokir Perangkat</DialogTitle>
           <DialogDescription>
-            Perangkat yang diblokir tidak bisa membuat pesanan, sekalipun membuat akun baru. Blokir disimpan pada ID perangkat, bukan akun.
+            Perangkat yang diblokir tidak bisa membuat pesanan.
           </DialogDescription>
         </DialogHeader>
 
