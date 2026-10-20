@@ -232,6 +232,20 @@ export default function NewOrder() {
     }
     setSubmitting(true);
     try {
+      // Perangkat yang diblokir admin tidak dapat membuat pesanan, sekalipun
+      // akunnya diganti. Pengecekan asli tetap dilakukan di server saat simpan.
+      try {
+        const db = await base44.functions.invoke("deviceBlock", { op: "check", deviceId: getDeviceId() });
+        if (db.data?.data?.blocked) {
+          toast({
+            title: "Perangkat Anda diblokir",
+            description: db.data.data.reason || "Hubungi admin untuk informasi lebih lanjut.",
+            variant: "destructive"
+          });
+          return;
+        }
+      } catch {}
+
       // Cek apakah ada driver yang bisa melayani mode pengantaran terpilih
       const check = await base44.functions.invoke("checkModeDriver", { mode, paymentMethod });
       if (check.data && !check.data.available) {

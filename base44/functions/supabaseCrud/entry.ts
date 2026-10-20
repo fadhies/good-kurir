@@ -200,6 +200,14 @@ export default async function(req) {
       if (!canCreate(table, user, data)) {
         return Response.json({ error: 'Forbidden' }, { status: 403 });
       }
+      // Blokir perangkat: order dari device_id yang diblokir admin ditolak,
+      // sekalipun pengguna membuat akun baru di perangkat yang sama.
+      if (table === 'orders' && !isAdmin(user) && data.device_id) {
+        const blockedRows = await selectQuery('blocked_devices', { filter: { device_id: data.device_id }, limit: 1 });
+        if (blockedRows.length) {
+          return Response.json({ error: `Perangkat Anda diblokir admin: ${blockedRows[0].reason || 'melanggar ketentuan aplikasi'}` }, { status: 403 });
+        }
+      }
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
       const row = await insertOne(table, {

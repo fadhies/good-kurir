@@ -3,7 +3,8 @@ import AdminLayout from "@/components/AdminLayout";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Users, Search, UserPlus } from "lucide-react";
+import { Loader2, Users, Search, UserPlus, Ban } from "lucide-react";
+import DeviceBlockDialog from "@/components/admin/DeviceBlockDialog";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -27,19 +28,21 @@ export default function AdminUsers() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("admin");
   const [inviting, setInviting] = useState(false);
+  const [blockTarget, setBlockTarget] = useState(null);
+
+  async function load() {
+    const [u, d] = await Promise.allSettled([
+      listAdminUsers(),
+      S.DriverProfile.list(),
+    ]);
+    if (u.status === "fulfilled") setUsers(u.value);
+    else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
+    if (d.status === "fulfilled") setDrivers(d.value);
+    else toast({ title: "Gagal memuat data driver", description: String(d.reason?.message || d.reason), variant: "destructive" });
+    setLoading(false);
+  }
 
   useEffect(() => {
-    async function load() {
-      const [u, d] = await Promise.allSettled([
-        listAdminUsers(),
-        S.DriverProfile.list(),
-      ]);
-      if (u.status === "fulfilled") setUsers(u.value);
-      else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
-      if (d.status === "fulfilled") setDrivers(d.value);
-      else toast({ title: "Gagal memuat data driver", description: String(d.reason?.message || d.reason), variant: "destructive" });
-      setLoading(false);
-    }
     load();
   }, []);
 
@@ -129,6 +132,12 @@ export default function AdminUsers() {
                 {driverIds.has(u.id) && (
                   <span className="ml-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Driver</span>
                 )}
+                <button
+                  onClick={() => setBlockTarget(u)}
+                  className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <Ban className="w-3 h-3" /> Perangkat
+                </button>
               </div>
             </div>
           ))}
@@ -159,6 +168,12 @@ export default function AdminUsers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <DeviceBlockDialog
+        user={blockTarget}
+        onClose={() => setBlockTarget(null)}
+        onChanged={load}
+      />
     </AdminLayout>
   );
 }
