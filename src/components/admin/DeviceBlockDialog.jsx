@@ -85,7 +85,7 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
         {loading ? (
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
         ) : devices.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Tidak ada ID perangkat tercatat dari pesanan pengguna ini. Hanya perangkat yang pernah membuat pesanan yang dapat diblokir.</p>
+          <p className="text-sm text-muted-foreground">Hanya perangkat yang pernah membuat pesanan yang dapat diblokir.</p>
         ) : (
           <div className="space-y-2 max-h-56 overflow-y-auto">
             {devices.map((id) => {
