@@ -21,7 +21,6 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
   const [devices, setDevices] = useState([]); // device_id dari pesanan pengguna ini
   const [blocked, setBlocked] = useState([]); // baris blokir terkait device di atas
   const [deviceId, setDeviceId] = useState("");
-  const [manualId, setManualId] = useState("");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -40,7 +39,6 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
       setBlocked(allBlocked.filter((b) => ids.includes(b.device_id)));
       setDeviceId(ids[0] || "");
       setReason("");
-      setManualId("");
     } finally {
       setLoading(false);
     }
@@ -87,14 +85,7 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
         {loading ? (
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
         ) : devices.length === 0 ? (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Tidak ada ID perangkat tercatat dari pesanan pengguna ini. Masukkan ID perangkat secara manual (jika ada).</p>
-            <Input
-              placeholder="ID perangkat (mis. 3f2a...)"
-              value={manualId}
-              onChange={(e) => setManualId(e.target.value)}
-            />
-          </div>
+          <p className="text-sm text-muted-foreground">Tidak ada ID perangkat tercatat dari pesanan pengguna ini. Hanya perangkat yang pernah membuat pesanan yang dapat diblokir.</p>
         ) : (
           <div className="space-y-2 max-h-56 overflow-y-auto">
             {devices.map((id) => {
@@ -131,7 +122,7 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
           </div>
         )}
 
-        {!loading && (devices.length > 0 || manualId.trim()) && (
+        {!loading && devices.length > 0 && (
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Alasan pemblokiran</label>
             <Input
@@ -140,17 +131,6 @@ export default function DeviceBlockDialog({ user, onClose, onChanged }) {
               onChange={(e) => setReason(e.target.value)}
             />
           </div>
-        )}
-
-        {devices.length === 0 && manualId.trim() && (
-          <Button
-            disabled={busy || !reason.trim()}
-            onClick={() => blockDevice(manualId.trim())}
-            className="bg-destructive hover:bg-destructive/90"
-          >
-            {busy ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : <Ban className="w-4 h-4 mr-1.5" />}
-            Blokir Perangkat
-          </Button>
         )}
 
         <DialogFooter>

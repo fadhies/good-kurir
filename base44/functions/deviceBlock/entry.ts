@@ -46,6 +46,11 @@ export default async function(req) {
       const deviceId = String(body.deviceId || '').trim();
       const reason = String(body.reason || '').trim();
       if (!deviceId) return Response.json({ error: 'deviceId required' }, { status: 400 });
+      // Hanya perangkat yang pernah tercatat pada order yang boleh diblokir.
+      const orderRows = await selectQuery('orders', { filter: { device_id: deviceId }, limit: 1 });
+      if (!orderRows.length) {
+        return Response.json({ error: 'Device ID tidak tercatat pada pesanan apa pun' }, { status: 400 });
+      }
       // Hapus duplikat lama (jika ada) lalu simpan blokir terbaru.
       await deleteWhere('blocked_devices', { device_id: deviceId });
       const row = await insertOne('blocked_devices', {
