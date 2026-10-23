@@ -4,7 +4,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
 import { formatRupiah } from "@/lib/geo";
-import { Loader2, ListOrdered, Search, Calendar } from "lucide-react";
+import { Loader2, ListOrdered, Search, Calendar, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -28,23 +28,42 @@ export default function AdminOrders() {
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
   const [date, setDate] = useState(makassarToday());
+  const [completingId, setCompletingId] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  async function load() {
+    const [o, u] = await Promise.allSettled([
+      S.Order.list("-created_date", 200),
+      listAdminUsers(),
+    ]);
+    if (o.status === "fulfilled") setOrders(o.value);
+    else toast({ title: "Gagal memuat pesanan", description: String(o.reason?.message || o.reason), variant: "destructive" });
+    if (u.status === "fulfilled") setUsers(u.value);
+    else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
+    setLoading(false);
+  }
+
   useEffect(() => {
-    async function load() {
-      const [o, u] = await Promise.allSettled([
-        S.Order.list("-created_date", 200),
-        listAdminUsers(),
-      ]);
-      if (o.status === "fulfilled") setOrders(o.value);
-      else toast({ title: "Gagal memuat pesanan", description: String(o.reason?.message || o.reason), variant: "destructive" });
-      if (u.status === "fulfilled") setUsers(u.value);
-      else toast({ title: "Gagal memuat daftar pengguna", description: String(u.reason?.message || u.reason), variant: "destructive" });
-      setLoading(false);
-    }
     load();
   }, []);
+
+  const COMPLETABLE = ["driver_assigned", "at_store", "awaiting_payment", "paid", "on_the_way"];
+
+  async function handleComplete(e, orderId) {
+    e.stopPropagation();
+    setCompletingId(orderId);
+    try {
+      const res = await base44.functions.invoke("completeOrderPayment", { orderId });
+      if (!res?.data?.success) throw new Error(res?.data?.error || "Gagal menyelesaikan pesanan");
+      toast({ title: "Pesanan diselesaikan", description: "Driver kini bisa mengambil pesanan berikutnya." });
+      await load();
+    } catch (err) {
+      toast({ title: "Gagal menyelesaikan pesanan", description: String(err.message || err), variant: "destructive" });
+    } finally {
+      setCompletingId(null);
+    }
+  }
 
   const userMap = useMemo(() => {
     const m = {};
@@ -175,6 +194,20 @@ export default function AdminOrders() {
                     <p className="font-semibold text-primary">{formatRupiah(o.total_amount || o.delivery_fee || 0)}</p>
                   </div>
                 </div>
+                {COMPLETABLE.includes(o.status) && (
+                  <div className="flex justify-end mt-3">
+                    <button
+                      onClick={(e) => handleComplete(e, o.id)}
+                      disabled={completingId === o.id}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline disabled:opacity-50"
+                    >
+                      {completingId === o.id
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <CheckCircle2 className="w-3.5 h-3.5" />}
+                      Selesaikan
+                    </button>
+                  </div>
+                )}
               </div>);
 
         })}

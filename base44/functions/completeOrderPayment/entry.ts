@@ -15,11 +15,22 @@ export default async function(req) {
 
     const order = await getById('orders', orderId);
     if (!order) return Response.json({ error: 'Order not found' }, { status: 404 });
-    if (order.driver_id !== user.id && order.created_by_id !== user.id) {
+    // Admin boleh menyelesaikan order yang terjebak (mis. user tidak
+    // mengonfirmasi selesai) agar driver bisa lanjut ambil order berikutnya.
+    let isAdmin = user.role === 'admin';
+    if (!isAdmin) {
+      try {
+        const rec = await base44.entities.User.get(user.id);
+        if (rec?.role === 'admin') isAdmin = true;
+      } catch (_e) { /* fall back ke me() role */ }
+    }
+
+    if (!isAdmin && order.driver_id !== user.id && order.created_by_id !== user.id) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
-    if (order.status !== 'on_the_way') {
-      return Response.json({ error: 'Pesanan belum dalam perjalanan' }, { status: 400 });
+    const completable = ['driver_assigned', 'at_store', 'awaiting_payment', 'paid', 'on_the_way'];
+    if (!completable.includes(order.status)) {
+      return Response.json({ error: 'Pesanan tidak dalam status yang bisa diselesaikan' }, { status: 400 });
     }
 
     const deliveryFee = order.delivery_fee || 0;
