@@ -3,7 +3,7 @@ import AdminLayout from "@/components/AdminLayout";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { base44 } from "@/api/base44Client";
 import S from "@/lib/supabaseEntities";
-import { formatRupiah } from "@/lib/geo";
+import { formatRupiah, shortAddress } from "@/lib/geo";
 import { Loader2, ListOrdered, Search, Calendar, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -177,7 +177,8 @@ export default function AdminOrders() {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{o.mode || "hemat"}</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">Dibuat {timeLabel(o)}</p>
-                    <p className="text-sm text-muted-foreground truncate mt-0.5">→ {o.destination_address}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-0.5">Dari {shortAddress(o.store_address)}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-0.5">→ {shortAddress(o.destination_address)}</p>
                   </div>
                   <OrderStatusBadge status={o.status} />
                 </div>
