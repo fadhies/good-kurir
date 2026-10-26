@@ -172,11 +172,11 @@ export default function AdminOrders() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-primary selectable">#{String(o.id).slice(-6)}</span>
-                      <span className="text-xs text-muted-foreground">• {timeLabel(o)}</span>
                       <span className="font-semibold truncate">{o.store_name || "Pesanan"}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">{typeLabel(o.type)}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{o.mode || "hemat"}</span>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">Dibuat {timeLabel(o)}</p>
                     <p className="text-sm text-muted-foreground truncate mt-0.5">→ {o.destination_address}</p>
                   </div>
                   <OrderStatusBadge status={o.status} />
