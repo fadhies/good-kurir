@@ -101,6 +101,10 @@ export default function AdminOrders() {
 
   const typeLabel = (t) => t === "food" ? "Makanan" : t === "goods" ? "Barang" : "Orang";
   const methodLabel = (m) => (m || "cash").toUpperCase();
+  const timeLabel = (o) =>
+    new Date(o.created_date).toLocaleTimeString("id-ID", {
+      hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar"
+    });
 
   return (
     <AdminLayout>
@@ -168,6 +172,7 @@ export default function AdminOrders() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-primary selectable">#{String(o.id).slice(-6)}</span>
+                      <span className="text-xs text-muted-foreground">• {timeLabel(o)}</span>
                       <span className="font-semibold truncate">{o.store_name || "Pesanan"}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">{typeLabel(o.type)}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{o.mode || "hemat"}</span>
