@@ -175,9 +175,9 @@ export default function AdminOrders() {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">{typeLabel(o.type)}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{o.mode || "hemat"}</span>
                     </div>
-                    <p className="font-semibold truncate mt-0.5">{o.store_name || "Pesanan"}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">Dibuat {timeLabel(o)}</p>
-                    <p className="text-sm text-muted-foreground truncate mt-0.5">→ {shortAddress(o.destination_address)}</p>
+                    <p className="font-semibold truncate mt-0.5">{o.store_name || "Pesanan"}</p>
+                     <p className="text-sm text-muted-foreground truncate mt-0.5">→ {shortAddress(o.destination_address)}</p>
                   </div>
                   <OrderStatusBadge status={o.status} />
                 </div>
