@@ -25,40 +25,52 @@ export default async function(req) {
     const users = await base44.asServiceRole.entities.User.list();
     const targets = users.filter((u) => u.id !== user.id);
 
-    // Kirim per batch 6 secara paralel, catat hasil tiap pengguna.
+    // Kirim satu per satu dengan jeda antar permintaan supaya tidak menabrak
+    // rate limit layanan push. Bila tetap ditolak karena rate limit, permintaan
+    // diulang otomatis dengan jeda yang makin panjang.
+    const DELAY_MS = 250;
+    const MAX_ATTEMPTS = 3;
+    const RETRY_BASE_MS = 1500;
+    const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+    const isRateLimit = (msg: string) => /rate limit|too many requests|429/i.test(msg);
+
     let sent = 0;
     let failed = 0;
     const failures = [];
-    for (let i = 0; i < targets.length; i += 6) {
-      const batch = targets.slice(i, i + 6);
-      const results = await Promise.allSettled(
-        batch.map((u) =>
-          base44.asServiceRole.integrations.Core.SendPushNotification({
+
+    for (let i = 0; i < targets.length; i++) {
+      const u = targets[i];
+      if (i > 0) await sleep(DELAY_MS);
+
+      let sentOk = false;
+      let reason = 'unknown error';
+
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          const val = (await base44.asServiceRole.integrations.Core.SendPushNotification({
             user_id: u.id,
             title,
             content,
-          })
-        )
-      );
-      for (let j = 0; j < results.length; j++) {
-        const u = batch[j];
-        const r = results[j];
-        if (r.status === 'fulfilled') {
-          const val = r.value || {};
+          })) || {};
           if (val.status === 'sent') {
-            sent++;
+            sentOk = true;
           } else {
-            failed++;
-            const reason = `status: ${val.status || 'unknown'}${Array.isArray(val.failed_channels) && val.failed_channels.length ? ` (${val.failed_channels.join(', ')})` : ''}`;
-            failures.push({ user_id: u.id, email: u.email, reason });
-            console.error(`push tidak terkirim untuk ${u.email}: ${reason}`);
+            reason = `status: ${val.status || 'unknown'}${Array.isArray(val.failed_channels) && val.failed_channels.length ? ` (${val.failed_channels.join(', ')})` : ''}`;
           }
-        } else {
-          failed++;
-          const reason = r.reason?.message || String(r.reason || 'unknown error');
-          failures.push({ user_id: u.id, email: u.email, reason });
-          console.error(`push gagal untuk ${u.email}: ${reason}`);
+          break;
+        } catch (err) {
+          reason = err?.message || String(err);
+          if (!isRateLimit(reason) || attempt === MAX_ATTEMPTS) break;
+          await sleep(RETRY_BASE_MS * attempt);
         }
+      }
+
+      if (sentOk) {
+        sent++;
+      } else {
+        failed++;
+        failures.push({ user_id: u.id, email: u.email, reason });
+        console.error(`push gagal untuk ${u.email}: ${reason}`);
       }
     }
 
