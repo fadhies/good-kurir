@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import Layout from "@/components/Layout";
 import PullToRefresh from "@/components/PullToRefresh";
 import S from "@/lib/supabaseEntities";
+import { chatPreview } from "@/lib/chatImage";
 import { Loader2, MessageCircle, ChevronRight } from "lucide-react";
 
 // Judul kartu: jenis layanan + nama toko/resto (makanan) atau tujuan antar.
@@ -108,7 +109,7 @@ export default function Chat() {
                         : m.sender_role === "admin"
                           ? "Admin"
                           : "Pemesan"}
-                    : {m.text}
+                    : {chatPreview(m.text)}
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />

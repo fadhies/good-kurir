@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
+import { chatPreview } from "@/lib/chatImage";
 import { subscribeUser } from "@/lib/realtime";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -58,8 +59,9 @@ export default function ChatNotificationListener() {
               : m.sender_role === "admin"
               ? "Admin"
               : "Pelanggan";
+          const shown = chatPreview(m.text);
           const preview =
-            m.text && m.text.length > 60 ? m.text.slice(0, 60) + "…" : m.text;
+            shown && shown.length > 60 ? shown.slice(0, 60) + "…" : shown;
           toast({
             title: `💬 Pesan dari ${senderLabel}`,
             description: preview || "Pesan baru",

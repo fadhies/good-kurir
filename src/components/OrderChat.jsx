@@ -3,8 +3,11 @@ import { useAuth } from "@/lib/AuthContext";
 import S from "@/lib/supabaseEntities";
 import { subscribeOrder } from "@/lib/realtime";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Send, Clock } from "lucide-react";
+import { Loader2, Send, Clock, ImagePlus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { compressImage } from "@/lib/compressImage";
+import ChatImage from "@/components/chat/ChatImage";
+import { IMG_PREFIX, isImageMessage, imageUriOf } from "@/lib/chatImage";
 
 export default function OrderChat({ order }) {
   const { user } = useAuth();
@@ -12,8 +15,10 @@ export default function OrderChat({ order }) {
   const [messages, setMessages] = useState(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [pending, setPending] = useState(null); // optimistic message
   const scrollRef = useRef(null);
+  const fileRef = useRef(null);
 
   async function load() {
     try {
@@ -80,6 +85,35 @@ export default function OrderChat({ order }) {
     }
   }
 
+  async function sendImage(e) {
+    const file = e.target.files?.[0];
+    if (fileRef.current) fileRef.current.value = "";
+    if (!file) return;
+    setUploading(true);
+    const senderRole = order.created_by_id === user?.id ? "user" : (order.driver_id === user?.id ? "driver" : "admin");
+    const participants = [order.created_by_id, order.driver_id].filter(Boolean);
+    try {
+      const compressed = await compressImage(file);
+      const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file: compressed });
+      await S.ChatMessage.create({
+        order_id: order.id,
+        sender_id: user.id,
+        sender_name: user.full_name || user.email,
+        sender_role: senderRole,
+        text: `${IMG_PREFIX}${file_uri}`,
+        participants,
+      });
+      base44.functions
+        .invoke("notifyChatMessage", { orderId: order.id, text: "📷 Foto" })
+        .catch(() => {});
+      await load();
+    } catch (err) {
+      toast({ title: "Gagal mengirim foto", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  }
+
   // Hanya tampilkan jika driver sudah ditetapkan dan bukan dibatalkan
   if (!order.driver_id || order.status === "cancelled" || order.status === "pending_match") return null;
 
@@ -116,7 +150,11 @@ export default function OrderChat({ order }) {
                       {m.sender_role === "driver" ? "Driver" : m.sender_role === "admin" ? "Admin" : "Pemesan"}
                     </p>
                   )}
-                  <p className="whitespace-pre-wrap break-words selectable">{m.text}</p>
+                  {isImageMessage(m.text) ? (
+                    <ChatImage fileUri={imageUriOf(m.text)} />
+                  ) : (
+                    <p className="whitespace-pre-wrap break-words selectable">{m.text}</p>
+                  )}
                   {m._pending ? (
                     <p className="text-[9px] mt-0.5 flex items-center gap-1 text-primary-foreground/70">
                       <Clock className="w-3 h-3" /> Mengirim...
@@ -134,6 +172,22 @@ export default function OrderChat({ order }) {
       </div>
 
       <div className="flex items-center gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          onChange={sendImage}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="shrink-0 w-10 h-10 rounded-xl bg-secondary text-secondary-foreground flex items-center justify-center disabled:opacity-50 hover:opacity-90"
+          aria-label="Kirim foto"
+        >
+          {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ImagePlus className="w-5 h-5" />}
+        </button>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
